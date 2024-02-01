@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="yourpackage",
+    name="drift-lens",
     version="0.1",
     packages=find_packages(),
     description="DriftLens: an Unsupervised Drift Detection framework",
