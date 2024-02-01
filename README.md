@@ -1,5 +1,3 @@
-# Drift Lens
-
 <div align="center">
   <img src="docs/source/_static/Drift_Lens_Logo.png" width="300"/>
   <h4>DriftLens Demo: Real-time Unsupervised Concept Drift Detection for Deep Learning Models</h4>
