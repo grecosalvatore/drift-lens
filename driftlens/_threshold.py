@@ -283,7 +283,6 @@ class StandardThresholdEstimator(ThresholdEstimatorMethod):
         batch_n_pc = baseline.batch_n_pc
         per_label_n_pc = baseline.per_label_n_pc
 
-
         # Check if the number of samples is a multiple of window_size
         if E.shape[0] % window_size == 0:
             print("Warning: Number of samples is not an exact multiple of window size. {} samples are discarded.".format(E.shape[0] // window_size))
@@ -328,3 +327,7 @@ class StandardThresholdEstimator(ThresholdEstimatorMethod):
         threshold.fit(batch_mean, batch_std, per_label_mean, per_label_std, self.label_list, batch_n_pc, per_label_n_pc, window_size, distribution_distances_list, self.threshold_method_name)
 
         return threshold
+
+
+class MaximumThresholdEstimator(ThresholdEstimatorMethod):
+    """ Maximum Threshold Estimator Class: Implementation of the ThresholdEstimatorMethod Abstract Class. """
