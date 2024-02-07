@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from sklearn.model_selection import StratifiedKFold
-import drift_lens._baseline as _baseline
-import drift_lens.drift_lens as drift_lens
+import driftlens._baseline as _baseline
+import driftlens.driftlens as driftlens
 from tqdm import tqdm
 import numpy as np
 import json
@@ -204,7 +204,7 @@ class KFoldThresholdEstimator(ThresholdEstimatorMethod):
             approximated_baseline = _baseline.StandardBaselineEstimator(self.label_list, batch_n_pc,
                                                                         per_label_n_pc).estimate_baseline(E_b, Y_b)
 
-            window_distribution_distances_dict = drift_lens.DriftLens()._compute_frechet_distribution_distances(
+            window_distribution_distances_dict = driftlens.DriftLens()._compute_frechet_distribution_distances(
                 self.label_list, approximated_baseline, E_w, Y_w, window_id)
 
             distribution_distances_list["batch"].append(window_distribution_distances_dict["batch"])
@@ -307,7 +307,7 @@ class StandardThresholdEstimator(ThresholdEstimatorMethod):
             E_w = E[i*window_size:(i*window_size)+window_size]
             Y_w = Y[i*window_size:(i*window_size)+window_size]
 
-            window_distribution_distances_dict = drift_lens.DriftLens()._compute_frechet_distribution_distances(self.label_list, baseline, E_w, Y_w, window_id)
+            window_distribution_distances_dict = driftlens.DriftLens()._compute_frechet_distribution_distances(self.label_list, baseline, E_w, Y_w, window_id)
 
             distribution_distances_list["batch"].append(window_distribution_distances_dict["batch"])
 
