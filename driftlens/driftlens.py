@@ -11,32 +11,32 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-class DriftLens:
 
+class DriftLens:
+    """ DriftLens Class. """
     def __init__(self, label_list=None):
 
-        self.baseline = None
-        self.threshold = None
+        self.baseline = None  # BaselineClass object
+        self.threshold = None  # ThresholdClass object
 
-        self.label_list = label_list
-        self.batch_n_pc = None
-        self.per_label_n_pc = None
+        self.label_list = label_list  # List of class labels
+        self.batch_n_pc = None  # Number of principal components to use for the per-batch
+        self.per_label_n_pc = None  # Number of principal components to use for the per-label
 
         self.baseline_algorithms = {"StandardBaselineEstimator": "Description"}
         self.threshold_estimators = {"KFoldThresholdEstimator": "Description"}
 
     def estimate_baseline(self, E, Y,  label_list, batch_n_pc, per_label_n_pc, baseline_algorithm="StandardBaselineEstimator"):
         """ Estimates the baseline.
-
         Args:
-            label_list (list):
-            batch_n_pc (int):
-            per_label_n_pc (int):
-            E (np.array): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
-            Y (np.array): Labels (predicted/origianl) of shape (m, 1), where m is the number of samples.
-            baseline_algorithm (str): Baseline algorithm to perform.
+            label_list (list): List of class labels used to train the model.
+            batch_n_pc (int): Number of principal components to use for the per-batch.
+            per_label_n_pc (int): Number of principal components to use for the per-label.
+            E (np.array): Embedding matrix of shape (m, d), where m is the number of samples and d the embedding dimensionality.
+            Y (np.array): Vector of predicted labels of shape (m, 1), where m is the number of samples.
+            baseline_algorithm (str): Baseline estimation algorithm to use. Possible values are: "StandardBaselineEstimator".
          Returns:
-            _baseline.BaselineClass: Returns the baseline objects with the estimated models.
+            (BaselineClass): BaselineClass object performing the offline phase of DriftLens.
         """
 
         self.label_list = label_list
@@ -58,48 +58,45 @@ class DriftLens:
 
         return self.baseline
 
-    def save_baseline(self, folderpath, baseline_name):
+    def save_baseline(self, folder_path, baseline_name):
         """ Stores persistently on disk the baseline.
-
         Args:
-            folderpath (str): Folder path where save the baseline.
+            folder_path (str): Folder path where save the baseline.
             baseline_name (str): Filename of the baseline folder.
         Returns:
             (str): Baseline folder path.
         """
         if self.baseline is not None:
-            baseline_path = self.baseline.save(folderpath, baseline_name)
+            baseline_path = self.baseline.save(folder_path, baseline_name)
         else:
             raise Exception(f'Error: Baseline has not yet been estimated. You should first call the "estimate_baseline" method.')
         return baseline_path
 
-
-    def save_threshold(self, folderpath, threshold_name):
+    def save_threshold(self, folder_path, threshold_name):
         """ Stores persistently on disk the threshold.
-
         Args:
-            folderpath (str): Folder path where save the baseline.
+            folder_path (str): Folder path where save the baseline.
             threshold_name (str): Filename of the threshold file.
         Returns:
             (str): threshold filepath.
         """
         if self.threshold is not None:
-            threshold_path = self.threshold.save(folderpath, threshold_name)
+            threshold_path = self.threshold.save(folder_path, threshold_name)
         else:
             raise Exception(f'Error: Threshold has not yet been estimated. You should first call the "estimate_threshold" method.')
         return threshold_path
 
-    def load_baseline(self, folderpath, baseline_name):
+    def load_baseline(self, folder_path, baseline_name):
         """ Loads the baseline from disk into a BaselineClass object.
         Args:
-            folderpath (str):
+            folder_path (str):
             baseline_name (str):
         Returns:
             BaselineClass: the loaded baseline.
         """
         baseline = _baseline.BaselineClass()
 
-        baseline.load(folderpath=folderpath, baseline_name=baseline_name)
+        baseline.load(folder_path=folder_path, baseline_name=baseline_name)
 
         self.baseline = baseline
         self.label_list = baseline.get_label_list()
@@ -140,17 +137,17 @@ class DriftLens:
             raise Exception(f'Error in estimating the threshold: {e}')
         return self.threshold
 
-    def load_threshold(self, folderpath, threshold_name):
+    def load_threshold(self, folder_path, threshold_name):
         """ Loads the threshold from disk into a ThresholdClass object.
         Args:
-            folderpath (str):
+            folder_path (str):
             threshold_name (str):
         Returns:
             ThresholdClass: the loaded threshold.
         """
         threshold = _threshold.ThresholdClass()
 
-        threshold.load(folderpath=folderpath, threshold_name=threshold_name)
+        threshold.load(folder_path=folder_path, threshold_name=threshold_name)
 
         self.threshold = threshold
         return threshold
@@ -212,7 +209,7 @@ class DriftLens:
         # Compute drift probability for each window
         for window_dict in window_distribution_list:
             # Compute per_batch drift probability
-            per_batch_distance = window_dict["batch"]
+            per_batch_distance = window_dict["per-batch"]
             per_batch_drift_probabilty = abs(0.5 - stats.norm.cdf(per_batch_distance, loc=threshold.get_batch_mean_distance(), scale=3*threshold.get_batch_std_distance())) * 100 / 0.5
             per_batch_drift_probabilities.append(per_batch_drift_probabilty)
 
@@ -222,7 +219,7 @@ class DriftLens:
                                              scale=3*threshold.get_std_distance_by_label(str(label)))) * 100 / 0.5
                 per_label_drift_probabilities[str(label)].append(per_label_drift_probabilty)
 
-        return {'batch': per_batch_drift_probabilities, 'per-label': per_label_drift_probabilities}
+        return {'per-batch': per_batch_drift_probabilities, 'per-label': per_label_drift_probabilities}
 
     @staticmethod
     def _compute_frechet_distribution_distances(label_list, baseline,  E_w, Y_w, window_id=0):
@@ -253,7 +250,7 @@ class DriftLens:
                                                            covariance_b_batch,
                                                            covariance_w_batch)
 
-        window_distribution_distances_dict["batch"] = distribution_distance_batch
+        window_distribution_distances_dict["per-batch"] = distribution_distance_batch
         window_distribution_distances_dict["per-label"] = {}
 
         for label in label_list:
@@ -280,7 +277,6 @@ class DriftLens:
             window_distribution_distances_dict["per-label"][str(label)] = distribution_distance_l
         return window_distribution_distances_dict
 
-
     @staticmethod
     def convert_distribution_distances_list_to_dataframe(distribution_distances_list):
 
@@ -291,7 +287,7 @@ class DriftLens:
         for distribution_distances_dict in distribution_distances_list:
             d = {}
             d["window_id"] = distribution_distances_dict["window_id"]
-            d["batch_distance"] = distribution_distances_dict["batch"]
+            d["batch_distance"] = distribution_distances_dict["per-batch"]
             for label, distance in distribution_distances_dict["per-label"].items():
                 d["label_{}_distance".format(label)] = distance
 
@@ -300,12 +296,20 @@ class DriftLens:
 
 
 class DriftLensVisualizer:
-
+    """ Class to visualize the drift detection monitor results. """
     def __init__(self):
         return
 
     @staticmethod
     def _parse_distribution_distances(label_list, windows_distribution_distances):
+        """ Parse the distribution distances to per-label and per-batch distances.
+        Args:
+            label_list (list): list of labels.
+            windows_distribution_distances (list): list of distribution distances.
+        Returns:
+            per_label_distribution_distances (dict): dictionary with per-label distribution distances.
+            per_batch_distribution_distances (list): list of per-batch distribution distances.
+         """
         per_label_distribution_distances = {}
         per_batch_distribution_distances = []
 
@@ -313,7 +317,7 @@ class DriftLensVisualizer:
             per_label_distribution_distances[str(l)] = []
 
         for window_distribution_distances in windows_distribution_distances:
-            per_batch_distribution_distances.append(window_distribution_distances["batch"])
+            per_batch_distribution_distances.append(window_distribution_distances["per-batch"])
             for l in label_list:
                 per_label_distribution_distances[str(l)].append(window_distribution_distances["per-label"][str(l)])
         return per_label_distribution_distances, per_batch_distribution_distances
