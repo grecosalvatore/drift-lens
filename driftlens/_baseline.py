@@ -342,14 +342,12 @@ class BaselineEstimatorMethod(ABC):
 
 class StandardBaselineEstimator(BaselineEstimatorMethod):
     """ Standard Baseline Estimator Class: Implementation of the BaselineEstimatorMethod Abstract Class. """
-
     def __init__(self, label_list, batch_n_pc, per_label_n_pc):
         BaselineEstimatorMethod.__init__(self, label_list, batch_n_pc, per_label_n_pc)
         return
 
     def estimate_baseline(self, E, Y):
         """ Estimates the baseline.
-
          Args:
              E (np.array): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
              Y (np.array): Labels (predicted/origianl) of shape (m, 1), where m is the number of samples.

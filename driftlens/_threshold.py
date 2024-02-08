@@ -100,16 +100,25 @@ class ThresholdClass:
         return
 
     def set_description(self, description):
-        """ Sets the 'description' attribute of the threshold. """
+        """ Sets the 'description' attribute of the threshold.
+        Args:
+            (str): Description of the threshold.
+        """
         self.description = description
         return
 
     def get_description(self):
-        """ Gets the 'description' attribute of the threshold. """
+        """ Gets the 'description' attribute of the threshold.
+         Returns:
+             (str): Description of the threshold.
+        """
         return self.description
 
     def get_label_list(self):
-        """ Gets the 'label_list' attribute of the threshold. It contains the list of labels. """
+        """ Gets the 'label_list' attribute of the threshold. It contains the list of labels.
+        Returns:
+            (list): List of labels used to train the model.
+        """
         return self.label_list
 
     def get_batch_mean_distance(self):
