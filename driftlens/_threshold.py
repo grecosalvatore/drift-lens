@@ -8,6 +8,7 @@ import json
 import os
 from tqdm import tqdm
 
+
 class ThresholdClass:
     """ Threshold Class: it contains all the attributes and methods of the threshold. """
     def __init__(self):
