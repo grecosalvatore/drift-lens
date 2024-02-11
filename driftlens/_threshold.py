@@ -341,3 +341,20 @@ class StandardThresholdEstimator(ThresholdEstimatorMethod):
 
 class MaximumThresholdEstimator(ThresholdEstimatorMethod):
     """ Maximum Threshold Estimator Class: Implementation of the ThresholdEstimatorMethod Abstract Class. """
+
+    def __init__(self, label_list):
+        ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="MaximumThresholdEstimator")
+        return
+
+    def estimate_threshold(self, E, Y, baseline, window_size, n_sampling):
+        """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object. """
+
+        per_batch_distances = []
+        per_label_distances = {label: [] for label in self.label_list}
+
+        print("Threshold Estimation")
+        for i in tqdm(range(n_sampling)):
+            print()
+
+
+
