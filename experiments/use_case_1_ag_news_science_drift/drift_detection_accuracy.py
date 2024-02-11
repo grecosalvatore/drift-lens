@@ -16,10 +16,10 @@ def parse_args():
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
-    parser.add_argument('--train_embedding_filename', type=str, default='train_embedding_0_1_2.hdf5')
-    parser.add_argument('--test_embedding_filename', type=str, default='train_embedding_0_1_2.hdf5')
-    parser.add_argument('--new_unseen_embedding_filename', type=str, default='new_unseen_embedding_0_1_2.hdf5')
-    parser.add_argument('--drift_embedding_filename', type=str, default='drift_embedding_3.hdf5')
+    parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0_1_2.hdf5")
+    parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0_1_2.hdf5')
+    parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/new_unseen_embedding_0_1_2.hdf5')
+    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/drift_embedding_3.hdf5')
     parser.add_argument('--output_dir', type=str, default='outputs/')  # Currently not used
     parser.add_argument('--cuda', action='store_true')
     parser.add_argument('--verbose', action='store_true')
@@ -56,17 +56,17 @@ def main():
     drift_label_list = [3]  # Labels used for drift simulation - 3: Science/technology
 
     # Set the file paths for the embeddings
-    train_embedding_filepath = f"{os.getcwd()}/experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/{args.model_name}/{args.train_embedding_filename}"
-    test_embedding_filepath = f"{os.getcwd()}/experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/{args.model_name}/{args.test_embedding_filename}"
-    new_unseen_embedding_filepath = f"{os.getcwd()}/experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/{args.model_name}/{args.new_unseen_embedding_filename}"
-    drift_embedding_filepath = f"{os.getcwd()}/experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/{args.model_name}/{args.drift_embedding_filename}"
+    #train_embedding_filepath = f"{os.getcwd()}/static/saved_embeddings/{args.model_name}/{args.train_embedding_filename}"
+    #test_embedding_filepath = f"{os.getcwd()}/static/saved_embeddings/{args.model_name}/{args.test_embedding_filename}"
+    #new_unseen_embedding_filepath = f"{os.getcwd()}/static/saved_embeddings/{args.model_name}/{args.new_unseen_embedding_filename}"
+    #drift_embedding_filepath = f"{os.getcwd()}/static/saved_embeddings/{args.model_name}/{args.drift_embedding_filename}"
 
     # Print the current working directory
     print("Current Working Directory:", os.getcwd())
 
     print(args.model_name)
     print(args.window_size)
-    print(args.train_embedding_filename)
+    print(args.train_embedding_filepath)
 
     window_size = args.window_size
     batch_n_pc = args.batch_n_pc
@@ -74,10 +74,10 @@ def main():
     n_windows = args.number_of_windows
 
     # Load the embeddings
-    E_train, Y_original_train, Y_predicted_train = load_embedding(train_embedding_filepath)
-    E_test, Y_original_test, Y_predicted_test = load_embedding(test_embedding_filepath)
-    E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(new_unseen_embedding_filepath)
-    E_drift, Y_original_drift, Y_predicted_drift = load_embedding(drift_embedding_filepath)
+    E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
+    E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
+    E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
+    E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
 
     print(len(E_train))
     print(len(E_test))
@@ -116,23 +116,38 @@ def main():
                                                                                                      batch_n_pc=batch_n_pc,
                                                                                                      per_label_n_pc=per_label_n_pc,
                                                                                                      window_size=window_size,
-                                                                                                     n_samples=1000,
+                                                                                                     n_samples=10,
                                                                                                      flag_shuffle=True,
                                                                                                      flag_replacement=True)
 
-    print(per_batch_distances_sorted, per_label_distances_sorted)
+    #print(per_batch_distances_sorted, per_label_distances_sorted)
+
+    per_batch_th = max(per_batch_distances_sorted)
 
     # Initialize drift detectors used for comparison
     ks_detector = KSDrift(E_train, p_val=.05)
     mmd_detector = MMDDrift(E_test, p_val=.05, n_permutations=100, backend="pytorch")
     lsdd_detector = LSDDDrift(E_test, backend='pytorch', p_val=.05)
 
+
+
     # Generate windows and predict drift
     for i in tqdm(range(n_windows)):
-        E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(window_size=window_size,
-                                                                                                          n_windows=1,
-                                                                                                          flag_shuffle=True,
-                                                                                                          flag_replacement=True)
+
+        if args.drift_percentage > 0:
+            # Drift
+            E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_constant_drift_windows_generation(window_size=window_size,
+                                                                                                                n_windows=1,
+                                                                                                                drift_percentage=float(args.drift_percentage/100),
+                                                                                                                flag_shuffle=True,
+                                                                                                                flag_replacement=True)
+
+        else:
+            # No Drift
+            E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(window_size=window_size,
+                                                                                                              n_windows=1,
+                                                                                                              flag_shuffle=True,
+                                                                                                              flag_replacement=True)
 
         # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
         dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
@@ -148,10 +163,22 @@ def main():
         lsdd_preds.append(lsdd_pred["data"]["is_drift"])
         dl_distances.append(dl_distance)
 
-    print(ks_preds)
-    print(mmd_preds)
-    print(lsdd_preds)
-    print(dl_distances)
+    if args.drift_percentage > 0:
+        ground_truth = [1] * n_windows
+    else:
+        ground_truth = [0] * n_windows
+
+    dl_preds = []
+    for dl_distance in dl_distances:
+        if dl_distance["per-batch"] > per_batch_th:
+            dl_preds.append(1)
+        else:
+            dl_preds.append(0)
+
+    print("KS", ks_preds)
+    print("MMD", mmd_preds)
+    print("LSDD", lsdd_preds)
+    print("DriftLens", dl_preds)
 
     return
 

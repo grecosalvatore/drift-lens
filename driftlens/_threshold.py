@@ -361,15 +361,16 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
                                                                                          1,
                                                                                          flag_replacement)
 
-            E_windows[i], Y_predicted_windows[i], Y_original_windows[i] = self._shuffle_dataset(E_windows[0],
+            E_windows[0], Y_predicted_windows[0], Y_original_windows[0] = self._shuffle_dataset(E_windows[0],
                                                                                                 Y_predicted_windows[0],
                                                                                                 Y_original_windows[0])
 
-            dl_th = driftlens.DriftLens(self.label_list).set_baseline(baseline)
+            dl_th = driftlens.DriftLens(self.label_list)
+            dl_th.set_baseline(baseline)
             distribution_distances = dl_th.compute_window_list_distribution_distances(E_windows, Y_predicted_windows)
 
-            per_batch_distances.append(distribution_distances[0][0]["batch"])
-            for l in label_list:
+            per_batch_distances.append(distribution_distances[0][0]["per-batch"])
+            for l in self.label_list:
                 per_label_distances[l].append(distribution_distances[0][0]["per-label"][str(l)])
 
 
@@ -379,8 +380,7 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
 
         per_batch_distances_sorted = per_batch_distances_arr[indices]
 
-
-        for l in label_list:
+        for l in self.label_list:
             per_label_distances[l] = sorted(per_label_distances[l], reverse=True)
 
         print(per_batch_distances_sorted)
