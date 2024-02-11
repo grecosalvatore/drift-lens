@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from sklearn.model_selection import StratifiedKFold
-import driftlens._baseline as _baseline
-import driftlens.driftlens as driftlens
+from driftlens import driftlens
 from tqdm import tqdm
 import numpy as np
 import json
@@ -339,22 +338,142 @@ class StandardThresholdEstimator(ThresholdEstimatorMethod):
         return threshold
 
 
-class MaximumThresholdEstimator(ThresholdEstimatorMethod):
+class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
     """ Maximum Threshold Estimator Class: Implementation of the ThresholdEstimatorMethod Abstract Class. """
 
     def __init__(self, label_list):
         ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="MaximumThresholdEstimator")
         return
 
-    def estimate_threshold(self, E, Y, baseline, window_size, n_sampling):
+    def estimate_threshold(self, E, Y, baseline, window_size, n_samples, flag_replacement=True, flag_shuffle=True):
         """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object. """
 
         per_batch_distances = []
         per_label_distances = {label: [] for label in self.label_list}
 
         print("Threshold Estimation")
-        for i in tqdm(range(n_sampling)):
-            print()
+        for i in tqdm(range(n_samples)):
+            E_windows, Y_predicted_windows, Y_original_windows = self._balanced_sampling(self.label_list,
+                                                                                         E,
+                                                                                         Y,
+                                                                                         Y,
+                                                                                         window_size,
+                                                                                         1,
+                                                                                         flag_replacement)
+
+            E_windows[i], Y_predicted_windows[i], Y_original_windows[i] = self._shuffle_dataset(E_windows[0],
+                                                                                                Y_predicted_windows[0],
+                                                                                                Y_original_windows[0])
+
+            dl_th = driftlens.DriftLens(self.label_list).set_baseline(baseline)
+            distribution_distances = dl_th.compute_window_list_distribution_distances(E_windows, Y_predicted_windows)
+
+            per_batch_distances.append(distribution_distances[0][0]["batch"])
+            for l in label_list:
+                per_label_distances[l].append(distribution_distances[0][0]["per-label"][str(l)])
+
+
+        per_batch_distances_arr = np.array(per_batch_distances)
+
+        indices = (-per_batch_distances_arr).argsort()
+
+        per_batch_distances_sorted = per_batch_distances_arr[indices]
+
+
+        for l in label_list:
+            per_label_distances[l] = sorted(per_label_distances[l], reverse=True)
+
+        print(per_batch_distances_sorted)
+        print(per_label_distances)
+
+        return per_batch_distances_sorted, per_label_distances
+
+
+
+    #TODO: improve this implementation
+    @staticmethod
+    def _balanced_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement):
+
+        per_label_E = {}
+        per_label_Y_predicted = {}
+        per_label_Y_original = {}
+
+        for l in label_list:
+            per_label_E[str(l)] = E[Y_original == l].copy()
+            per_label_Y_predicted[str(l)] = Y_predicted[Y_original == l].copy()
+            per_label_Y_original[str(l)] = Y_original[Y_original == l].copy()
+
+        n_samples_per_label = window_size // len(label_list)
+        n_residual_samples = window_size % len(label_list)
+
+        E_windows = []
+        Y_predicted_windows = []
+        Y_original_windows = []
+        for i in range(n_windows):
+            E_window_list = []
+            Y_predicted_window_list = []
+            Y_original_window_list = []
+            for l in label_list:
+                m_l = len(per_label_E[str(l)])
+                try:
+                    l_idxs = np.random.choice(m_l, n_samples_per_label, replace=False)
+                except:
+                    print(f"error: {l} , {m_l}")
+                E_l_window = per_label_E[str(l)][l_idxs]
+                Y_predicted_l_window = per_label_Y_predicted[str(l)][l_idxs]
+                Y_original_l_window = per_label_Y_original[str(l)][l_idxs]
+
+                E_window_list += E_l_window.tolist()
+                Y_predicted_window_list += Y_predicted_l_window.tolist()
+                Y_original_window_list += Y_original_l_window.tolist()
+
+                if bool(flag_replacement) == False:
+                    # If not flag_replacement than remove vectors
+                    per_label_E[str(l)] = np.delete(per_label_E[str(l)], l_idxs, 0)
+                    per_label_Y_predicted[str(l)] = np.delete(per_label_Y_predicted[str(l)], l_idxs, 0)
+                    per_label_Y_original[str(l)] = np.delete(per_label_Y_original[str(l)], l_idxs, 0)
+
+            if n_residual_samples != 0:
+                count_residual = 0
+                while count_residual < n_residual_samples:
+
+                    random_idx_l = np.random.choice(len(label_list), 1, replace=True)[0]
+                    random_l = label_list[random_idx_l]
+
+                    m_l = len(per_label_E[str(random_l)])
+                    idx = np.random.choice(m_l, 1, replace=False)
+                    E_l_window = per_label_E[str(random_l)][idx]
+                    Y_predicted_l_window = per_label_Y_predicted[str(random_l)][idx]
+                    Y_original_l_window = per_label_Y_original[str(random_l)][idx]
+
+                    E_window_list += E_l_window.tolist()
+                    Y_predicted_window_list += Y_predicted_l_window.tolist()
+                    Y_original_window_list += Y_original_l_window.tolist()
+
+                    count_residual += 1
+
+                    if bool(flag_replacement) == False:
+                        # If not flag_replacement than remove vectors
+                        per_label_E[str(random_l)] = np.delete(per_label_E[str(random_l)], idx, 0)
+                        per_label_Y_predicted[str(random_l)] = np.delete(per_label_Y_predicted[str(random_l)],
+                                                                             idx, 0)
+                        per_label_Y_original[str(random_l)] = np.delete(per_label_Y_original[str(random_l)],
+                                                                            idx, 0)
+
+            E_windows.append(np.array(E_window_list))
+            Y_predicted_windows.append(np.array(Y_predicted_window_list))
+            Y_original_windows.append(np.array(Y_original_window_list))
+
+
+        return E_windows, Y_predicted_windows, Y_original_windows
+
+    @staticmethod
+    def _shuffle_dataset(E, Y_predicted, Y_original):
+        p = np.random.permutation(len(E))
+        E = E[p]
+        Y_original = Y_original[p]
+        Y_predicted = Y_predicted[p]
+        return E, Y_predicted, Y_original
 
 
 

@@ -110,6 +110,15 @@ class DriftLens:
         self.threshold = threshold
         return
 
+    def random_sampling_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, n_samples, flag_shuffle=True, flag_replacement=True):
+        threshold_algorithm = _threshold.RandomSamplingThresholdEstimator(label_list)
+        # Execute the threshold estimation
+        try:
+            per_batch_distances_sorted, per_label_distances = threshold_algorithm.estimate_threshold(E, Y, self.baseline, window_size, n_samples, flag_shuffle=flag_shuffle, flag_replacement=flag_replacement)
+        except Exception as e:
+            raise Exception(f'Error in estimating the threshold: {e}')
+        return per_batch_distances_sorted, per_label_distances
+
     def KFold_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, flag_shuffle=True):
         threshold_algorithm = _threshold.KFoldThresholdEstimator(label_list)
         # Execute the threshold estimation

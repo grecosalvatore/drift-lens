@@ -16,10 +16,10 @@ def parse_args():
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
-    parser.add_argument('--train_embedding_filename', type=str, default='/home/mlaquatra/nlp_projects/geolingit/geolingit-data/standard-track/subtask_b/train_b.tsv')
-    parser.add_argument('--test_embedding_filename', type=str, default='/home/mlaquatra/nlp_projects/geolingit/geolingit-data/standard-track/subtask_b/dev_b.tsv')
-    parser.add_argument('--new_unseen_embedding_filename', type=str, default='/home/mlaquatra/nlp_projects/geolingit/geolingit-data/standard-track/subtask_b/dev_b.tsv')
-    parser.add_argument('--drift_embedding_filename', type=str, default='/home/mlaquatra/nlp_projects/geolingit/geolingit-data/standard-track/subtask_b/dev_b.tsv')
+    parser.add_argument('--train_embedding_filename', type=str, default='train_embedding_0_1_2.hdf5')
+    parser.add_argument('--test_embedding_filename', type=str, default='train_embedding_0_1_2.hdf5')
+    parser.add_argument('--new_unseen_embedding_filename', type=str, default='new_unseen_embedding_0_1_2.hdf5')
+    parser.add_argument('--drift_embedding_filename', type=str, default='drift_embedding_3.hdf5')
     parser.add_argument('--output_dir', type=str, default='outputs/')  # Currently not used
     parser.add_argument('--cuda', action='store_true')
     parser.add_argument('--verbose', action='store_true')
@@ -108,6 +108,19 @@ def main():
                                     label_list=training_label_list,
                                     batch_n_pc=batch_n_pc,
                                     per_label_n_pc=per_label_n_pc)
+
+    # Estimate the threshold values with DriftLens
+    per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(label_list=training_label_list,
+                                                                                                     E=E_test,
+                                                                                                     Y=Y_predicted_test,
+                                                                                                     batch_n_pc=batch_n_pc,
+                                                                                                     per_label_n_pc=per_label_n_pc,
+                                                                                                     window_size=window_size,
+                                                                                                     n_samples=1000,
+                                                                                                     flag_shuffle=True,
+                                                                                                     flag_replacement=True)
+
+    print(per_batch_distances_sorted, per_label_distances_sorted)
 
     # Initialize drift detectors used for comparison
     ks_detector = KSDrift(E_train, p_val=.05)
