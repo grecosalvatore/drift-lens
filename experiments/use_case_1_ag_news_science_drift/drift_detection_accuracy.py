@@ -203,7 +203,7 @@ def main():
     print("DriftLens: ", driftlens_acc)
 
     # Create the output dictionary
-    output_dict = {"params": args,
+    output_dict = {"params": vars(args),
                    "accuracy": {"KS": ks_acc, "MMD": mmd_acc, "LSDD": lsdd_acc, "CVM": cvm_acc, "ChiSquare": chisquare_acc, "DriftLens": driftlens_acc}}
 
     # Save the output dictionary
