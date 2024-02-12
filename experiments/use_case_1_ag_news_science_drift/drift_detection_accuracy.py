@@ -56,6 +56,9 @@ def load_embedding(filepath, E_name=None, Y_original_name=None, Y_predicted_name
 
 
 def main():
+    print("Drift Detection Experiment - Use Case 1")
+
+
     # Parse arguments
     args = parse_args()
 
