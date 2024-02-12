@@ -2,7 +2,7 @@
 cd ..
 
 
-python -m experiments.use_case_2_20_news_recreation_drift.drift_detection_accuracy \
+python -m experiments.use_case_2_20_news_recreation_drift.use_case_2_drift_detection_accuracy \
   --model_name 'roberta' \
   --window_size 500 \
   --number_of_windows 100 \

@@ -383,9 +383,6 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
         for l in self.label_list:
             per_label_distances[l] = sorted(per_label_distances[l], reverse=True)
 
-        print(per_batch_distances_sorted)
-        print(per_label_distances)
-
         return per_batch_distances_sorted, per_label_distances
 
 

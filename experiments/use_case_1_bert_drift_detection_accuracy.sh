@@ -2,7 +2,7 @@
 cd ..
 
 
-python -m experiments.use_case_1_ag_news_science_drift.drift_detection_accuracy \
+python -m experiments.use_case_1_ag_news_science_drift.use_case_1_drift_detection_accuracy \
   --model_name 'bert' \
   --window_size 500 \
   --number_of_windows 100 \
