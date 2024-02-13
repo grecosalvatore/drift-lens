@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument('--model_name', type=str, default='bert')
     parser.add_argument('--window_size', type=int, default=250)
     parser.add_argument('--number_of_windows', type=int, default=10)
-    parser.add_argument('--drift_percentage', type=int, default=0)
+    parser.add_argument('--drift_percentage', type=int, default=20)
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=25)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
@@ -70,12 +70,12 @@ def main():
     # Print the current working directory
     print("Current Working Directory:", os.getcwd())
 
-    if args.save_results:
-        if not os.path.exists(args.output_dir):
-            os.makedirs(args.output_dir)
-        ts = time.time()
-        timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
-        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_drift_percentage_{args.drift_percentage}_{timestamp}.json"
+    #if args.save_results:
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+    ts = time.time()
+    timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
+    output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_drift_percentage_{args.drift_percentage}_{timestamp}.json"
 
     # Parse parameters
     window_size = args.window_size
