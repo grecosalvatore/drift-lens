@@ -3,12 +3,13 @@ cd ..
 
 
 python -m experiments.use_case_1_ag_news_science_drift.use_case_1_drift_detection_accuracy \
+  --number_of_runs 100 \
   --model_name 'bert' \
   --window_size 500 \
   --number_of_windows 100 \
   --drift_percentage 0 \
   --threshold_sensitivity 99 \
-  --threshold_number_of_estimation_samples 100 \
+  --threshold_number_of_estimation_samples 1000 \
   --batch_n_p 150 \
   --per_label_n_pc 75 \
   --train_embedding_filepath 'experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/bert/train_embedding_0_1_2.hdf5' \

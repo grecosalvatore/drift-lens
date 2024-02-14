@@ -8,7 +8,7 @@ python -m experiments.use_case_2_20_news_recreation_drift.use_case_2_drift_detec
   --number_of_windows 100 \
   --drift_percentage 0 \
   --threshold_sensitivity 99 \
-  --threshold_number_of_estimation_samples 100 \
+  --threshold_number_of_estimation_samples 10000 \
   --batch_n_p 150 \
   --per_label_n_pc 75 \
   --train_embedding_filepath 'experiments/use_case_2_20_news_recreation_drift/static/saved_embeddings/bert/train_embedding_0-4.hdf5' \
@@ -20,3 +20,4 @@ python -m experiments.use_case_2_20_news_recreation_drift.use_case_2_drift_detec
   --cuda \
   --verbose \
   --seed 42
+  #--sota_comparison \

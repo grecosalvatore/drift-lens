@@ -15,19 +15,21 @@ import time
 def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('--model_name', type=str, default='bert')
-    parser.add_argument('--window_size', type=int, default=250)
+    parser.add_argument('--window_size', type=int, default=1000)
     parser.add_argument('--number_of_windows', type=int, default=10)
-    parser.add_argument('--drift_percentage', type=int, default=20)
+    parser.add_argument('--drift_percentage', type=int, default=0)
     parser.add_argument('--batch_n_pc', type=int, default=150)
-    parser.add_argument('--per_label_n_pc', type=int, default=25)
+    parser.add_argument('--per_label_n_pc', type=int, default=75)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
-    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=1000)
+    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=100)
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0-4.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0-4.hdf5')
     parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/new_unseen_embedding_0-4.hdf5')
     parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/drift_embedding_5.hdf5')
     parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/bert/")
     parser.add_argument('--save_results', action='store_true')
+    parser.add_argument('--sota_comparison', action='store_true')
+    #parser.add_argument('--sota_comparison', action='store_false')
     parser.add_argument('--cuda', action='store_true')
     parser.add_argument('--verbose', action='store_true')
     parser.add_argument('--seed', type=int, default=42)
@@ -117,6 +119,7 @@ def main():
                           Y_predicted_drift,
                           Y_original_drift)
 
+
     # Initialize the DriftLens
     dl = DriftLens()
 
@@ -127,10 +130,19 @@ def main():
                                     batch_n_pc=batch_n_pc,
                                     per_label_n_pc=per_label_n_pc)
 
+    print(proportions_dict)
+
+    E_th = np.vstack([E_train, E_test])
+    Y_original_th = np.hstack([Y_original_train, Y_original_test])
+    Y_predicted_th = np.hstack([Y_predicted_train, Y_predicted_test])
+
+    E_th = E_th
+    Y_th = Y_original_th
+
     # Estimate the threshold values with DriftLens
     per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(label_list=training_label_list,
-                                                                                                     E=E_test,
-                                                                                                     Y=Y_predicted_test,
+                                                                                                     E=E_th,
+                                                                                                     Y=Y_th,
                                                                                                      batch_n_pc=batch_n_pc,
                                                                                                      per_label_n_pc=per_label_n_pc,
                                                                                                      window_size=window_size,
@@ -141,16 +153,19 @@ def main():
                                                                                                      proportions_dict=proportions_dict)
 
     # Calculate the threshold values
+    print(per_batch_distances_sorted)
+
     l = np.array(per_batch_distances_sorted)
     l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
     per_batch_th = max(l)
 
-    # Initialize drift detectors used for comparison
-    ks_detector = KSDrift(E_train[:1000], p_val=.05)
-    mmd_detector = MMDDrift(E_test[:1000], p_val=.05, n_permutations=100, backend="pytorch")
-    lsdd_detector = LSDDDrift(E_test[:1000], backend='pytorch', p_val=.05)
-    cvm_detector = CVMDrift(E_train[:1000], p_val=.05)
-    chisquare_detector = ChiSquareDrift(E_train[:1000], p_val=0.05)
+    if args.sota_comparison:
+        # Initialize drift detectors used for comparison
+        ks_detector = KSDrift(E_train[:1000], p_val=.05)
+        mmd_detector = MMDDrift(E_test[:1000], p_val=.05, n_permutations=100, backend="pytorch")
+        lsdd_detector = LSDDDrift(E_test[:1000], backend='pytorch', p_val=.05)
+        cvm_detector = CVMDrift(E_train[:1000], p_val=.05)
+        chisquare_detector = ChiSquareDrift(E_train[:1000], p_val=0.05)
 
     # Generate windows and predict drift
     for i in tqdm(range(n_windows)):
@@ -174,27 +189,33 @@ def main():
 
         # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
         dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
-
-        # Predict drift with the drift detectors used for comparison
-        ks_pred = ks_detector.predict(E_windows[0])
-        mmd_pred = mmd_detector.predict(E_windows[0])
-        lsdd_pred = lsdd_detector.predict(E_windows[0], return_p_val=True, return_distance=True)
-        cvm_pred = cvm_detector.predict(E_windows[0], drift_type='batch', return_p_val=True, return_distance=True)
-        chisquare_pred = chisquare_detector.predict(E_windows[0], drift_type='batch', return_p_val=True, return_distance=True)
-
-        # Append the predictions to the lists
-        ks_preds.append(ks_pred["data"]["is_drift"])
-        mmd_preds.append(mmd_pred["data"]["is_drift"])
-        lsdd_preds.append(lsdd_pred["data"]["is_drift"])
-        cvm_preds.append(cvm_pred["data"]["is_drift"])
-        chisquare_preds.append(chisquare_pred["data"]["is_drift"])
-
         dl_distances.append(dl_distance)
+
+        if args.sota_comparison:
+            # Predict drift with the drift detectors used for comparison
+            ks_pred = ks_detector.predict(E_windows[0])
+            mmd_pred = mmd_detector.predict(E_windows[0])
+            lsdd_pred = lsdd_detector.predict(E_windows[0], return_p_val=True, return_distance=True)
+            cvm_pred = cvm_detector.predict(E_windows[0], drift_type='batch', return_p_val=True, return_distance=True)
+            chisquare_pred = chisquare_detector.predict(E_windows[0], drift_type='batch', return_p_val=True, return_distance=True)
+
+            # Append the predictions to the lists
+            ks_preds.append(ks_pred["data"]["is_drift"])
+            mmd_preds.append(mmd_pred["data"]["is_drift"])
+            lsdd_preds.append(lsdd_pred["data"]["is_drift"])
+            cvm_preds.append(cvm_pred["data"]["is_drift"])
+            chisquare_preds.append(chisquare_pred["data"]["is_drift"])
+
+
 
     if args.drift_percentage > 0:
         ground_truth = [1] * n_windows
     else:
         ground_truth = [0] * n_windows
+
+    print("DriftLens Th", per_batch_th)
+    print("\n")
+    print(dl_distances)
 
     dl_preds = []
     for dl_distance in dl_distances:
@@ -203,27 +224,32 @@ def main():
         else:
             dl_preds.append(0)
 
-    # Calculate the accuracy of the drift detectors
-    ks_acc = accuracy_score(ground_truth, ks_preds, normalize=True)
-    mmd_acc = accuracy_score(ground_truth, mmd_preds, normalize=True)
-    lsdd_acc = accuracy_score(ground_truth, lsdd_preds, normalize=True)
-    cvm_acc = accuracy_score(ground_truth, cvm_preds, normalize=True)
-    chisquare_acc = accuracy_score(ground_truth, chisquare_preds, normalize=True)
+    if args.sota_comparison:
+        # Calculate the accuracy of the drift detectors
+        ks_acc = accuracy_score(ground_truth, ks_preds, normalize=True)
+        mmd_acc = accuracy_score(ground_truth, mmd_preds, normalize=True)
+        lsdd_acc = accuracy_score(ground_truth, lsdd_preds, normalize=True)
+        cvm_acc = accuracy_score(ground_truth, cvm_preds, normalize=True)
+        chisquare_acc = accuracy_score(ground_truth, chisquare_preds, normalize=True)
 
     driftlens_acc = accuracy_score(ground_truth, dl_preds, normalize=True)
 
-
-    print("KS: ", ks_acc)
-    print("MMD: ", mmd_acc)
-    print("LSDD: ", lsdd_acc)
-    print("CVM: ", cvm_acc)
-    print("ChiSquare: ", chisquare_acc)
+    if args.sota_comparison:
+        print("KS: ", ks_acc)
+        print("MMD: ", mmd_acc)
+        print("LSDD: ", lsdd_acc)
+        print("CVM: ", cvm_acc)
+        print("ChiSquare: ", chisquare_acc)
 
     print("DriftLens: ", driftlens_acc)
 
-    # Create the output dictionary
-    output_dict = {"params": vars(args),
-                   "accuracy": {"KS": ks_acc, "MMD": mmd_acc, "LSDD": lsdd_acc, "CVM": cvm_acc, "ChiSquare": chisquare_acc, "DriftLens": driftlens_acc}}
+    if args.sota_comparison:
+        # Create the output dictionary
+        output_dict = {"params": vars(args),
+                       "accuracy": {"KS": ks_acc, "MMD": mmd_acc, "LSDD": lsdd_acc, "CVM": cvm_acc, "ChiSquare": chisquare_acc, "DriftLens": driftlens_acc}}
+    else:
+        output_dict = {"params": vars(args),
+                       "accuracy": {"DriftLens": driftlens_acc}}
 
     # Save the output dictionary
     with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
