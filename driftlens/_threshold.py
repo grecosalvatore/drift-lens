@@ -210,7 +210,7 @@ class KFoldThresholdEstimator(ThresholdEstimatorMethod):
             Y_b, Y_w = Y[approximated_baseline_idxs], Y[simulated_new_window_idx]
 
             # Estimate an approximated baseline with k-1 folds
-            approximated_baseline = _baseline.StandardBaselineEstimator(self.label_list, batch_n_pc,
+            approximated_baseline = self._baseline.StandardBaselineEstimator(self.label_list, batch_n_pc,
                                                                         per_label_n_pc).estimate_baseline(E_b, Y_b)
 
             window_distribution_distances_dict = driftlens.DriftLens()._compute_frechet_distribution_distances(
@@ -345,7 +345,7 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
         ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="MaximumThresholdEstimator")
         return
 
-    def estimate_threshold(self, E, Y, baseline, window_size, n_samples, flag_replacement=True, flag_shuffle=True):
+    def estimate_threshold(self, E, Y, baseline, window_size, n_samples, flag_replacement=True, flag_shuffle=True, proportional_flag=proportional_flag, proportions=proportions):
         """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object. """
 
         per_batch_distances = []
@@ -353,13 +353,25 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
 
         print("Threshold Estimation")
         for i in tqdm(range(n_samples)):
-            E_windows, Y_predicted_windows, Y_original_windows = self._balanced_sampling(self.label_list,
-                                                                                         E,
-                                                                                         Y,
-                                                                                         Y,
-                                                                                         window_size,
-                                                                                         1,
-                                                                                         flag_replacement)
+
+            if proportional_flag == False:
+
+                E_windows, Y_predicted_windows, Y_original_windows = self._balanced_sampling(self.label_list,
+                                                                                             E,
+                                                                                             Y,
+                                                                                             Y,
+                                                                                             window_size,
+                                                                                             1,
+                                                                                             flag_replacement)
+            else:
+                E_windows, Y_predicted_windows, Y_original_windows = self._proportional_sampling(self.label_list,
+                                                                                                 E,
+                                                                                                 Y,
+                                                                                                 Y,
+                                                                                                 window_size,
+                                                                                                 1,
+                                                                                                 flag_replacement,
+                                                                                                 proportions)
 
             E_windows[0], Y_predicted_windows[0], Y_original_windows[0] = self._shuffle_dataset(E_windows[0],
                                                                                                 Y_predicted_windows[0],
@@ -384,6 +396,84 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
             per_label_distances[l] = sorted(per_label_distances[l], reverse=True)
 
         return per_batch_distances_sorted, per_label_distances
+
+    @staticmethod
+    def _proportional_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement,
+                               proportions):
+        per_label_E = {}
+        per_label_Y_predicted = {}
+        per_label_Y_original = {}
+
+        # Dictionary to keep track of samples per label based on proportions
+        n_samples_per_label = {str(l): int(proportions[str(l)] * window_size) for l in label_list}
+        total_samples = sum(n_samples_per_label.values())
+        n_residual_samples = window_size - total_samples  # Adjust for any rounding errors in proportions
+
+        for l in label_list:
+            per_label_E[str(l)] = E[Y_original == l].copy()
+            per_label_Y_predicted[str(l)] = Y_predicted[Y_original == l].copy()
+            per_label_Y_original[str(l)] = Y_original[Y_original == l].copy()
+
+        E_windows = []
+        Y_predicted_windows = []
+        Y_original_windows = []
+
+        for i in range(n_windows):
+            E_window_list = []
+            Y_predicted_window_list = []
+            Y_original_window_list = []
+
+            for l in label_list:
+                m_l = len(per_label_E[str(l)])
+                n_samples = n_samples_per_label[str(l)]
+                try:
+                    l_idxs = np.random.choice(m_l, n_samples, replace=flag_replacement)
+                except:
+                    print(f"error: {l} , {m_l}")
+
+                E_l_window = per_label_E[str(l)][l_idxs]
+                Y_predicted_l_window = per_label_Y_predicted[str(l)][l_idxs]
+                Y_original_l_window = per_label_Y_original[str(l)][l_idxs]
+
+                E_window_list += E_l_window.tolist()
+                Y_predicted_window_list += Y_predicted_l_window.tolist()
+                Y_original_window_list += Y_original_l_window.tolist()
+
+                if not flag_replacement:
+                    # If not flag_replacement then remove vectors
+                    per_label_E[str(l)] = np.delete(per_label_E[str(l)], l_idxs, 0)
+                    per_label_Y_predicted[str(l)] = np.delete(per_label_Y_predicted[str(l)], l_idxs, 0)
+                    per_label_Y_original[str(l)] = np.delete(per_label_Y_original[str(l)], l_idxs, 0)
+
+            # Handling residual samples due to rounding errors in proportions
+            if n_residual_samples > 0:
+                labels, counts = np.unique(Y_original, return_counts=True)
+                label_distribution = counts / counts.sum()
+                additional_labels = np.random.choice(labels, n_residual_samples, replace=True, p=label_distribution)
+
+                for l in additional_labels:
+                    m_l = len(per_label_E[str(l)])
+                    if m_l > 0:
+                        idx = np.random.choice(m_l, 1, replace=False)
+                        E_l_window = per_label_E[str(l)][idx]
+                        Y_predicted_l_window = per_label_Y_predicted[str(l)][idx]
+                        Y_original_l_window = per_label_Y_original[str(l)][idx]
+
+                        E_window_list += E_l_window.tolist()
+                        Y_predicted_window_list += Y_predicted_l_window.tolist()
+                        Y_original_window_list += Y_original_l_window.tolist()
+
+                        if not flag_replacement:
+                            # If not flag_replacement then remove vectors
+                            per_label_E[str(l)] = np.delete(per_label_E[str(l)], idx, 0)
+                            per_label_Y_predicted[str(l)] = np.delete(per_label_Y_predicted[str(l)], idx, 0)
+                            per_label_Y_original[str(l)] = np.delete(per_label_Y_original[str(l)], idx, 0)
+
+            E_windows.append(np.array(E_window_list))
+            Y_predicted_windows.append(np.array(Y_predicted_window_list))
+            Y_original_windows.append(np.array(Y_original_window_list))
+
+        return E_windows, Y_predicted_windows, Y_original_windows
 
 
 

@@ -54,6 +54,13 @@ def load_embedding(filepath, E_name=None, Y_original_name=None, Y_predicted_name
         raise Exception("Error in loading the embedding file. Please set the embedding paths in the configuration file.")
     return E, Y_original, Y_predicted
 
+def create_proportions_dict(Y):
+    Y = np.array(Y)
+    labels, counts = np.unique(Y, return_counts=True)
+    total_count = counts.sum()
+    proportions = {str(label): count / total_count for label, count in zip(labels, counts)}
+    return proportions
+
 
 def main():
     print("Drift Detection Experiment - Use Case 2 - 20 News with one macro-class for drift simulation (Recreation)")
@@ -88,6 +95,9 @@ def main():
     E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
     E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
     E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
+
+    # Create the proportions dictionary by counting the ocurrences of each label in the training set
+    proportions_dict = create_proportions_dict(Y_original_train)
 
     # Initialize empty lists of predictions
     ks_preds = []
@@ -145,18 +155,18 @@ def main():
 
         if args.drift_percentage > 0:
             # Drift
-            E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_constant_drift_windows_generation(window_size=window_size,
-                                                                                                                n_windows=1,
-                                                                                                                drift_percentage=float(args.drift_percentage/100),
-                                                                                                                flag_shuffle=True,
-                                                                                                                flag_replacement=True)
+            E_windows, Y_predicted_windows, Y_original_windows = wg.proportional_constant_drift_windows_generation(window_size=window_size,
+                                                                                                                    n_windows=1,
+                                                                                                                    drift_percentage=float(args.drift_percentage/100),
+                                                                                                                    flag_shuffle=True,
+                                                                                                                    flag_replacement=True)
 
         else:
             # No Drift
-            E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(window_size=window_size,
-                                                                                                              n_windows=1,
-                                                                                                              flag_shuffle=True,
-                                                                                                              flag_replacement=True)
+            E_windows, Y_predicted_windows, Y_original_windows = wg.proportional_without_drift_windows_generation(window_size=window_size,
+                                                                                                                  n_windows=1,
+                                                                                                                  flag_shuffle=True,
+                                                                                                                  flag_replacement=True)
 
         # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
         dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
