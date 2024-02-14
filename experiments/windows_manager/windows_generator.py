@@ -88,7 +88,7 @@ class WindowsGenerator:
                                                                                                 Y_original_windows[i])
         return E_windows, Y_predicted_windows, Y_original_windows
 
-    def proportional_without_drift_windows_generation(self, window_size, n_windows, proportions, flag_shuffle=True, flag_replacement=False):
+    def proportional_without_drift_windows_generation(self, window_size, n_windows, proportions_dict, flag_shuffle=True, flag_replacement=False):
 
         if bool(flag_shuffle):
             self.shuffle_datasets()
@@ -100,7 +100,7 @@ class WindowsGenerator:
                                                                                          window_size=window_size,
                                                                                          n_windows=n_windows,
                                                                                          flag_replacement=flag_replacement,
-                                                                                         proportions=proportions)
+                                                                                         proportions_dict=proportions_dict)
         for i in range(n_windows):
             E_windows[i], Y_predicted_windows[i], Y_original_windows[i] = self._shuffle_dataset(E_windows[i],
                                                                                                 Y_predicted_windows[i],
@@ -184,13 +184,13 @@ class WindowsGenerator:
         return E_windows, Y_predicted_windows, Y_original_windows
 
     @staticmethod
-    def _proportional_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement, proportions):
+    def _proportional_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement, proportions_dict):
         per_label_E = {}
         per_label_Y_predicted = {}
         per_label_Y_original = {}
 
         # Dictionary to keep track of samples per label based on proportions
-        n_samples_per_label = {str(l): int(proportions[str(l)] * window_size) for l in label_list}
+        n_samples_per_label = {str(l): int(proportions_dict[str(l)] * window_size) for l in label_list}
         total_samples = sum(n_samples_per_label.values())
         n_residual_samples = window_size - total_samples  # Adjust for any rounding errors in proportions
 

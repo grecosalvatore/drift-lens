@@ -345,7 +345,7 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
         ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="MaximumThresholdEstimator")
         return
 
-    def estimate_threshold(self, E, Y, baseline, window_size, n_samples, flag_replacement=True, flag_shuffle=True, proportional_flag=proportional_flag, proportions=proportions):
+    def estimate_threshold(self, E, Y, baseline, window_size, n_samples, flag_replacement=True, flag_shuffle=True, proportional_flag=False, proportions_dict=None):
         """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object. """
 
         per_batch_distances = []
@@ -371,7 +371,7 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
                                                                                                  window_size,
                                                                                                  1,
                                                                                                  flag_replacement,
-                                                                                                 proportions)
+                                                                                                 proportions_dict)
 
             E_windows[0], Y_predicted_windows[0], Y_original_windows[0] = self._shuffle_dataset(E_windows[0],
                                                                                                 Y_predicted_windows[0],
@@ -399,13 +399,13 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
 
     @staticmethod
     def _proportional_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement,
-                               proportions):
+                               proportions_dict):
         per_label_E = {}
         per_label_Y_predicted = {}
         per_label_Y_original = {}
 
         # Dictionary to keep track of samples per label based on proportions
-        n_samples_per_label = {str(l): int(proportions[str(l)] * window_size) for l in label_list}
+        n_samples_per_label = {str(l): int(proportions_dict[str(l)] * window_size) for l in label_list}
         total_samples = sum(n_samples_per_label.values())
         n_residual_samples = window_size - total_samples  # Adjust for any rounding errors in proportions
 

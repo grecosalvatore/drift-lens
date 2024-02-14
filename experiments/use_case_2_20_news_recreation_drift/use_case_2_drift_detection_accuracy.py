@@ -136,7 +136,9 @@ def main():
                                                                                                      window_size=window_size,
                                                                                                      n_samples=args.threshold_number_of_estimation_samples,
                                                                                                      flag_shuffle=True,
-                                                                                                     flag_replacement=True)
+                                                                                                     flag_replacement=True,
+                                                                                                     proportional_flag=True,
+                                                                                                     proportions_dict=proportions_dict)
 
     # Calculate the threshold values
     l = np.array(per_batch_distances_sorted)
@@ -144,11 +146,11 @@ def main():
     per_batch_th = max(l)
 
     # Initialize drift detectors used for comparison
-    ks_detector = KSDrift(E_train, p_val=.05)
-    mmd_detector = MMDDrift(E_test, p_val=.05, n_permutations=100, backend="pytorch")
-    lsdd_detector = LSDDDrift(E_test, backend='pytorch', p_val=.05)
-    cvm_detector = CVMDrift(E_train, p_val=.05)
-    chisquare_detector = ChiSquareDrift(E_train, p_val=0.05)
+    ks_detector = KSDrift(E_train[:1000], p_val=.05)
+    mmd_detector = MMDDrift(E_test[:1000], p_val=.05, n_permutations=100, backend="pytorch")
+    lsdd_detector = LSDDDrift(E_test[:1000], backend='pytorch', p_val=.05)
+    cvm_detector = CVMDrift(E_train[:1000], p_val=.05)
+    chisquare_detector = ChiSquareDrift(E_train[:1000], p_val=0.05)
 
     # Generate windows and predict drift
     for i in tqdm(range(n_windows)):
@@ -159,14 +161,16 @@ def main():
                                                                                                                     n_windows=1,
                                                                                                                     drift_percentage=float(args.drift_percentage/100),
                                                                                                                     flag_shuffle=True,
-                                                                                                                    flag_replacement=True)
+                                                                                                                    flag_replacement=True,
+                                                                                                                   proportions_dict=proportions_dict)
 
         else:
             # No Drift
             E_windows, Y_predicted_windows, Y_original_windows = wg.proportional_without_drift_windows_generation(window_size=window_size,
                                                                                                                   n_windows=1,
                                                                                                                   flag_shuffle=True,
-                                                                                                                  flag_replacement=True)
+                                                                                                                  flag_replacement=True,
+                                                                                                                  proportions_dict=proportions_dict)
 
         # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
         dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])

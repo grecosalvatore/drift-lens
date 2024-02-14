@@ -4,7 +4,7 @@ cd ..
 
 python -m experiments.use_case_2_20_news_recreation_drift.use_case_2_drift_detection_accuracy \
   --model_name 'bert' \
-  --window_size 100 \
+  --window_size 500 \
   --number_of_windows 100 \
   --drift_percentage 0 \
   --threshold_sensitivity 99 \
