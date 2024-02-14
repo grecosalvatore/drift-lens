@@ -16,8 +16,6 @@ class WindowsGenerator:
         self.Y_predicted_drifted = Y_predicted_drifted
         return
 
-
-
     def custom_windows_generation(self, window_size, drift_pattern_dict, flag_shuffle=True, flag_replacement=False):
         if flag_shuffle:
             self.shuffle_datasets()
@@ -84,6 +82,25 @@ class WindowsGenerator:
                                                                                      window_size,
                                                                                      n_windows,
                                                                                      flag_replacement)
+        for i in range(n_windows):
+            E_windows[i], Y_predicted_windows[i], Y_original_windows[i] = self._shuffle_dataset(E_windows[i],
+                                                                                                Y_predicted_windows[i],
+                                                                                                Y_original_windows[i])
+        return E_windows, Y_predicted_windows, Y_original_windows
+
+    def proportional_without_drift_windows_generation(self, window_size, n_windows, proportions, flag_shuffle=True, flag_replacement=False):
+
+        if bool(flag_shuffle):
+            self.shuffle_datasets()
+
+        E_windows, Y_predicted_windows, Y_original_windows = self._proportional_sampling(self.training_label_list,
+                                                                                         self.E,
+                                                                                         self.Y_predicted,
+                                                                                         self.Y_original,
+                                                                                         window_size=window_size,
+                                                                                         n_windows=n_windows,
+                                                                                         flag_replacement=flag_replacement,
+                                                                                         proportions=proportions)
         for i in range(n_windows):
             E_windows[i], Y_predicted_windows[i], Y_original_windows[i] = self._shuffle_dataset(E_windows[i],
                                                                                                 Y_predicted_windows[i],
@@ -167,8 +184,7 @@ class WindowsGenerator:
         return E_windows, Y_predicted_windows, Y_original_windows
 
     @staticmethod
-    def _proportional_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement,
-                               proportions):
+    def _proportional_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement, proportions):
         per_label_E = {}
         per_label_Y_predicted = {}
         per_label_Y_original = {}
@@ -330,6 +346,39 @@ class WindowsGenerator:
                 drift_percentage = float(min(drift_percentage, 1.0))
 
         for i in range(n_windows):
+            E_windows[i], Y_predicted_windows[i], Y_original_windows[i] = self._shuffle_dataset(E_windows[i], Y_predicted_windows[i], Y_original_windows[i])
+
+        return E_windows, Y_predicted_windows, Y_original_windows
+
+    def proportional_constant_drift_windows_generation(self, window_size, n_windows, drift_percentage, proportions, flag_shuffle=True, flag_replacement=False):
+        if bool(flag_shuffle):
+            self.shuffle_datasets()
+
+
+        m_window_drifted = int(round(window_size*drift_percentage))
+        m_window = int(window_size-m_window_drifted)
+
+        E_windows, Y_predicted_windows, Y_original_windows = self._proportions_sampling(self.training_label_list,
+                                                                                     self.E,
+                                                                                     self.Y_predicted,
+                                                                                     self.Y_original,
+                                                                                     m_window,
+                                                                                     n_windows,
+                                                                                     flag_replacement,
+                                                                                     proportions)
+
+        E_windows_drifted, Y_predicted_windows_drifted, Y_original_windows_drifted = self._balanced_sampling(self.drifted_label_list,
+                                                                                     self.E_drifted,
+                                                                                     self.Y_predicted_drifted,
+                                                                                     self.Y_original_drifted,
+                                                                                     m_window_drifted,
+                                                                                     n_windows,
+                                                                                     flag_replacement)
+        for i in range(n_windows):
+            E_windows[i] = np.concatenate((E_windows[i], E_windows_drifted[i]), axis=0)
+            Y_predicted_windows[i] = np.concatenate((Y_predicted_windows[i], Y_predicted_windows_drifted[i]), axis=0)
+            Y_original_windows[i] = np.concatenate((Y_original_windows[i], Y_original_windows_drifted[i]), axis=0)
+
             E_windows[i], Y_predicted_windows[i], Y_original_windows[i] = self._shuffle_dataset(E_windows[i], Y_predicted_windows[i], Y_original_windows[i])
 
         return E_windows, Y_predicted_windows, Y_original_windows
