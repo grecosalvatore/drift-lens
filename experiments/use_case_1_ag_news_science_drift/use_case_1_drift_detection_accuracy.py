@@ -85,15 +85,18 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 def main():
     print("Drift Detection Experiment - Use Case 1")
 
-
     # Parse arguments
     args = parse_args()
 
+    print("Number of runs: ", args.number_of_runs)
+    print("Window size: ", args.window_size)
+    print("Number of windows: ", args.number_of_windows)
+    print("Number of samples sota: ", args.n_subsamples_sota)
+    print("Number of samples threshold: ", args.threshold_number_of_estimation_samples)
+    print("Drift percentage: ", args.drift_percentage)
+
     training_label_list = [0, 1, 2]  # Labels used for training - 0: World, 1: Sports, 2: Business
     drift_label_list = [3]  # Labels used for drift simulation - 3: Science/technology
-
-    # Print the current working directory
-    print("Current Working Directory:", os.getcwd())
 
     if args.save_results:
         if not os.path.exists(args.output_dir):
