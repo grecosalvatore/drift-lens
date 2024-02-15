@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument('--per_label_n_pc', type=int, default=75)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
     parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=1000)
+    parser.add_argument('--n_subsamples_sota', type=int, default=10000)
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0_1_2.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0_1_2.hdf5')
     parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/new_unseen_embedding_0_1_2.hdf5')
@@ -54,6 +55,31 @@ def load_embedding(filepath, E_name=None, Y_original_name=None, Y_predicted_name
     else:
         raise Exception("Error in loading the embedding file. Please set the embedding paths in the configuration file.")
     return E, Y_original, Y_predicted
+
+
+def stratified_subsampling(E, Y, n_samples, unique_labels):
+    # Calculate samples per class
+    samples_per_class = int(n_samples / len(unique_labels))
+
+    # Placeholder for stratified sample indices
+    selected_indices = []
+
+    for label in unique_labels:
+        # Find indices where current label occurs
+        label_indices = np.where(Y == label)[0]
+
+        # If the class has fewer samples than samples_per_class, take them all
+        # Otherwise, randomly choose samples_per_class from them
+        if len(label_indices) <= samples_per_class:
+            selected_indices.extend(label_indices)
+        else:
+            selected_indices.extend(np.random.choice(label_indices, samples_per_class, replace=False))
+
+    # Now, selected_indices contains the indices of the stratified sample
+    # Extract the corresponding elements from E
+    E_subsample = E[selected_indices]
+
+    return E_subsample, Y[selected_indices]
 
 
 def main():
@@ -88,9 +114,17 @@ def main():
     E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
     E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
 
+    ks_acc_list = []
+    mmd_acc_list = []
+    lsdd_acc_list = []
+    cvm_acc_list = []
+    chisquare_acc_list = []
+    driftlens_acc_list = []
 
-    for i in range(args.number_of_runs):
-        print(f"Run {i + 1}/{args.number_of_runs}")
+    output_dict_run_list = []
+
+    for run_id in range(args.number_of_runs):
+        print(f"Run {run_id + 1}/{args.number_of_runs}")
 
         # Initialize empty lists of predictions
         ks_preds = []
@@ -136,12 +170,23 @@ def main():
         l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
         per_batch_th = max(l)
 
+        E_subsample, Y_subsample = stratified_subsampling(E_train,
+                                                          Y_original_train,
+                                                          n_samples=args.n_subsamples_sota,
+                                                          unique_labels=training_label_list)
+
         # Initialize drift detectors used for comparison
-        ks_detector = KSDrift(E_train[:500], p_val=.05)
-        mmd_detector = MMDDrift(E_test[:500], p_val=.05, n_permutations=100, backend="pytorch")
-        lsdd_detector = LSDDDrift(E_test[:500], backend='pytorch', p_val=.05)
-        cvm_detector = CVMDrift(E_train[:500], p_val=.05)
-        chisquare_detector = ChiSquareDrift(E_train[:500], p_val=0.05)
+        ks_detector = KSDrift(E_subsample, p_val=.05)
+        mmd_detector = MMDDrift(E_subsample, p_val=.05, n_permutations=100, backend="pytorch")
+        lsdd_detector = LSDDDrift(E_subsample, backend='pytorch', p_val=.05)
+        cvm_detector = CVMDrift(E_subsample, p_val=.05)
+        chisquare_detector = ChiSquareDrift(E_subsample, p_val=0.05)
+
+        # Ground truth
+        if args.drift_percentage > 0:
+            ground_truth = [1] * n_windows
+        else:
+            ground_truth = [0] * n_windows
 
         # Generate windows and predict drift
         for i in tqdm(range(n_windows)):
@@ -180,10 +225,6 @@ def main():
 
             dl_distances.append(dl_distance)
 
-        if args.drift_percentage > 0:
-            ground_truth = [1] * n_windows
-        else:
-            ground_truth = [0] * n_windows
 
         dl_preds = []
         for dl_distance in dl_distances:
@@ -198,21 +239,32 @@ def main():
         lsdd_acc = accuracy_score(ground_truth, lsdd_preds, normalize=True)
         cvm_acc = accuracy_score(ground_truth, cvm_preds, normalize=True)
         chisquare_acc = accuracy_score(ground_truth, chisquare_preds, normalize=True)
-
         driftlens_acc = accuracy_score(ground_truth, dl_preds, normalize=True)
 
+        ks_acc_list.append(ks_acc)
+        mmd_acc_list.append(mmd_acc)
+        lsdd_acc_list.append(lsdd_acc)
+        cvm_acc_list.append(cvm_acc)
+        chisquare_acc_list.append(chisquare_acc)
+        driftlens_acc_list.append(driftlens_acc)
 
         print("KS: ", ks_acc)
         print("MMD: ", mmd_acc)
         print("LSDD: ", lsdd_acc)
         print("CVM: ", cvm_acc)
         print("ChiSquare: ", chisquare_acc)
-
         print("DriftLens: ", driftlens_acc)
 
         # Create the output dictionary
-        output_dict = {"params": vars(args),
-                       "accuracy": {"KS": ks_acc, "MMD": mmd_acc, "LSDD": lsdd_acc, "CVM": cvm_acc, "ChiSquare": chisquare_acc, "DriftLens": driftlens_acc}}
+        output_dict_run = {f"run_id":run_id, "KS": ks_acc, "MMD": mmd_acc, "LSDD": lsdd_acc, "CVM": cvm_acc, "ChiSquare": chisquare_acc, "DriftLens": driftlens_acc}
+        output_dict_run_list.append(output_dict_run)
+
+    # Create final output dictionary
+    output_dict = {"params": vars(args),
+                   "runs":output_dict_run_list,
+                   "accuracy_list": {"KS": ks_acc_list, "MMD": mmd_acc_list, "LSDD": lsdd_acc_list, "CVM": cvm_acc_list, "ChiSquare": chisquare_acc_list, "DriftLens": driftlens_acc_list},
+                      "mean_accuracy": {"KS": np.mean(ks_acc_list), "MMD": np.mean(mmd_acc_list), "LSDD": np.mean(lsdd_acc_list), "CVM": np.mean(cvm_acc_list), "ChiSquare": np.mean(chisquare_acc_list), "DriftLens": np.mean(driftlens_acc_list)},
+                     "standard_deviation_accuracy": {"KS": np.std(ks_acc_list), "MMD": np.std(mmd_acc_list), "LSDD": np.std(lsdd_acc_list), "CVM": np.std(cvm_acc_list), "ChiSquare": np.std(chisquare_acc_list), "DriftLens": np.std(driftlens_acc_list)}}
 
     # Save the output dictionary
     with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
