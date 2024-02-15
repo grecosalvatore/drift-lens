@@ -10,7 +10,9 @@ import numpy as np
 import json
 import datetime
 import time
+import torch
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
@@ -177,6 +179,8 @@ def main():
                                                           Y_original_train,
                                                           n_samples=args.n_subsamples_sota,
                                                           unique_labels=training_label_list)
+
+        print(len(E_subsample))
 
         # Initialize drift detectors used for comparison
         ks_detector = KSDrift(E_subsample, p_val=.05)
