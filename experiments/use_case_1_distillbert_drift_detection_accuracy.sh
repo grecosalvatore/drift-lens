@@ -3,11 +3,11 @@ cd ..
 
 
 python -m experiments.use_case_1_ag_news_science_drift.use_case_1_drift_detection_accuracy \
-  --number_of_runs 1 \
+  --number_of_runs 10 \
   --model_name 'distillbert' \
-  --window_size 1000 \
+  --window_size 2000 \
   --number_of_windows 100 \
-  --drift_percentage 5 \
+  --drift_percentage 0 5 10 15 20 \
   --threshold_sensitivity 99 \
   --threshold_number_of_estimation_samples 10000 \
   --batch_n_p 150 \
