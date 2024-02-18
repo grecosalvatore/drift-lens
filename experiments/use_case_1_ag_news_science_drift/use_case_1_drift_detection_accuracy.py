@@ -24,7 +24,7 @@ def parse_args():
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
-    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=1000)
+    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
     parser.add_argument('--n_subsamples_sota', type=int, default=10000)
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0_1_2.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0_1_2.hdf5')
