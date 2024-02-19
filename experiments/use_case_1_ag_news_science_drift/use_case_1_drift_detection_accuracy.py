@@ -278,12 +278,12 @@ def main():
         #                  "mean_accuracy": {"KS": np.mean(ks_acc_list), "MMD": np.mean(mmd_acc_list), "LSDD": np.mean(lsdd_acc_list), "CVM": np.mean(cvm_acc_list), "DriftLens": np.mean(driftlens_acc_list)},
         #                 "standard_deviation_accuracy": {"KS": np.std(ks_acc_list), "MMD": np.std(mmd_acc_list), "LSDD": np.std(lsdd_acc_list), "CVM": np.std(cvm_acc_list), "DriftLens": np.std(driftlens_acc_list)}}
 
-        output_dict["runs_log"] = output_dict_run_list
+    output_dict["runs_log"] = output_dict_run_list
 
-        for p in args.drift_percentage:
-            output_dict[str(p)] = {"accuracy_list": {"KS": ks_acc_dict[str(p)], "MMD": mmd_acc_dict[str(p)], "LSDD": lsdd_acc_dict[str(p)], "CVM": cvm_acc_dict[str(p)], "DriftLens": driftlens_acc_dict[str(p)]},
-                                      "mean_accuracy": {"KS": np.mean(ks_acc_dict[str(p)]), "MMD": np.mean(mmd_acc_dict[str(p)]), "LSDD": np.mean(lsdd_acc_dict[str(p)]), "CVM": np.mean(cvm_acc_dict[str(p)]), "DriftLens": np.mean(driftlens_acc_dict[str(p)])},
-                                      "standard_deviation_accuracy": {"KS": np.std(ks_acc_dict[str(p)]), "MMD": np.std(mmd_acc_dict[str(p)]), "LSDD": np.std(lsdd_acc_dict[str(p)]), "CVM": np.std(cvm_acc_dict[str(p)]), "DriftLens": np.std(driftlens_acc_dict[str(p)])}}
+    for p in args.drift_percentage:
+        output_dict[str(p)] = {"accuracy_list": {"KS": ks_acc_dict[str(p)], "MMD": mmd_acc_dict[str(p)], "LSDD": lsdd_acc_dict[str(p)], "CVM": cvm_acc_dict[str(p)], "DriftLens": driftlens_acc_dict[str(p)]},
+                                  "mean_accuracy": {"KS": np.mean(ks_acc_dict[str(p)]), "MMD": np.mean(mmd_acc_dict[str(p)]), "LSDD": np.mean(lsdd_acc_dict[str(p)]), "CVM": np.mean(cvm_acc_dict[str(p)]), "DriftLens": np.mean(driftlens_acc_dict[str(p)])},
+                                  "standard_deviation_accuracy": {"KS": np.std(ks_acc_dict[str(p)]), "MMD": np.std(mmd_acc_dict[str(p)]), "LSDD": np.std(lsdd_acc_dict[str(p)]), "CVM": np.std(cvm_acc_dict[str(p)]), "DriftLens": np.std(driftlens_acc_dict[str(p)])}}
 
 
         # Save the output dictionary

@@ -270,25 +270,17 @@ def main():
             output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "KS": ks_acc, "MMD": mmd_acc, "LSDD": lsdd_acc, "CVM": cvm_acc, "DriftLens": driftlens_acc}
             output_dict_run_list.append(output_dict_run)
 
-        # Create final output dictionary
-
-        #output_dict = {"params": vars(args),
-        #               "runs":output_dict_run_list,
-        #               "accuracy_list": {"KS": ks_acc_list, "MMD": mmd_acc_list, "LSDD": lsdd_acc_list, "CVM": cvm_acc_list, "DriftLens": driftlens_acc_list},
-        #                  "mean_accuracy": {"KS": np.mean(ks_acc_list), "MMD": np.mean(mmd_acc_list), "LSDD": np.mean(lsdd_acc_list), "CVM": np.mean(cvm_acc_list), "DriftLens": np.mean(driftlens_acc_list)},
-        #                 "standard_deviation_accuracy": {"KS": np.std(ks_acc_list), "MMD": np.std(mmd_acc_list), "LSDD": np.std(lsdd_acc_list), "CVM": np.std(cvm_acc_list), "DriftLens": np.std(driftlens_acc_list)}}
-
         output_dict["runs_log"] = output_dict_run_list
 
-        for p in args.drift_percentage:
-            output_dict[str(p)] = {"accuracy_list": {"KS": ks_acc_dict[str(p)], "MMD": mmd_acc_dict[str(p)], "LSDD": lsdd_acc_dict[str(p)], "CVM": cvm_acc_dict[str(p)], "DriftLens": driftlens_acc_dict[str(p)]},
-                                      "mean_accuracy": {"KS": np.mean(ks_acc_dict[str(p)]), "MMD": np.mean(mmd_acc_dict[str(p)]), "LSDD": np.mean(lsdd_acc_dict[str(p)]), "CVM": np.mean(cvm_acc_dict[str(p)]), "DriftLens": np.mean(driftlens_acc_dict[str(p)])},
-                                      "standard_deviation_accuracy": {"KS": np.std(ks_acc_dict[str(p)]), "MMD": np.std(mmd_acc_dict[str(p)]), "LSDD": np.std(lsdd_acc_dict[str(p)]), "CVM": np.std(cvm_acc_dict[str(p)]), "DriftLens": np.std(driftlens_acc_dict[str(p)])}}
+    for p in args.drift_percentage:
+        output_dict[str(p)] = {"accuracy_list": {"KS": ks_acc_dict[str(p)], "MMD": mmd_acc_dict[str(p)], "LSDD": lsdd_acc_dict[str(p)], "CVM": cvm_acc_dict[str(p)], "DriftLens": driftlens_acc_dict[str(p)]},
+                                  "mean_accuracy": {"KS": np.mean(ks_acc_dict[str(p)]), "MMD": np.mean(mmd_acc_dict[str(p)]), "LSDD": np.mean(lsdd_acc_dict[str(p)]), "CVM": np.mean(cvm_acc_dict[str(p)]), "DriftLens": np.mean(driftlens_acc_dict[str(p)])},
+                                  "standard_deviation_accuracy": {"KS": np.std(ks_acc_dict[str(p)]), "MMD": np.std(mmd_acc_dict[str(p)]), "LSDD": np.std(lsdd_acc_dict[str(p)]), "CVM": np.std(cvm_acc_dict[str(p)]), "DriftLens": np.std(driftlens_acc_dict[str(p)])}}
 
 
-        # Save the output dictionary
-        with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
-            json.dump(output_dict, fp)
+    # Save the output dictionary
+    with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
+        json.dump(output_dict, fp)
 
     return
 
