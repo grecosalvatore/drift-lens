@@ -12,25 +12,26 @@ import datetime
 import time
 import torch
 
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('--number_of_runs', type=int, default=1)
-    parser.add_argument('--model_name', type=str, default='vit')
-    parser.add_argument('--window_size', type=int, default=2000)
+    parser.add_argument('--model_name', type=str, default='bert')
+    parser.add_argument('--window_size', type=int, default=1000)
     parser.add_argument('--number_of_windows', type=int, default=10)
     parser.add_argument('--drift_percentage', type=int, nargs='+', default=[0, 5, 10, 15, 20]),
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
-    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=1000)
+    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
     parser.add_argument('--n_subsamples_sota', type=int, default=10000)
-    parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/vit/train_embedding.hdf5")
-    parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/test_embedding.hdf5')
-    parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/new_unseen_embedding.hdf5')
-    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_embedding.hdf5')
-    parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/vit/")
+    parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0-4.hdf5")
+    parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0-4.hdf5')
+    parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/new_unseen_embedding_0-4.hdf5')
+    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/drift_embedding_5.hdf5')
+    parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/bert/")
     parser.add_argument('--save_results', action='store_true')
     parser.add_argument('--cuda', action='store_true')
     parser.add_argument('--verbose', action='store_true')
@@ -83,9 +84,15 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
     return E_subsample, Y[selected_indices]
 
+def create_proportions_dict(Y):
+    labels, counts = np.unique(Y, return_counts=True)
+    total_count = counts.sum()
+    proportions = {str(label): count / total_count for label, count in zip(labels, counts)}
+    return proportions
+
 
 def main():
-    print("Drift Detection Experiment - Use Case 3")
+    print("Drift Detection Experiment - Use Case 2")
 
     # Parse arguments
     args = parse_args()
@@ -106,7 +113,7 @@ def main():
             os.makedirs(args.output_dir)
         ts = time.time()
         timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
-        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
+        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_balanced_{timestamp}.json"
 
     # Parse parameters
     window_size = args.window_size
@@ -120,29 +127,13 @@ def main():
     E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
     E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
 
-    print("Training len, " , len(E_train))
-    print("Test len, " , len(E_test))
-    print("New unseen len, " , len(E_new_unseen))
-    print("Drift len, " , len(E_drift))
+    print("Training samples:", len(E_train))
+    print("Test samples:", len(E_test))
+    print("New unseen samples:", len(E_new_unseen))
+    print("Drift samples:", len(E_drift))
 
-    # Find the number of instances in the smallest class
-    min_class_size = min(np.bincount(Y_original_train))
-
-    # Indices for undersampling
-    undersampled_indices = np.array([], dtype=int)
-
-    # Perform undersampling
-    for class_label in np.unique(Y_original_train):
-        # Find the indices of the class_label
-        class_indices = np.where(Y_original_train == class_label)[0]
-        # Randomly sample from class_indices
-        class_undersampled_indices = resample(class_indices, replace=False, n_samples=min_class_size, random_state=0)
-        # Append the undersampled indices for the class
-        undersampled_indices = np.append(undersampled_indices, class_undersampled_indices)
-
-    # Use the undersampled indices to create the balanced dataset
-    E_train_balanced = E_train[undersampled_indices]
-    Y_train_balanced = Y_original_train[undersampled_indices]
+    proportions_dict = create_proportions_dict(Y_original_train)
+    print("Proportions dict: ", proportions_dict)
 
     ks_acc_dict = {str(p): [] for p in args.drift_percentage}
     mmd_acc_dict = {str(p): [] for p in args.drift_percentage}
@@ -156,7 +147,7 @@ def main():
 
     for run_id in range(args.number_of_runs):
 
-        print(f"Run {run_id + 1}/{args.number_of_runs}")
+        print(f"\nRun {run_id + 1}/{args.number_of_runs}")
 
         # Initialize the WindowsGenerator - used for creating the windows
         wg = WindowsGenerator(training_label_list,
@@ -179,16 +170,17 @@ def main():
                                         per_label_n_pc=per_label_n_pc)
 
         # Estimate the threshold values with DriftLens
-        per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(
-            label_list=training_label_list,
-            E=E_test,
-            Y=Y_predicted_test,
-            batch_n_pc=batch_n_pc,
-            per_label_n_pc=per_label_n_pc,
-            window_size=window_size,
-            n_samples=args.threshold_number_of_estimation_samples,
-            flag_shuffle=True,
-            flag_replacement=True)
+        per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(label_list=training_label_list,
+                                                                                                         E=E_test,
+                                                                                                         Y=Y_predicted_test,
+                                                                                                         batch_n_pc=batch_n_pc,
+                                                                                                         per_label_n_pc=per_label_n_pc,
+                                                                                                         window_size=window_size,
+                                                                                                         n_samples=args.threshold_number_of_estimation_samples,
+                                                                                                         flag_shuffle=True,
+                                                                                                         flag_replacement=True,
+                                                                                                         proportional_flag=True,
+                                                                                                         proportions_dict=proportions_dict)
 
         # Calculate the threshold values
         l = np.array(per_batch_distances_sorted)
@@ -208,7 +200,7 @@ def main():
 
         for current_drift_percentage in args.drift_percentage:
 
-            print(f"\tDrift percentage: {current_drift_percentage}")
+            print(f" Drift percentage: {current_drift_percentage}")
 
             # Initialize empty lists of predictions
             ks_preds = []
@@ -228,22 +220,20 @@ def main():
 
                 if current_drift_percentage > 0:
                     # Drift
-                    E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_constant_drift_windows_generation(window_size=window_size,
+                    E_windows, Y_predicted_windows, Y_original_windows = wg.proportional_constant_drift_windows_generation(window_size=window_size,
                                                                                                                         n_windows=1,
                                                                                                                         drift_percentage=float(current_drift_percentage/100),
                                                                                                                         flag_shuffle=True,
-                                                                                                                        flag_replacement=True)
+                                                                                                                        flag_replacement=True,
+                                                                                                                       proportions_dict=proportions_dict)
 
                 else:
                     # No Drift
-                    E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(window_size=window_size,
+                    E_windows, Y_predicted_windows, Y_original_windows = wg.proportional_without_drift_windows_generation(window_size=window_size,
                                                                                                                       n_windows=1,
                                                                                                                       flag_shuffle=True,
-                                                                                                                      flag_replacement=True)
-
-                for w_id in range(len(E_windows)):
-                    E_windows[w_id] = np.float32(E_windows[w_id])
-
+                                                                                                                      flag_replacement=True,
+                                                                                                                      proportions_dict=proportions_dict)
 
                 # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
                 dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])

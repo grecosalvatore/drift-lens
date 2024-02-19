@@ -3,10 +3,10 @@ cd ..
 
 
 
-python -m experiments.use_case_2_20_news_recreation_drift.use_case_2_drift_detection_accuracy \
+python -m experiments.use_case_2_20_news_recreation_drift.use_case_2_drift_detection_accuracy_balanced \
   --number_of_runs 10 \
   --model_name 'bert' \
-  --window_size 250 \
+  --window_size 1000 \
   --number_of_windows 100 \
   --drift_percentage 0 5 10 15 20 \
   --threshold_sensitivity 99 \

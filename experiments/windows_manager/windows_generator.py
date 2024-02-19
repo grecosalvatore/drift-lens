@@ -2,6 +2,12 @@ import numpy as np
 from numpy import random
 
 
+def create_proportions_dict(Y):
+    labels, counts = np.unique(Y, return_counts=True)
+    total_count = counts.sum()
+    proportions = {str(label): count / total_count for label, count in zip(labels, counts)}
+    return proportions
+
 class WindowsGenerator:
 
     def __init__(self, training_label_list, drifted_label_list, E, Y_predicted, Y_original, E_drifted, Y_predicted_drifted, Y_original_drifted):
@@ -490,6 +496,8 @@ class WindowsGenerator:
             E_windows.append(np.array(E_window_list))
             Y_predicted_windows.append(np.array(Y_predicted_window_list))
             Y_original_windows.append(np.array(Y_original_window_list))
+
+            print(create_proportions_dict(Y_original_window_list))
 
         return E_windows, Y_predicted_windows, Y_original_windows
 

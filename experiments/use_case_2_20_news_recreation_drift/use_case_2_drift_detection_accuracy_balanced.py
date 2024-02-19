@@ -11,6 +11,7 @@ import json
 import datetime
 import time
 import torch
+from sklearn.utils import resample
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -106,7 +107,7 @@ def main():
             os.makedirs(args.output_dir)
         ts = time.time()
         timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
-        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
+        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_balanced_{timestamp}.json"
 
     # Parse parameters
     window_size = args.window_size
@@ -124,6 +125,28 @@ def main():
     print("Test samples:", len(E_test))
     print("New unseen samples:", len(E_new_unseen))
     print("Drift samples:", len(E_drift))
+
+    # Find the number of instances in the smallest class
+    min_class_size = min(np.bincount(Y_original_train))
+
+    # Indices for undersampling
+    undersampled_indices = np.array([], dtype=int)
+
+    # Perform undersampling
+    for class_label in np.unique(Y_original_train):
+        # Find the indices of the class_label
+        class_indices = np.where(Y_original_train == class_label)[0]
+        # Randomly sample from class_indices
+        class_undersampled_indices = resample(class_indices, replace=False, n_samples=min_class_size, random_state=0)
+        # Append the undersampled indices for the class
+        undersampled_indices = np.append(undersampled_indices, class_undersampled_indices)
+
+    # Use the undersampled indices to create the balanced dataset
+    E_train_balanced = E_train[undersampled_indices]
+    Y_original_train_balanced = Y_original_train[undersampled_indices]
+    Y_predicted_train_balanced = Y_predicted_train[undersampled_indices]
+
+    print("Training len after undersampling ", len(E_train_balanced))
 
     ks_acc_dict = {str(p): [] for p in args.drift_percentage}
     mmd_acc_dict = {str(p): [] for p in args.drift_percentage}
@@ -182,10 +205,10 @@ def main():
                                                           unique_labels=training_label_list)
 
         # Initialize drift detectors used for comparison
-        ks_detector = KSDrift(E_subsample, p_val=.05)
-        mmd_detector = MMDDrift(E_subsample, p_val=.05, n_permutations=100, backend="pytorch")
-        lsdd_detector = LSDDDrift(E_subsample, backend='pytorch', p_val=.05)
-        cvm_detector = CVMDrift(E_subsample, p_val=.05)
+        ks_detector = KSDrift(E_train_balanced, p_val=.05)
+        mmd_detector = MMDDrift(E_train_balanced, p_val=.05, n_permutations=100, backend="pytorch")
+        lsdd_detector = LSDDDrift(E_train_balanced, backend='pytorch', p_val=.05)
+        cvm_detector = CVMDrift(E_train_balanced, p_val=.05)
 
         for current_drift_percentage in args.drift_percentage:
 
