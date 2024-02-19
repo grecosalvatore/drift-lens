@@ -2,7 +2,9 @@
 cd ..
 
 
-python -m experiments.use_case_1_ag_news_science_drift.use_case_1_drift_curve_correlation \
+python -m experiments.drift_curve_correlation \
+  --training_label_list 0 1 2 \
+  --drift_label_list 3 \
   --number_of_runs 10 \
   --model_name 'bert' \
   --window_size 1000 \

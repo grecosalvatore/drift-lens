@@ -12,6 +12,8 @@ from tqdm import tqdm
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
+    parser.add_argument('--training_label_list', type=int, nargs='+', default=[0, 1, 2])
+    parser.add_argument('--drift_label_list', type=int, nargs='+', default=[3])
     parser.add_argument('--number_of_runs', type=int, default=1)
     parser.add_argument('--model_name', type=str, default='bert')
     parser.add_argument('--window_size', type=int, default=1000)
@@ -67,8 +69,8 @@ def main():
     print("Window size: ", args.window_size)
     print("Number of windows: ", args.number_of_windows)
 
-    training_label_list = [0, 1, 2]  # Labels used for training
-    drift_label_list = [3]  # Labels used for drift simulation
+    training_label_list = args.training_label_list  # Labels used for training
+    drift_label_list = args.drift_label_list  # Labels used for drift simulation
 
 
     if args.save_results:
