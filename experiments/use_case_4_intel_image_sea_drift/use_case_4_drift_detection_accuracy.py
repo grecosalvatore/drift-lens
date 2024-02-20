@@ -115,10 +115,16 @@ def main():
     n_windows = args.number_of_windows
 
     # Load the embeddings
-    E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
-    E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
-    E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
-    E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
+    if args.model_name == "vgg16":
+        E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+    else:
+        E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
+        E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
+        E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
+        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
 
     print("Training len, " , len(E_train))
     print("Test len, " , len(E_test))
