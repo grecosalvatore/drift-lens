@@ -2,7 +2,7 @@
 cd ..
 
 
-python -m experiments.use_case_4_stl_truck_drift.use_case_4_drift_detection_accuracy \
+python -m experiments.use_case_5_stl_truck_drift.use_case_5_drift_detection_accuracy \
   --model_name 'vgg16' \
   --window_size 500 \
   --number_of_windows 100 \

@@ -18,14 +18,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('--number_of_runs', type=int, default=1)
     parser.add_argument('--model_name', type=str, default='vit')
-    parser.add_argument('--window_size', type=int, default=2000)
-    parser.add_argument('--number_of_windows', type=int, default=10)
+    parser.add_argument('--window_size', type=int, default=1000)
+    parser.add_argument('--number_of_windows', type=int, default=100)
     parser.add_argument('--drift_percentage', type=int, nargs='+', default=[0, 5, 10, 15, 20]),
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
-    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=1000)
-    parser.add_argument('--n_subsamples_sota', type=int, default=10000)
+    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
+    parser.add_argument('--n_subsamples_sota', type=int, default=5000)
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/vit/train_embedding.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/test_embedding.hdf5')
     parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/new_unseen_embedding.hdf5')
@@ -85,7 +85,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 3")
+    print("Drift Detection Experiment - Use Case 4")
 
     # Parse arguments
     args = parse_args()
@@ -126,29 +126,10 @@ def main():
         E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
         E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
 
-    print("Training len, " , len(E_train))
-    print("Test len, " , len(E_test))
-    print("New unseen len, " , len(E_new_unseen))
-    print("Drift len, " , len(E_drift))
-
-    # Find the number of instances in the smallest class
-    min_class_size = min(np.bincount(Y_original_train))
-
-    # Indices for undersampling
-    undersampled_indices = np.array([], dtype=int)
-
-    # Perform undersampling
-    for class_label in np.unique(Y_original_train):
-        # Find the indices of the class_label
-        class_indices = np.where(Y_original_train == class_label)[0]
-        # Randomly sample from class_indices
-        class_undersampled_indices = resample(class_indices, replace=False, n_samples=min_class_size, random_state=0)
-        # Append the undersampled indices for the class
-        undersampled_indices = np.append(undersampled_indices, class_undersampled_indices)
-
-    # Use the undersampled indices to create the balanced dataset
-    E_train_balanced = E_train[undersampled_indices]
-    Y_train_balanced = Y_original_train[undersampled_indices]
+    print("Training samples:", len(E_train))
+    print("Test samples:", len(E_test))
+    print("New unseen samples:", len(E_new_unseen))
+    print("Drift samples:", len(E_drift))
 
     ks_acc_dict = {str(p): [] for p in args.drift_percentage}
     mmd_acc_dict = {str(p): [] for p in args.drift_percentage}
@@ -162,7 +143,7 @@ def main():
 
     for run_id in range(args.number_of_runs):
 
-        print(f"Run {run_id + 1}/{args.number_of_runs}")
+        print(f"\nRun {run_id + 1}/{args.number_of_runs}")
 
         # Initialize the WindowsGenerator - used for creating the windows
         wg = WindowsGenerator(training_label_list,
@@ -214,7 +195,7 @@ def main():
 
         for current_drift_percentage in args.drift_percentage:
 
-            print(f"\tDrift percentage: {current_drift_percentage}")
+            print(f" Drift percentage: {current_drift_percentage}")
 
             # Initialize empty lists of predictions
             ks_preds = []
@@ -249,7 +230,6 @@ def main():
 
                 for w_id in range(len(E_windows)):
                     E_windows[w_id] = np.float32(E_windows[w_id])
-
 
                 # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
                 dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
@@ -299,17 +279,16 @@ def main():
             output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "KS": ks_acc, "MMD": mmd_acc, "LSDD": lsdd_acc, "CVM": cvm_acc, "DriftLens": driftlens_acc}
             output_dict_run_list.append(output_dict_run)
 
-        output_dict["runs_log"] = output_dict_run_list
+    output_dict["runs_log"] = output_dict_run_list
 
     for p in args.drift_percentage:
         output_dict[str(p)] = {"accuracy_list": {"KS": ks_acc_dict[str(p)], "MMD": mmd_acc_dict[str(p)], "LSDD": lsdd_acc_dict[str(p)], "CVM": cvm_acc_dict[str(p)], "DriftLens": driftlens_acc_dict[str(p)]},
                                   "mean_accuracy": {"KS": np.mean(ks_acc_dict[str(p)]), "MMD": np.mean(mmd_acc_dict[str(p)]), "LSDD": np.mean(lsdd_acc_dict[str(p)]), "CVM": np.mean(cvm_acc_dict[str(p)]), "DriftLens": np.mean(driftlens_acc_dict[str(p)])},
                                   "standard_deviation_accuracy": {"KS": np.std(ks_acc_dict[str(p)]), "MMD": np.std(mmd_acc_dict[str(p)]), "LSDD": np.std(lsdd_acc_dict[str(p)]), "CVM": np.std(cvm_acc_dict[str(p)]), "DriftLens": np.std(driftlens_acc_dict[str(p)])}}
 
-
-    # Save the output dictionary
-    with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
-        json.dump(output_dict, fp)
+        # Save the output dictionary
+        with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
+            json.dump(output_dict, fp)
 
     return
 
