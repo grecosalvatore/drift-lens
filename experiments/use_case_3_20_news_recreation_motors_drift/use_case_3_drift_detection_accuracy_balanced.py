@@ -27,10 +27,10 @@ def parse_args():
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
     parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
     parser.add_argument('--n_subsamples_sota', type=int, default=10000)
-    parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0-4.hdf5")
-    parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0-4.hdf5')
-    parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/new_unseen_embedding_0-4.hdf5')
-    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/drift_embedding_5.hdf5')
+    parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0-5.hdf5")
+    parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0-5.hdf5')
+    parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/new_unseen_embedding_0-5.hdf5')
+    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/drift_embedding_6.hdf5')
     parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/bert/")
     parser.add_argument('--save_results', action='store_true')
     parser.add_argument('--cuda', action='store_true')
@@ -86,7 +86,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 2")
+    print("Drift Detection Experiment - Use Case 3")
 
     # Parse arguments
     args = parse_args()
@@ -99,8 +99,8 @@ def main():
     print("Number of samples threshold: ", args.threshold_number_of_estimation_samples)
     print("Drift percentage: ", args.drift_percentage)
 
-    training_label_list = [0, 1, 2, 3, 4]  # Labels used for training
-    drift_label_list = [5]  # Labels used for drift simulation
+    training_label_list = [0, 1, 2, 3, 4, 5]  # Labels used for training
+    drift_label_list = [6]  # Labels used for drift simulation
 
     if args.save_results:
         if not os.path.exists(args.output_dir):
