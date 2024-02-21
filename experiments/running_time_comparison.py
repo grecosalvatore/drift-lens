@@ -9,6 +9,7 @@ import h5py
 from scipy import stats
 import numpy as np
 from tqdm import tqdm
+import time
 
 def range_type(astr, nargs=None):
     # Convert the input string into a range
@@ -21,6 +22,46 @@ def range_type(astr, nargs=None):
         return range(int(values[0]), int(values[1]), int(values[2]))
     else:
         raise argparse.ArgumentTypeError("Range values must be in start:end:step format")
+
+def run_window_drift_prediction(E_window, Y_window, ks_detector, mmd_detector, lsdd_detector, cvm_detector, drift_lens_detector):
+
+    # Measure the running time of drift_lens_detector.predict
+    start_time = time.time()
+    dl_distance = drift_lens_detector.compute_window_distribution_distances(E_window, Y_window)
+    end_time = time.time()
+    dl_time = end_time - start_time
+    print(f"DriftLens Detector Prediction Time: {dl_time} seconds")
+
+    # Measure the running time of ks_detector.predict
+    start_time = time.time()
+    ks_pred = ks_detector.predict(E_window)
+    end_time = time.time()
+    ks_time = end_time - start_time
+    print(f"KS Detector Prediction Time: {ks_time} seconds")
+
+    # Measure the running time of mmd_detector.predict
+    start_time = time.time()
+    mmd_pred = mmd_detector.predict(E_window)
+    end_time = time.time()
+    mmd_time = end_time - start_time
+    print(f"MMD Detector Prediction Time: {mmd_time} seconds")
+
+    # Measure the running time of lsdd_detector.predict
+    start_time = time.time()
+    lsdd_pred = lsdd_detector.predict(E_window, return_p_val=True, return_distance=True)
+    end_time = time.time()
+    lsdd_time = end_time - start_time
+    print(f"LSDD Detector Prediction Time: {lsdd_time} seconds")
+
+    # Measure the running time of cvm_detector.predict
+    start_time = time.time()
+    cvm_pred = cvm_detector.predict(E_window, drift_type='batch', return_p_val=True, return_distance=True)
+    end_time = time.time()
+    cvm_time = end_time - start_time
+    print(f"CVM Detector Prediction Time: {cvm_time} seconds")
+
+    running_time_dict = {"DriftLens": dl_time, "KS": ks_time, "MMD": mmd_time, "LSDD": lsdd_time, "CVM": cvm_time}
+    return running_time_dict
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Running Time Comparison')

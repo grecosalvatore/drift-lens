@@ -5,7 +5,7 @@ cd ..
 python -m experiments.use_case_5_stl_truck_drift.use_case_5_drift_detection_accuracy \
   --number_of_runs 10 \
   --model_name 'vit' \
-  --window_size 250 \
+  --window_size 1000 \
   --number_of_windows 100 \
   --drift_percentage 0 5 10 15 20 \
   --threshold_sensitivity 99 \
