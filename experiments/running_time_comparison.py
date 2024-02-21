@@ -1,4 +1,5 @@
 import argparse
+from alibi_detect.cd import KSDrift, MMDDrift, LSDDDrift, CVMDrift
 from experiments.windows_manager.windows_generator import WindowsGenerator
 import os
 import json
@@ -22,6 +23,25 @@ def range_type(astr, nargs=None):
         return range(int(values[0]), int(values[1]), int(values[2]))
     else:
         raise argparse.ArgumentTypeError("Range values must be in start:end:step format")
+
+def load_embedding(filepath, E_name=None, Y_original_name=None, Y_predicted_name=None):
+    if filepath is not None:
+        with h5py.File(filepath, "r") as hf:
+            if E_name is None:
+                E = hf["E"][()]
+            else:
+                E = hf[E_name][()]
+            if Y_original_name is None:
+                Y_original = hf["Y_original"][()]
+            else:
+                Y_original = hf[Y_original_name][()]
+            if Y_predicted_name is None:
+                Y_predicted = hf["Y_predicted"][()]
+            else:
+                Y_predicted = hf[Y_predicted_name][()]
+    else:
+        raise Exception("Error in loading the embedding file. Please set the embedding paths in the configuration file.")
+    return E, Y_original, Y_predicted
 
 def run_window_drift_prediction(E_window, Y_window, ks_detector, mmd_detector, lsdd_detector, cvm_detector, drift_lens_detector):
 
@@ -72,6 +92,7 @@ def parse_args():
     parser.add_argument('--datastream_window_size_range', type=range_type, default="500:5000:500", help='Example range argument in start:end:step format')
     parser.add_argument('--fixed_reference_window_size', type=int, default=1000)
     parser.add_argument('--fixed_datastream_window_size', type=int, default=1000)
+    parser.add_argument('--fixed_embedding_dimensionality', type=int, default=1000)
     parser.add_argument('--model_name', type=str, default='bert')
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0_1_2.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0_1_2.hdf5')
@@ -97,9 +118,50 @@ def main():
     # Parse arguments
     args = parse_args()
 
+    training_label_list = args.training_label_list
+    num_labels = len(training_label_list)
+
+    E_window_datastream_fixed = np.random.uniform(low=-2, high=2, size=(args.fixed_datastream_window_size,
+                                                                        args.fixed_embedding_dimensionality))
+
+    Y_window_datastream_fixed = np.random.randint(low=0, high=num_labels, size=args.fixed_datastream_window_size)
+
     # Running time comparison based on the reference window size
     for reference_window_size in args.reference_window_size_range:
         print(reference_window_size)
+
+        E_reference = np.random.uniform(low=-2, high=2, size=(reference_window_size,
+                                                              args.fixed_embedding_dimensionality))
+
+        Y_reference = np.random.randint(low=0, high=num_labels, size=reference_window_size)
+
+        # Initialize the DriftLens
+        drift_lens_detector = DriftLens()
+
+        # Estimate the baseline with DriftLens
+        baseline = drift_lens_detector.estimate_baseline(E=E_reference,
+                                                         Y=Y_reference,
+                                                         label_list=training_label_list,
+                                                         batch_n_pc=args.batch_n_pc,
+                                                         per_label_n_pc=args.per_label_n_pc)
+
+        ks_detector = KSDrift(E_reference, p_val=.05)
+        mmd_detector = MMDDrift(E_reference, p_val=.05, n_permutations=100, backend="pytorch")
+        lsdd_detector = LSDDDrift(E_reference, backend='pytorch', p_val=.05)
+        cvm_detector = CVMDrift(E_reference, p_val=.05)
+
+        running_time_dict = run_window_drift_prediction(E_window_datastream_fixed,
+                                                        Y_window_datastream_fixed,
+                                                        ks_detector,
+                                                        mmd_detector,
+                                                        lsdd_detector,
+                                                        cvm_detector,
+                                                        drift_lens_detector)
+
+        print(running_time_dict)
+
+
+
 
     # Running time comparison based on the datastream window size
     for datastream_window_size in args.datastream_window_size_range:
