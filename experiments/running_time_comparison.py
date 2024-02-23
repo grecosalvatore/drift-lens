@@ -50,35 +50,35 @@ def run_window_drift_prediction(E_window, Y_window, ks_detector, mmd_detector, l
     dl_distance = drift_lens_detector.compute_window_distribution_distances(E_window, Y_window)
     end_time = time.time()
     dl_time = end_time - start_time
-    print(f"DriftLens Detector Prediction Time: {dl_time} seconds")
+    #print(f"DriftLens Detector Prediction Time: {dl_time} seconds")
 
     # Measure the running time of ks_detector.predict
     start_time = time.time()
     ks_pred = ks_detector.predict(E_window)
     end_time = time.time()
     ks_time = end_time - start_time
-    print(f"KS Detector Prediction Time: {ks_time} seconds")
+    #print(f"KS Detector Prediction Time: {ks_time} seconds")
 
     # Measure the running time of mmd_detector.predict
     start_time = time.time()
     mmd_pred = mmd_detector.predict(E_window)
     end_time = time.time()
     mmd_time = end_time - start_time
-    print(f"MMD Detector Prediction Time: {mmd_time} seconds")
+    #print(f"MMD Detector Prediction Time: {mmd_time} seconds")
 
     # Measure the running time of lsdd_detector.predict
     start_time = time.time()
     lsdd_pred = lsdd_detector.predict(E_window, return_p_val=True, return_distance=True)
     end_time = time.time()
     lsdd_time = end_time - start_time
-    print(f"LSDD Detector Prediction Time: {lsdd_time} seconds")
+    #print(f"LSDD Detector Prediction Time: {lsdd_time} seconds")
 
     # Measure the running time of cvm_detector.predict
     start_time = time.time()
     cvm_pred = cvm_detector.predict(E_window, drift_type='batch', return_p_val=True, return_distance=True)
     end_time = time.time()
     cvm_time = end_time - start_time
-    print(f"CVM Detector Prediction Time: {cvm_time} seconds")
+    #print(f"CVM Detector Prediction Time: {cvm_time} seconds")
 
     running_time_dict = {"DriftLens": dl_time, "KS": ks_time, "MMD": mmd_time, "LSDD": lsdd_time, "CVM": cvm_time}
     return running_time_dict
@@ -126,9 +126,12 @@ def main():
 
     Y_window_datastream_fixed = np.random.randint(low=0, high=num_labels, size=args.fixed_datastream_window_size)
 
+    print("Computing running time comparison based on the reference window size")
+
+    running_time_for_reference_window_size_dict = {}
+
     # Running time comparison based on the reference window size
-    for reference_window_size in args.reference_window_size_range:
-        print(reference_window_size)
+    for reference_window_size in tqdm(args.reference_window_size_range):
 
         E_reference = np.random.uniform(low=-2, high=2, size=(reference_window_size,
                                                               args.fixed_embedding_dimensionality))
@@ -150,18 +153,26 @@ def main():
         lsdd_detector = LSDDDrift(E_reference, backend='pytorch', p_val=.05)
         cvm_detector = CVMDrift(E_reference, p_val=.05)
 
-        running_time_dict = run_window_drift_prediction(E_window_datastream_fixed,
-                                                        Y_window_datastream_fixed,
-                                                        ks_detector,
-                                                        mmd_detector,
-                                                        lsdd_detector,
-                                                        cvm_detector,
-                                                        drift_lens_detector)
+        running_time_for_reference_window_size_dict_tmp = {"DriftLens": [],
+                                                       "KS": [],
+                                                       "MMD": [],
+                                                       "LSDD": [],
+                                                       "CVM": []}
 
-        print(running_time_dict)
+        for i in range(args.number_of_runs):
 
+            running_time_dict = run_window_drift_prediction(E_window_datastream_fixed,
+                                                            Y_window_datastream_fixed,
+                                                            ks_detector,
+                                                            mmd_detector,
+                                                            lsdd_detector,
+                                                            cvm_detector,
+                                                            drift_lens_detector)
 
+            for key in running_time_dict:
+                running_time_for_reference_window_size_dict_tmp[key].append(running_time_dict[key])
 
+    print(running_time_for_reference_window_size_dict)
 
     # Running time comparison based on the datastream window size
     for datastream_window_size in args.datastream_window_size_range:
