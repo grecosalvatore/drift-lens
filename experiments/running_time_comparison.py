@@ -174,9 +174,58 @@ def main():
 
     print(running_time_for_reference_window_size_dict)
 
+
+    ##################################################################################################
+    # Running time comparison based on the datastream window size
+
+    E_reference_fixed = np.random.uniform(low=-2, high=2, size=(args.reference_window_size_range,
+                                                          args.fixed_embedding_dimensionality))
+
+    Y_reference_fixed = np.random.randint(low=0, high=num_labels, size=args.reference_window_size_range)
+
+    # Initialize the DriftLens
+    drift_lens_detector = DriftLens()
+
+    # Estimate the baseline with DriftLens
+    baseline = drift_lens_detector.estimate_baseline(E=E_reference_fixed,
+                                                     Y=Y_reference_fixed,
+                                                     label_list=training_label_list,
+                                                     batch_n_pc=args.batch_n_pc,
+                                                     per_label_n_pc=args.per_label_n_pc)
+
+    ks_detector = KSDrift(E_reference_fixed, p_val=.05)
+    mmd_detector = MMDDrift(E_reference_fixed, p_val=.05, n_permutations=100, backend="pytorch")
+    lsdd_detector = LSDDDrift(E_reference_fixed, backend='pytorch', p_val=.05)
+    cvm_detector = CVMDrift(E_reference_fixed, p_val=.05)
+
     # Running time comparison based on the datastream window size
     for datastream_window_size in args.datastream_window_size_range:
         print(datastream_window_size)
+
+        E_window_datastream = np.random.uniform(low=-2, high=2, size=(datastream_window_size, args.fixed_embedding_dimensionality))
+
+        Y_window_datastream = np.random.randint(low=0, high=num_labels, size=datastream_window_size)
+
+        running_time_for_datastream_window_size_dict_tmp = {"DriftLens": [],
+                                                           "KS": [],
+                                                           "MMD": [],
+                                                           "LSDD": [],
+                                                           "CVM": []}
+
+        for i in range(args.number_of_runs):
+
+            running_time_dict = run_window_drift_prediction(E_window_datastream,
+                                                            Y_window_datastream,
+                                                            ks_detector,
+                                                            mmd_detector,
+                                                            lsdd_detector,
+                                                            cvm_detector,
+                                                            drift_lens_detector)
+
+            for key in running_time_dict:
+                running_time_for_datastream_window_size_dict_tmp[key].append(running_time_dict[key])
+
+    print(running_time_for_datastream_window_size_dict_tmp)
 
     return
 
