@@ -12,17 +12,25 @@ import numpy as np
 from tqdm import tqdm
 import time
 
+import argparse
+
 def range_type(astr, nargs=None):
     # Convert the input string into a range
     values = astr.split(":")
-    if len(values) == 1: # Single value
+    if len(values) == 1:  # Single value
+        # Include the single value by setting start and end as the same, adding 1 to include the end
         return range(int(values[0]), int(values[0]) + 1)
-    elif len(values) == 2: # Start and end
-        return range(int(values[0]), int(values[1]))
-    elif len(values) == 3: # Start, end, and step
-        return range(int(values[0]), int(values[1]), int(values[2]))
+    elif len(values) == 2:  # Start and end
+        # Add 1 to the end value to include it in the range
+        return range(int(values[0]), int(values[1]) + 1)
+    elif len(values) == 3:  # Start, end, and step
+        # Calculate the adjusted end to potentially include the end value, depending on the step
+        start, end, step = int(values[0]), int(values[1]), int(values[2])
+        adjusted_end = end + 1 if (end - start) % step == 0 else end
+        return range(start, adjusted_end, step)
     else:
         raise argparse.ArgumentTypeError("Range values must be in start:end:step format")
+
 
 def load_embedding(filepath, E_name=None, Y_original_name=None, Y_predicted_name=None):
     if filepath is not None:
@@ -88,8 +96,8 @@ def parse_args():
     parser.add_argument('--number_of_runs', type=int, default=1)
     parser.add_argument('--training_label_list', type=int, nargs='+', default=[0, 1, 2])
     parser.add_argument('--drift_label_list', type=int, nargs='+', default=[3])
-    parser.add_argument('--reference_window_size_range', type=range_type, default="5000:50000:5000", help='Example range argument in start:end:step format')
-    parser.add_argument('--datastream_window_size_range', type=range_type, default="500:5000:500", help='Example range argument in start:end:step format')
+    parser.add_argument('--reference_window_size_range', type=range_type, default="500:1500:500", help='Example range argument in start:end:step format')
+    parser.add_argument('--datastream_window_size_range', type=range_type, default="500:1500:500", help='Example range argument in start:end:step format')
     parser.add_argument('--fixed_reference_window_size', type=int, default=1000)
     parser.add_argument('--fixed_datastream_window_size', type=int, default=1000)
     parser.add_argument('--fixed_embedding_dimensionality', type=int, default=1000)
@@ -121,6 +129,8 @@ def main():
     training_label_list = args.training_label_list
     num_labels = len(training_label_list)
 
+    detectors = ["DriftLens", "KS", "MMD", "LSDD", "CVM"]
+
     E_window_datastream_fixed = np.random.uniform(low=-2, high=2, size=(args.fixed_datastream_window_size,
                                                                         args.fixed_embedding_dimensionality))
 
@@ -130,8 +140,15 @@ def main():
 
     running_time_for_reference_window_size_dict = {}
 
+
     # Running time comparison based on the reference window size
     for reference_window_size in tqdm(args.reference_window_size_range):
+        print("Current reference window size", reference_window_size)
+
+        running_time_for_reference_window_size_dict[reference_window_size] = {}
+        for drift_detector in detectors:
+            running_time_for_reference_window_size_dict[reference_window_size][drift_detector] = {}
+            running_time_for_reference_window_size_dict[reference_window_size][drift_detector]['running_time_list'] = []
 
         E_reference = np.random.uniform(low=-2, high=2, size=(reference_window_size,
                                                               args.fixed_embedding_dimensionality))
@@ -153,12 +170,6 @@ def main():
         lsdd_detector = LSDDDrift(E_reference, backend='pytorch', p_val=.05)
         cvm_detector = CVMDrift(E_reference, p_val=.05)
 
-        running_time_for_reference_window_size_dict_tmp = {"DriftLens": [],
-                                                       "KS": [],
-                                                       "MMD": [],
-                                                       "LSDD": [],
-                                                       "CVM": []}
-
         for i in range(args.number_of_runs):
 
             running_time_dict = run_window_drift_prediction(E_window_datastream_fixed,
@@ -170,7 +181,13 @@ def main():
                                                             drift_lens_detector)
 
             for key in running_time_dict:
-                running_time_for_reference_window_size_dict_tmp[key].append(running_time_dict[key])
+                running_time_for_reference_window_size_dict[reference_window_size][key]['running_time_list'].append(running_time_dict[key])
+
+
+        for key in detectors:
+            running_time_for_reference_window_size_dict[reference_window_size][key]['mean'] = np.mean(running_time_for_reference_window_size_dict[reference_window_size][key]['running_time_list'])
+            running_time_for_reference_window_size_dict[reference_window_size][key]['std'] = np.std(running_time_for_reference_window_size_dict[reference_window_size][key]['running_time_list'])
+
 
     print(running_time_for_reference_window_size_dict)
 
@@ -178,10 +195,10 @@ def main():
     ##################################################################################################
     # Running time comparison based on the datastream window size
 
-    E_reference_fixed = np.random.uniform(low=-2, high=2, size=(args.reference_window_size_range,
-                                                          args.fixed_embedding_dimensionality))
+    E_reference_fixed = np.random.uniform(low=-2, high=2, size=(args.fixed_reference_window_size,
+                                                                args.fixed_embedding_dimensionality))
 
-    Y_reference_fixed = np.random.randint(low=0, high=num_labels, size=args.reference_window_size_range)
+    Y_reference_fixed = np.random.randint(low=0, high=num_labels, size=args.fixed_reference_window_size)
 
     # Initialize the DriftLens
     drift_lens_detector = DriftLens()
@@ -198,9 +215,11 @@ def main():
     lsdd_detector = LSDDDrift(E_reference_fixed, backend='pytorch', p_val=.05)
     cvm_detector = CVMDrift(E_reference_fixed, p_val=.05)
 
+    running_time_for_datastream_window_size_dict = {}
+
     # Running time comparison based on the datastream window size
     for datastream_window_size in args.datastream_window_size_range:
-        print(datastream_window_size)
+        print("Current datastream window size", datastream_window_size)
 
         E_window_datastream = np.random.uniform(low=-2, high=2, size=(datastream_window_size, args.fixed_embedding_dimensionality))
 
@@ -225,7 +244,8 @@ def main():
             for key in running_time_dict:
                 running_time_for_datastream_window_size_dict_tmp[key].append(running_time_dict[key])
 
-    print(running_time_for_datastream_window_size_dict_tmp)
+
+    print(running_time_for_datastream_window_size_dict)
 
     return
 

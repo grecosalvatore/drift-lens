@@ -6,8 +6,8 @@ python -m experiments.running_time_comparison \
   --number_of_runs 3 \
   --training_label_list 0 1 2 \
   --drift_label_list 3 \
-  --reference_window_size_range '500:1500:500' \
-  --datastream_window_size_range '500:5000:500' \
+  --reference_window_size_range '5000:15000:5000' \
+  --datastream_window_size_range '500:1500:500' \
   --fixed_reference_window_size 1000 \
   --fixed_datastream_window_size 1000 \
   --fixed_embedding_dimensionality 1000 \
