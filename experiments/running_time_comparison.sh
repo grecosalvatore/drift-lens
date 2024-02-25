@@ -14,7 +14,7 @@ python -m experiments.running_time_comparison \
   --run_experiment_reference_window \
   --run_experiment_window_size \
   --run_experiment_embedding_dimensionality \
-  --reference_window_size_range '20000:25000:5000' \
+  --reference_window_size_range '5000:15000:2500' \
   --datastream_window_size_range '500:2500:500' \
   --embedding_dimensionality_range '500:2500:500' \
   --fixed_reference_window_size 5000 \

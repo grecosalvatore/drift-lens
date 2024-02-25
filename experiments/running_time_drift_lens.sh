@@ -9,11 +9,11 @@ python -m experiments.running_time_comparison \
   --run_driftlens \
   --run_experiment_reference_window \
   --run_experiment_window_size \
-  --reference_window_size_range '20000:25000:5000' \
-  --datastream_window_size_range '500:2500:500' \
+  --reference_window_size_range '50000:500000:50000' \
+  --datastream_window_size_range '1000:10000:1000' \
   --embedding_dimensionality_range '500:2500:500' \
-  --fixed_reference_window_size 5000 \
-  --fixed_datastream_window_size 1000 \
+  --fixed_reference_window_size 50000 \
+  --fixed_datastream_window_size 5000 \
   --fixed_embedding_dimensionality 1000 \
   --batch_n_p 150 \
   --per_label_n_pc 75 \
