@@ -93,19 +93,15 @@ def run_window_drift_prediction(E_window, Y_window, ks_detector, mmd_detector, l
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Running Time Comparison')
-    parser.add_argument('--number_of_runs', type=int, default=1)
+    parser.add_argument('--number_of_runs', type=int, default=10)
     parser.add_argument('--training_label_list', type=int, nargs='+', default=[0, 1, 2])
     parser.add_argument('--drift_label_list', type=int, nargs='+', default=[3])
     parser.add_argument('--reference_window_size_range', type=range_type, default="500:1500:500", help='Example range argument in start:end:step format')
     parser.add_argument('--datastream_window_size_range', type=range_type, default="500:1500:500", help='Example range argument in start:end:step format')
+    parser.add_argument('--embedding_dimensionality_range', type=range_type, default="500:1500:500", help='Example range argument in start:end:step format')
     parser.add_argument('--fixed_reference_window_size', type=int, default=1000)
     parser.add_argument('--fixed_datastream_window_size', type=int, default=1000)
     parser.add_argument('--fixed_embedding_dimensionality', type=int, default=1000)
-    parser.add_argument('--model_name', type=str, default='bert')
-    parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0_1_2.hdf5")
-    parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/test_embedding_0_1_2.hdf5')
-    parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/new_unseen_embedding_0_1_2.hdf5')
-    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/bert/drift_embedding_3.hdf5')
     parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/bert/")
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
@@ -170,7 +166,7 @@ def main():
         lsdd_detector = LSDDDrift(E_reference, backend='pytorch', p_val=.05)
         cvm_detector = CVMDrift(E_reference, p_val=.05)
 
-        for i in range(args.number_of_runs):
+        for i in tqdm(range(args.number_of_runs)):
 
             running_time_dict = run_window_drift_prediction(E_window_datastream_fixed,
                                                             Y_window_datastream_fixed,
@@ -190,10 +186,14 @@ def main():
 
 
     print(running_time_for_reference_window_size_dict)
-
+    print("\n\n")
 
     ##################################################################################################
     # Running time comparison based on the datastream window size
+
+    print("Computing running time comparison based on the datastream window size")
+
+    running_time_for_datastream_window_size_dict = {}
 
     E_reference_fixed = np.random.uniform(low=-2, high=2, size=(args.fixed_reference_window_size,
                                                                 args.fixed_embedding_dimensionality))
@@ -221,15 +221,14 @@ def main():
     for datastream_window_size in args.datastream_window_size_range:
         print("Current datastream window size", datastream_window_size)
 
+        running_time_for_datastream_window_size_dict[datastream_window_size] = {}
+        for drift_detector in detectors:
+            running_time_for_datastream_window_size_dict[datastream_window_size][drift_detector] = {}
+            running_time_for_datastream_window_size_dict[datastream_window_size][drift_detector]['running_time_list'] = []
+
         E_window_datastream = np.random.uniform(low=-2, high=2, size=(datastream_window_size, args.fixed_embedding_dimensionality))
 
         Y_window_datastream = np.random.randint(low=0, high=num_labels, size=datastream_window_size)
-
-        running_time_for_datastream_window_size_dict_tmp = {"DriftLens": [],
-                                                           "KS": [],
-                                                           "MMD": [],
-                                                           "LSDD": [],
-                                                           "CVM": []}
 
         for i in range(args.number_of_runs):
 
@@ -242,10 +241,82 @@ def main():
                                                             drift_lens_detector)
 
             for key in running_time_dict:
-                running_time_for_datastream_window_size_dict_tmp[key].append(running_time_dict[key])
+                running_time_for_datastream_window_size_dict[datastream_window_size][key]['running_time_list'].append(running_time_dict[key])
+
+        for key in detectors:
+            running_time_for_datastream_window_size_dict[datastream_window_size][key]['mean'] = np.mean(
+                running_time_for_datastream_window_size_dict[datastream_window_size][key]['running_time_list'])
+            running_time_for_datastream_window_size_dict[datastream_window_size][key]['std'] = np.std(
+                running_time_for_datastream_window_size_dict[datastream_window_size][key]['running_time_list'])
 
 
     print(running_time_for_datastream_window_size_dict)
+    print("\n\n")
+
+    ##################################################################################################
+    # Running time comparison based on the embedding dimensionality window size
+
+    print("Computing running time comparison based on the datastream window size")
+
+    running_time_for_embedding_dimensionality_dict = {}
+
+    # Running time comparison based on the datastream window size
+    for embedding_dimensionality in tqdm(args.embedding_dimensionality_range):
+        print("Current embedding dimensionality window size", embedding_dimensionality)
+
+        running_time_for_embedding_dimensionality_dict[embedding_dimensionality] = {}
+        for drift_detector in detectors:
+            running_time_for_embedding_dimensionality_dict[embedding_dimensionality][drift_detector] = {}
+            running_time_for_embedding_dimensionality_dict[embedding_dimensionality][drift_detector][
+                'running_time_list'] = []
+
+        E_reference_fixed = np.random.uniform(low=-2, high=2, size=(args.fixed_reference_window_size,
+                                                                    embedding_dimensionality))
+
+        Y_reference_fixed = np.random.randint(low=0, high=num_labels, size=args.fixed_reference_window_size)
+
+        # Initialize the DriftLens
+        drift_lens_detector = DriftLens()
+
+        # Estimate the baseline with DriftLens
+        baseline = drift_lens_detector.estimate_baseline(E=E_reference_fixed,
+                                                         Y=Y_reference_fixed,
+                                                         label_list=training_label_list,
+                                                         batch_n_pc=args.batch_n_pc,
+                                                         per_label_n_pc=args.per_label_n_pc)
+
+        ks_detector = KSDrift(E_reference_fixed, p_val=.05)
+        mmd_detector = MMDDrift(E_reference_fixed, p_val=.05, n_permutations=100, backend="pytorch")
+        lsdd_detector = LSDDDrift(E_reference_fixed, backend='pytorch', p_val=.05)
+        cvm_detector = CVMDrift(E_reference_fixed, p_val=.05)
+
+        E_window_datastream = np.random.uniform(low=-2, high=2,
+                                                size=(args.fixed_datastream_window_size, embedding_dimensionality))
+
+        Y_window_datastream = np.random.randint(low=0, high=num_labels, size=args.fixed_datastream_window_size)
+
+        for i in range(args.number_of_runs):
+
+            running_time_dict = run_window_drift_prediction(E_window_datastream,
+                                                            Y_window_datastream,
+                                                            ks_detector,
+                                                            mmd_detector,
+                                                            lsdd_detector,
+                                                            cvm_detector,
+                                                            drift_lens_detector)
+
+            for key in running_time_dict:
+                running_time_for_embedding_dimensionality_dict[embedding_dimensionality][key]['running_time_list'].append(
+                    running_time_dict[key])
+
+        for key in detectors:
+            running_time_for_embedding_dimensionality_dict[embedding_dimensionality][key]['mean'] = np.mean(
+                running_time_for_embedding_dimensionality_dict[embedding_dimensionality][key]['running_time_list'])
+            running_time_for_embedding_dimensionality_dict[embedding_dimensionality][key]['std'] = np.std(
+                running_time_for_embedding_dimensionality_dict[embedding_dimensionality][key]['running_time_list'])
+
+    print(running_time_for_embedding_dimensionality_dict)
+    print("\n\n")
 
     return
 
