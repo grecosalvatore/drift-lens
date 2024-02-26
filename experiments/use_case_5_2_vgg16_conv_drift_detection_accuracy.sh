@@ -5,7 +5,7 @@ cd ..
 python -m experiments.use_case_5_stl_truck_drift.use_case_5_drift_conv_detection_accuracy \
   --number_of_runs 3 \
   --model_name 'vgg16' \
-  --window_size 500 \
+  --window_size 250 \
   --number_of_windows 100 \
   --drift_percentage 0 5 10 15 20 \
   --threshold_sensitivity 99 \
