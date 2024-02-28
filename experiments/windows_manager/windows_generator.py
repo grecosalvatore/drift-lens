@@ -516,10 +516,11 @@ class WindowsGenerator:
         self.Y_original = self.Y_original[p]
         self.Y_predicted = self.Y_predicted[p]
 
-        p_drifted = np.random.permutation(len(self.E_drifted))
-        self.E_drifted = self.E_drifted[p_drifted]
-        self.Y_original_drifted = self.Y_original_drifted[p_drifted]
-        self.Y_predicted_drifted = self.Y_predicted_drifted[p_drifted]
+        if self.E_drifted != None:
+            p_drifted = np.random.permutation(len(self.E_drifted))
+            self.E_drifted = self.E_drifted[p_drifted]
+            self.Y_original_drifted = self.Y_original_drifted[p_drifted]
+            self.Y_predicted_drifted = self.Y_predicted_drifted[p_drifted]
         return
 
 
