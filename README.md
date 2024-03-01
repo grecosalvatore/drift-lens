@@ -12,7 +12,7 @@ The preliminary idea was first proposed in the paper:
 
 [Drift Lens: Real-time unsupervised Concept Drift detection by evaluating per-label embedding distributions](https://ieeexplore.ieee.org/document/9679880) **(Greco et al., 2021)**
 
-The final methodology is current **Under Review**.
+The final methodology is currently **Under Review**.
 
 ## Table of Contents
 - [Installation](#installation)
