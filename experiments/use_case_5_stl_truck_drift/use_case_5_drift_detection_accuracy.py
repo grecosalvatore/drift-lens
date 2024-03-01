@@ -182,8 +182,6 @@ def main():
         l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
         per_batch_th = max(l)
 
-        print(per_batch_th)
-
         E_subsample, Y_subsample = stratified_subsampling(E_train,
                                                           Y_original_train,
                                                           n_samples=args.n_subsamples_sota,

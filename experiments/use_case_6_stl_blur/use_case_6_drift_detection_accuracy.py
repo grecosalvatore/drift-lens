@@ -29,10 +29,10 @@ def parse_args():
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/vit/train_embedding.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/test_embedding.hdf5')
     parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/new_unseen_embedding.hdf5')
-    parser.add_argument('--drift_5_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_5_embedding.hdf5')
-    parser.add_argument('--drift_10_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_10_embedding.hdf5')
-    parser.add_argument('--drift_15_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_15_embedding.hdf5')
-    parser.add_argument('--drift_20_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_20_embedding.hdf5')
+    parser.add_argument('--drift_5_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_5_embedding_radius2.hdf5')
+    parser.add_argument('--drift_10_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_10_embedding_radius2.hdf5')
+    parser.add_argument('--drift_15_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_15_embedding_radius2.hdf5')
+    parser.add_argument('--drift_20_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_20_embedding_radius2.hdf5')
     parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/vit/")
     parser.add_argument('--save_results', action='store_true')
     parser.add_argument('--cuda', action='store_true')
@@ -100,6 +100,7 @@ def main():
     print("Number of samples sota: ", args.n_subsamples_sota)
     print("Number of samples threshold: ", args.threshold_number_of_estimation_samples)
     print("Drift percentage: ", args.drift_percentage)
+    print("Drift path: ", args.drift_5_embedding_filepath)
 
     training_label_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # Labels used for training
     drift_label_list = training_label_list  # Labels used for drift simulation
@@ -109,7 +110,7 @@ def main():
             os.makedirs(args.output_dir)
         ts = time.time()
         timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
-        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
+        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_radius2_{timestamp}.json"
 
     # Parse parameters
     window_size = args.window_size
@@ -132,17 +133,17 @@ def main():
         E_drift_15, Y_original_drift_15, Y_predicted_drift_15 = load_embedding(args.drift_15_embedding_filepath)
         E_drift_20, Y_original_drift_20, Y_predicted_drift_20 = load_embedding(args.drift_20_embedding_filepath)
 
-    Y_original_drift_5 = [y-10 for y in Y_original_drift_5]
-    Y_original_drift_5 = np.array(Y_original_drift_5)
+    #Y_original_drift_5 = [y-10 for y in Y_original_drift_5]
+    #Y_original_drift_5 = np.array(Y_original_drift_5)
 
-    Y_original_drift_10 = [y-10 for y in Y_original_drift_10]
-    Y_original_drift_10 = np.array(Y_original_drift_10)
+    #Y_original_drift_10 = [y-10 for y in Y_original_drift_10]
+    #Y_original_drift_10 = np.array(Y_original_drift_10)
 
-    Y_original_drift_15 = [y-10 for y in Y_original_drift_15]
-    Y_original_drift_15 = np.array(Y_original_drift_15)
+    #Y_original_drift_15 = [y-10 for y in Y_original_drift_15]
+    #Y_original_drift_15 = np.array(Y_original_drift_15)
 
-    Y_original_drift_20 = [y-10 for y in Y_original_drift_20]
-    Y_original_drift_20 = np.array(Y_original_drift_20)
+    #Y_original_drift_20 = [y-10 for y in Y_original_drift_20]
+    #Y_original_drift_20 = np.array(Y_original_drift_20)
 
     print("Training samples:", len(E_train))
     print("Test samples:", len(E_test))
@@ -192,8 +193,6 @@ def main():
         l = np.array(per_batch_distances_sorted)
         l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
         per_batch_th = max(l)
-
-        print(per_batch_th)
 
         E_subsample, Y_subsample = stratified_subsampling(E_train,
                                                           Y_original_train,

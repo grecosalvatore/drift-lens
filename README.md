@@ -6,9 +6,11 @@
 
 
 *DriftLens* is an **unsupervised drift detection** framework for deep learning classifiers on unstructured data.
-The *DriftLens* methodology was first proposed in the paper:
+The *DriftLens* preliminary idea was first proposed in the paper:
 
 [Drift Lens: Real-time unsupervised Concept Drift detection by evaluating per-label embedding distributions](https://ieeexplore.ieee.org/document/9679880) **(Greco et al., 2021)**
+
+The final methodology is current **Under Review**.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -33,6 +35,8 @@ pip install git+https://github.com/grecosalvatore/drift-lens
 
 ## References
 If you use the DriftLens, please cite the following papers:
+
+1) Preliminary idea
 ```bibtex
 @INPROCEEDINGS{driftlens,
   author={Greco, Salvatore and Cerquitelli, Tania},
@@ -43,5 +47,10 @@ If you use the DriftLens, please cite the following papers:
   number={},
   pages={341-349},
   doi={10.1109/ICDMW53433.2021.00049}
+  }
+```
+
+2) Webapp tool
+```bibtex
   }
 ```
