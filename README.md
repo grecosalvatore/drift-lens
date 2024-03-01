@@ -1,6 +1,7 @@
+#
 <div align="center">
   <img src="docs/source/_static/Drift_Lens_Logo.png" width="300"/>
-  <h4>DriftLens Demo: Real-time Unsupervised Concept Drift Detection for Deep Learning Models</h4>
+  <h4>Drift-Lens: an Unsupervised Drift Detection Framework for Deep Learning Classifiers on Unstructured Data</h4>
 </div>
 <br/>
 
