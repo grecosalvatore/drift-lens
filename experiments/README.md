@@ -1,4 +1,5 @@
 # Experiments reproducibility
+This folder contains the scripts and instructions to reproduce the experiments of the paper:
 
 ## Table of Contents
 - [Experimental use cases](#experimental-use-cases)
