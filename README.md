@@ -20,6 +20,8 @@ The final methodology is currently **Under Review**.
 - [Example of usage](#example-of-usage)
 - [DriftLens Methodology](#driftlens-methodology)
 - [Experiments Reproducibility](#experiments-reproducibility)
+- [References](#references)
+- [Authors](#authors)
 
 ## Installation
 DriftLens is available on PyPI and can be installed with pip for Python >= 3:
@@ -43,7 +45,12 @@ Instructions and scripts for the experimental evaluation reproducibility are loc
 ## References
 If you use the DriftLens, please cite the following papers:
 
-1) Preliminary idea
+1) DriftLens methodology and evaluation
+The paper is currently **under review** at the VLDB conference.
+```bibtex
+```
+
+2) Preliminary idea
 ```bibtex
 @INPROCEEDINGS{driftlens,
   author={Greco, Salvatore and Cerquitelli, Tania},
@@ -57,7 +64,14 @@ If you use the DriftLens, please cite the following papers:
   }
 ```
 
-2) Webapp tool
+3) Webapp tool
 ```bibtex
   }
 ```
+
+# Authors
+
+- **Salvatore Greco**, *Politecnico di Torino* - [Homepage](https://grecosalvatore.github.io/) - [GitHub](https://github.com/grecosalvatore) - [Twitter](https://twitter.com/_salvatoregreco)
+- **Bartolomeo Vacchetti**, *Politecnico di Torino* - [Homepage]()
+- **Daniele Apiletti**, *Politecnico di Torino* - [Homepage](https://www.polito.it/en/staff?p=daniele.apiletti)
+- **Tania Cerquitelli**, *Politecnico di Torino* - [Homepage](https://dbdmg.polito.it/dbdmg_web/people/tania-cerquitelli/)
