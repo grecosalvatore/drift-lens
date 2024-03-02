@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from sklearn.decomposition import PCA
 
 import numpy as np
-from driftlens import _frechet_inception_distance as fid
+from driftlens import _frechet_drift_distance as fdd
 import os
 import pickle
 import json
@@ -361,8 +361,8 @@ class StandardBaselineEstimator(BaselineEstimatorMethod):
         E_reduced = batch_PCA.transform(E)
 
         # Estimate the mean vector and the covariance matrix for the entire batch
-        batch_mean = fid.get_mean(E_reduced)
-        batch_covariance = fid.get_covariance(E_reduced)
+        batch_mean = fdd.get_mean(E_reduced)
+        batch_covariance = fdd.get_covariance(E_reduced)
 
         # Counts the batch number of samples
         batch_n_samples = len(Y)
@@ -385,8 +385,8 @@ class StandardBaselineEstimator(BaselineEstimatorMethod):
             E_l_reduced = per_label_PCA_dict[str(label)].transform(E_l)
 
             # Estimate the mean vector and the covariance matrix for the label l
-            mean_l = fid.get_mean(E_l_reduced)
-            covariance_l = fid.get_covariance(E_l_reduced)
+            mean_l = fdd.get_mean(E_l_reduced)
+            covariance_l = fdd.get_covariance(E_l_reduced)
 
             # Store the mean vector and the covariance matrix in the dictionary
             per_label_mean_dict[str(label)] = mean_l

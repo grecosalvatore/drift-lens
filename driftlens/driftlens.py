@@ -1,6 +1,6 @@
 import os.path
 
-from driftlens import _frechet_inception_distance as fid
+from driftlens import _frechet_drift_distance as fdd
 from driftlens import _baseline as _baseline
 from driftlens import _threshold as _threshold
 
@@ -251,10 +251,10 @@ class DriftLens:
         # Reduce the embedding dimensionality with PCA for the entire current window w
         E_w_reduced = baseline.get_batch_PCA_model().transform(E_w)
 
-        mean_w_batch = fid.get_mean(E_w_reduced)
-        covariance_w_batch = fid.get_covariance(E_w_reduced)
+        mean_w_batch = fdd.get_mean(E_w_reduced)
+        covariance_w_batch = fdd.get_covariance(E_w_reduced)
 
-        distribution_distance_batch = fid.frechet_distance(mean_b_batch,
+        distribution_distance_batch = fdd.frechet_distance(mean_b_batch,
                                                            mean_w_batch,
                                                            covariance_b_batch,
                                                            covariance_w_batch)
@@ -275,10 +275,10 @@ class DriftLens:
             E_w_l_reduced = baseline.get_PCA_model_by_label(label).transform(E_w_l)
 
             # Estimate the mean vector and the covariance matrix for the label l in the current window w
-            mean_w_l = fid.get_mean(E_w_l_reduced)
-            covariance_w_l = fid.get_covariance(E_w_l_reduced)
+            mean_w_l = fdd.get_mean(E_w_l_reduced)
+            covariance_w_l = fdd.get_covariance(E_w_l_reduced)
 
-            distribution_distance_l = fid.frechet_distance(mean_b_l,
+            distribution_distance_l = fdd.frechet_distance(mean_b_l,
                                                            mean_w_l,
                                                            covariance_b_l,
                                                            covariance_w_l)
