@@ -10,6 +10,11 @@
 
 ## Experimental use cases
 
+
+Each macro use case is divided into folder. 
+For each macro use case, there is a folder `model_training_and_embedding_extraction` containing the following scripts:
+- `{model}_training.ipynb`: Jupyter notebook to train the model
+- `{model}_embedding_extraction.py`: Jupyter notebook to extract the embedding representations the model
 <table>
   <caption>Experimental use cases.</caption>
   <thead>
@@ -195,7 +200,15 @@
 </table>
 
 ## Drift detection performance evaluation
+This evaluation aims to determine the effectiveness of DriftLens in detecting windows containing drifted samples of varying severity.
+The drift detection problem is tackled as a binary classification task. The task consists in predicting whether a window of new samples contains drift. 
+
 
 ## Complexity evaluation
+This evaluation aims to ascertain the effectiveness of DriftLens to
+perform near real-time drift detection. To this end, we compare the
+running time of the drift detectors by varying the reference and
+data stream windows sizes, and the embedding dimensionality.
 
 ## Drift curve evaluation
+This evaluation aims to measure the ability of DriftLens to coherently represent and characterize the drift curve.
