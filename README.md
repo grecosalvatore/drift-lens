@@ -38,6 +38,7 @@ pip install git+https://github.com/grecosalvatore/drift-lens
 ## DriftLens Methodology
 
 ## Experiments Reproducibility
+Instructions and scripts for the experimental evaluation reproducibility are located in the experiments folder.
 
 ## References
 If you use the DriftLens, please cite the following papers:
