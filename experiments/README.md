@@ -31,7 +31,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
   <tbody>
     <tr>
       <td rowspan="3">Text</td>
-      <td rowspan="3">Ag News</td>
+      <th rowspan="3">Ag News</th>
       <th>1.1</th>
       <td>BERT</td>
       <td>0.98</td>
@@ -59,7 +59,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
     </tr>
   <tr>
       <td rowspan="3">Text</td>
-      <td rowspan="3">20 Newsgroup</td>
+      <th rowspan="3">20 Newsgroup</th>
       <th>2.1</th>
       <td>BERT</td>
       <td>0.88</td>
@@ -87,8 +87,8 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
     </tr>
     <tr>
       <td rowspan="3">Text</td>
-      <td rowspan="3">20 Newsgroup</td>
-      <td rowspan="3">3</td>
+      <th rowspan="3">20 Newsgroup</th>
+      <th rowspan="3">3</th>
       <td rowspan="3">BERT</td>
       <td rowspan="3">0.87</td>
       <td rowspan="3"><b>Task</b>: Topic Classification. <BR>
@@ -109,7 +109,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
     </tr>
   <tr>
       <td rowspan=2">Image</td>
-      <td rowspan="2">Intel-Image</td>
+      <th rowspan="2">Intel-Image</th>
       <th>4.1</th>
       <td>VGG16</td>
       <td>0.89</td>
@@ -132,7 +132,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
     </tr>
   <tr>
       <td rowspan="2">Image</td>
-      <td rowspan="2">STL-10</td>
+      <th rowspan="2">STL-10</th>
       <th>5.1</th>
       <td>VGG16</td>
       <td>0.82</td>
@@ -155,8 +155,8 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
     </tr>
     <tr>
       <td rowspan="3">Image</td>
-      <td rowspan="3">STL-10</td>
-      <td rowspan="3">6</td>
+      <th rowspan="3">STL-10</th>
+      <th rowspan="3">6</th>
       <td rowspan="3">VisualTransformer</td>
       <td rowspan="3">0.90</td>
       <td rowspan="3"><b>Task</b>: Image Classification. <BR>
@@ -177,8 +177,8 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
     </tr>
 <tr>
       <td rowspan="3">Speech</td>
-      <td rowspan="3">Common Voice</td>
-      <td rowspan="3">7</td>
+      <th rowspan="3">Common Voice</th>
+      <th rowspan="3">7</th>
       <td rowspan="3">Wav2Vec</td>
       <td rowspan="3">0.91</td>
       <td rowspan="3"><b>Task</b>: Gender Classification. <BR>
