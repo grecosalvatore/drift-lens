@@ -85,9 +85,10 @@ The methodology includes an *offline* and an *online* phases.
 
 
 In the *offline* phase, DriftLens, takes in input a historical dataset (i.e., baseline and threshold datasets), then: 
+
 1) Estimates the reference distributions from the baseline dataset (e.g., training dataset). The reference
 distributions, called **baseline**, represent the distribution of features (i.e., embedding) that the model has learned during the training phase (i.e., they represent the absence of drift).
-2)Estimates threshold distance values from the threshold dataset to discriminate between drift and no-drift conditions.
+2) Estimates threshold distance values from the threshold dataset to discriminate between drift and no-drift conditions.
 
 In the *online* phase, the new data stream is processed in windows of fixed size. For each window, DriftLens:
 
