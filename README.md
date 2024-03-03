@@ -40,6 +40,12 @@ pip install git+https://github.com/grecosalvatore/drift-lens
 ```python
 from driftlens.driftlens import DriftLens
 
+# DriftLens parameters
+batch_n_pc = 150 # Number of principal components to reduce per-batch embeddings
+per_label_n_pc = 75 # Number of principal components to reduce per-label embeddings
+window_size = 1000 # Window size for drift detection
+threshold_number_of_estimation_samples = 1000 # Number of sampled windows to estimate the threshold values
+
 # Initialize DriftLens
 dl = DriftLens()
 
@@ -58,7 +64,7 @@ per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_thre
                                                             batch_n_pc=batch_n_pc,
                                                             per_label_n_pc=per_label_n_pc,
                                                             window_size=window_size,
-                                                            n_samples=args.threshold_number_of_estimation_samples,
+                                                            n_samples=threshold_number_of_estimation_samples,
                                                             flag_shuffle=True,
                                                             flag_replacement=True)
 
