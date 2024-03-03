@@ -51,15 +51,16 @@ baseline = dl.estimate_baseline(E=E_train,
                                 per_label_n_pc=per_label_n_pc)
 
 # Estimate the threshold values with DriftLens
-per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(label_list=training_label_list,
-                                                                                                 E=E_test,
-                                                                                                 Y=Y_predicted_test,
-                                                                                                 batch_n_pc=batch_n_pc,
-                                                                                                 per_label_n_pc=per_label_n_pc,
-                                                                                                 window_size=window_size,
-                                                                                                 n_samples=args.threshold_number_of_estimation_samples,
-                                                                                                 flag_shuffle=True,
-                                                                                                 flag_replacement=True)
+per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(
+                                                            label_list=training_label_list,
+                                                            E=E_test,
+                                                            Y=Y_predicted_test,
+                                                            batch_n_pc=batch_n_pc,
+                                                            per_label_n_pc=per_label_n_pc,
+                                                            window_size=window_size,
+                                                            n_samples=args.threshold_number_of_estimation_samples,
+                                                            flag_shuffle=True,
+                                                            flag_replacement=True)
 
 # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
 dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
