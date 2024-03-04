@@ -1,15 +1,15 @@
 # Run the Python script as a module
-cd ..
+cd ../../..
 
 
 python -m experiments.use_case_5_stl_truck_drift.use_case_5_drift_detection_accuracy \
-  --number_of_runs 3 \
+  --number_of_runs 1 \
   --model_name 'vit' \
   --window_size 1000 \
-  --number_of_windows 100 \
+  --number_of_windows 10 \
   --drift_percentage 0 5 10 15 20 \
   --threshold_sensitivity 99 \
-  --threshold_number_of_estimation_samples 100 \
+  --threshold_number_of_estimation_samples 10 \
   --batch_n_p 150 \
   --per_label_n_pc 25 \
   --n_subsamples_sota 500 \

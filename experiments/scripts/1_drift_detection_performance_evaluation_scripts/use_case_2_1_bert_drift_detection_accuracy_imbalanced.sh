@@ -1,5 +1,5 @@
 # Run the Python script as a module
-cd ..
+cd ../../..
 
 
 

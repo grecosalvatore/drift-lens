@@ -1,5 +1,5 @@
 # Run the Python script as a module
-cd ..
+cd ../../..
 
 
 python -m experiments.use_case_4_intel_image_sea_drift.use_case_4_drift_conv_detection_accuracy \

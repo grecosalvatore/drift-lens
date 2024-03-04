@@ -1,5 +1,5 @@
 # Run the Python script as a module
-cd ..
+cd ../../..
 
 
 python -m experiments.use_case_6_stl_blur.use_case_6_drift_detection_accuracy \

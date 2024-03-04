@@ -1,5 +1,5 @@
 # Run the Python script as a module
-cd ..
+cd ../../..
 
 
 python -m experiments.use_case_5_stl_truck_drift.use_case_5_drift_detection_accuracy \
