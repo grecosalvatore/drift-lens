@@ -3,7 +3,7 @@ cd ..
 
 
 python -m experiments.use_case_5_stl_truck_drift.use_case_5_drift_detection_accuracy \
-  --number_of_runs 10 \
+  --number_of_runs 3 \
   --model_name 'vit' \
   --window_size 1000 \
   --number_of_windows 100 \
@@ -12,7 +12,7 @@ python -m experiments.use_case_5_stl_truck_drift.use_case_5_drift_detection_accu
   --threshold_number_of_estimation_samples 100 \
   --batch_n_p 150 \
   --per_label_n_pc 25 \
-  --n_subsamples_sota 5000 \
+  --n_subsamples_sota 500 \
   --train_embedding_filepath 'experiments/use_case_5_stl_truck_drift/static/saved_embeddings/vit/train_embedding.hdf5' \
   --test_embedding_filepath 'experiments/use_case_5_stl_truck_drift/static/saved_embeddings/vit/test_embedding.hdf5' \
   --new_unseen_embedding_filepath 'experiments/use_case_5_stl_truck_drift/static/saved_embeddings/vit/new_unseen_embedding.hdf5' \

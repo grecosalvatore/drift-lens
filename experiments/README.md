@@ -30,7 +30,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
   </thead>
   <tbody>
     <tr>
-      <td rowspan="3">Text</td>
+      <th rowspan="3">Text</th>
       <th rowspan="3">Ag News</th>
       <th>1.1</th>
       <td>BERT</td>
@@ -58,7 +58,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
       <td></td>
     </tr>
   <tr>
-      <td rowspan="3">Text</td>
+      <th rowspan="3">Text</th>
       <th rowspan="3">20 Newsgroup</th>
       <th>2.1</th>
       <td>BERT</td>
@@ -86,7 +86,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
       <td></td>
     </tr>
     <tr>
-      <td rowspan="3">Text</td>
+      <th rowspan="3">Text</th>
       <th rowspan="3">20 Newsgroup</th>
       <th rowspan="3">3</th>
       <td rowspan="3">BERT</td>
@@ -108,7 +108,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
       <td></td>
     </tr>
   <tr>
-      <td rowspan=2">Image</td>
+      <th rowspan=2">Image</th>
       <th rowspan="2">Intel-Image</th>
       <th>4.1</th>
       <td>VGG16</td>
@@ -131,7 +131,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
       <td></td>
     </tr>
   <tr>
-      <td rowspan="2">Image</td>
+      <th rowspan="2">Image</th>
       <th rowspan="2">STL-10</th>
       <th>5.1</th>
       <td>VGG16</td>
@@ -154,7 +154,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
       <td></td>
     </tr>
     <tr>
-      <td rowspan="3">Image</td>
+      <th rowspan="3">Image</th>
       <th rowspan="3">STL-10</th>
       <th rowspan="3">6</th>
       <td rowspan="3">VisualTransformer</td>
@@ -176,7 +176,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
       <td></td>
     </tr>
 <tr>
-      <td rowspan="3">Speech</td>
+      <th rowspan="3">Speech</th>
       <th rowspan="3">Common Voice</th>
       <th rowspan="3">7</th>
       <td rowspan="3">Wav2Vec</td>

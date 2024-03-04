@@ -286,9 +286,9 @@ def main():
                                   "mean_accuracy": {"KS": np.mean(ks_acc_dict[str(p)]), "MMD": np.mean(mmd_acc_dict[str(p)]), "LSDD": np.mean(lsdd_acc_dict[str(p)]), "CVM": np.mean(cvm_acc_dict[str(p)]), "DriftLens": np.mean(driftlens_acc_dict[str(p)])},
                                   "standard_deviation_accuracy": {"KS": np.std(ks_acc_dict[str(p)]), "MMD": np.std(mmd_acc_dict[str(p)]), "LSDD": np.std(lsdd_acc_dict[str(p)]), "CVM": np.std(cvm_acc_dict[str(p)]), "DriftLens": np.std(driftlens_acc_dict[str(p)])}}
 
-        # Save the output dictionary
-        with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
-            json.dump(output_dict, fp)
+    # Save the output dictionary
+    with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
+        json.dump(output_dict, fp)
 
     return
 
