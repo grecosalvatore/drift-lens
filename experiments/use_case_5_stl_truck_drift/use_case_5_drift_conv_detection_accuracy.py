@@ -11,6 +11,7 @@ import json
 import datetime
 import time
 import torch
+import statistics
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -285,9 +286,35 @@ def main():
                                   "mean_accuracy": {"KS": np.mean(ks_acc_dict[str(p)]), "MMD": np.mean(mmd_acc_dict[str(p)]), "LSDD": np.mean(lsdd_acc_dict[str(p)]), "CVM": np.mean(cvm_acc_dict[str(p)]), "DriftLens": np.mean(driftlens_acc_dict[str(p)])},
                                   "standard_deviation_accuracy": {"KS": np.std(ks_acc_dict[str(p)]), "MMD": np.std(mmd_acc_dict[str(p)]), "LSDD": np.std(lsdd_acc_dict[str(p)]), "CVM": np.std(cvm_acc_dict[str(p)]), "DriftLens": np.std(driftlens_acc_dict[str(p)])}}
 
-        # Save the output dictionary
-        with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
-            json.dump(output_dict, fp)
+    mean_accuracy_drift_list_mmd = []
+    mean_accuracy_drift_list_ks = []
+    mean_accuracy_drift_list_lsdd = []
+    mean_accuracy_drift_list_cvm = []
+    mean_accuracy_drift_list_driftlens = []
+    for p in args.drift_percentage:
+        if p > 0:
+            mean_accuracy_drift_list_mmd.append(output_dict[str(p)]["mean_accuracy"]["MMD"])
+            mean_accuracy_drift_list_ks.append(output_dict[str(p)]["mean_accuracy"]["KS"])
+            mean_accuracy_drift_list_lsdd.append(output_dict[str(p)]["mean_accuracy"]["LSDD"])
+            mean_accuracy_drift_list_cvm.append(output_dict[str(p)]["mean_accuracy"]["CVM"])
+            mean_accuracy_drift_list_driftlens.append(output_dict[str(p)]["mean_accuracy"]["DriftLens"])
+
+    hdd_mmd = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["MMD"], np.mean(mean_accuracy_drift_list_mmd)])
+    hdd_ks = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["KS"], np.mean(mean_accuracy_drift_list_ks)])
+    hdd_lsdd = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["LSDD"], np.mean(mean_accuracy_drift_list_lsdd)])
+    hdd_cvm = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["CVM"], np.mean(mean_accuracy_drift_list_cvm)])
+    hdd_driftlens = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["DriftLens"], np.mean(mean_accuracy_drift_list_driftlens)])
+
+    output_dict["HDD"] = {"MMD": hdd_mmd, "KS": hdd_ks, "LSDD": hdd_lsdd, "CVM": hdd_cvm,
+                          "DriftLens": hdd_driftlens}
+    # Save the output dictionary
+    with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
+        json.dump(output_dict, fp)
 
     return
 
