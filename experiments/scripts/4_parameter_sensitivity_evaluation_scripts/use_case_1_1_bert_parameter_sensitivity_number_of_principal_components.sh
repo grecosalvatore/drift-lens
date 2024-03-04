@@ -1,5 +1,5 @@
 # Run the Python script as a module
-cd ..
+cd ../../..
 
 
 python -m experiments.use_case_1_ag_news_science_drift.use_case_1_parameter_sensitivity_number_of_principal_components \
