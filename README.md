@@ -49,14 +49,14 @@ threshold_number_of_estimation_samples = 1000 # Number of sampled windows to est
 # Initialize DriftLens
 dl = DriftLens()
 
-# Estimate the baseline 
+# Estimate the baseline (offline phase)
 baseline = dl.estimate_baseline(E=E_train,
                                 Y=Y_predicted_train,
                                 label_list=training_label_list,
                                 batch_n_pc=batch_n_pc,
                                 per_label_n_pc=per_label_n_pc)
 
-# Estimate the threshold values with DriftLens
+# Estimate the threshold values with DriftLens (offline phase)
 per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(
                                                             label_list=training_label_list,
                                                             E=E_test,
@@ -96,6 +96,10 @@ In the *online* phase, the new data stream is processed in windows of fixed size
 4) it computes the distribution distances with respect to the reference distributions
 5) it evaluates the distances against the threshold values.  If the distance exceeds the threshold, the presence of drift is predicted.
 
+In both phases, the distributions are estimated as multivariate normal distribution by computing the mean and the covariance over the embedding vectors.
+
+DriftLens uses the Frechet Distance to measure the similarity between the reference (i.e., baseline) and the new window distributions.
+
 ## Experiments Reproducibility
 Instructions and scripts for the experimental evaluation reproducibility are located in the experiments folder.
 
@@ -103,7 +107,7 @@ Instructions and scripts for the experimental evaluation reproducibility are loc
 If you use the DriftLens, please cite the following papers:
 
 1) DriftLens methodology and evaluation
-The paper is currently **under review** at the VLDB conference.
+The paper is currently **under review**.
 ```bibtex
 ```
 

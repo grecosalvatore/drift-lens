@@ -16,6 +16,9 @@ Each macro use case is divided into folder.
 For each macro use case, there is a folder `model_training_and_embedding_extraction` containing the following scripts:
 - `{model}_training.ipynb`: Jupyter notebook to train the model
 - `{model}_embedding_extraction.py`: Jupyter notebook to extract the embedding representations the model
+
+Each macro use case also contains a README.md file with specific information about the use case and the simulated drift.
+
 <table>
   <caption>Experimental use cases.</caption>
   <thead>
@@ -200,16 +203,30 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
   </tbody>
 </table>
 
-## Drift detection performance evaluation
+## 1) Drift detection performance evaluation
 This evaluation aims to determine the effectiveness of DriftLens in detecting windows containing drifted samples of varying severity.
 The drift detection problem is tackled as a binary classification task. The task consists in predicting whether a window of new samples contains drift. 
 
+The folder  contains the script to run the evaluation. These scripts can be used to reproduce Tables 3 and 4 in the paper.
+The script is organized as follows:
 
-## Complexity evaluation
+## 2) Complexity evaluation
 This evaluation aims to ascertain the effectiveness of DriftLens to
 perform near real-time drift detection. To this end, we compare the
 running time of the drift detectors by varying the reference and
 data stream windows sizes, and the embedding dimensionality.
 
-## Drift curve evaluation
+The folder  contains the script to run the evaluation. These scripts can be used to reproduce Figures 5 and 6 in the paper.
+The script is organized as follows:
+
+## 3) Drift curve evaluation
 This evaluation aims to measure the ability of DriftLens to coherently represent and characterize the drift curve.
+
+The folder  contains the script to run the evaluation. These scripts can be used to reproduce Table 5 in the paper.
+The script is organized as follows:
+
+## 4) Drift curve evaluation
+This evaluation aims to determine the robustness and sensitivity of DriftLens to its parameters.
+
+The folder  contains the script to run the evaluation. These scripts can be used to reproduce Table 6 in the paper.
+The script is organized as follows:
