@@ -271,14 +271,6 @@ def main():
             output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "KS": ks_acc, "MMD": mmd_acc, "LSDD": lsdd_acc, "CVM": cvm_acc, "DriftLens": driftlens_acc}
             output_dict_run_list.append(output_dict_run)
 
-        # Create final output dictionary
-
-        #output_dict = {"params": vars(args),
-        #               "runs":output_dict_run_list,
-        #               "accuracy_list": {"KS": ks_acc_list, "MMD": mmd_acc_list, "LSDD": lsdd_acc_list, "CVM": cvm_acc_list, "DriftLens": driftlens_acc_list},
-        #                  "mean_accuracy": {"KS": np.mean(ks_acc_list), "MMD": np.mean(mmd_acc_list), "LSDD": np.mean(lsdd_acc_list), "CVM": np.mean(cvm_acc_list), "DriftLens": np.mean(driftlens_acc_list)},
-        #                 "standard_deviation_accuracy": {"KS": np.std(ks_acc_list), "MMD": np.std(mmd_acc_list), "LSDD": np.std(lsdd_acc_list), "CVM": np.std(cvm_acc_list), "DriftLens": np.std(driftlens_acc_list)}}
-
     output_dict["runs_log"] = output_dict_run_list
 
     for p in args.drift_percentage:
