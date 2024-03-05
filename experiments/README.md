@@ -5,7 +5,8 @@ This folder contains the scripts and instructions to reproduce the experiments o
 - [Experimental use cases](#experimental-use-cases)
 - [Drift detection performance evaluation](#drift-detection-performance-evaluation)
 - [Complexity evaluation](#complexity-evaluation)
-- [Drift curve correlation](#drift-curve-evaluation)
+- [Drift curve evaluation](#drift-curve-evaluation)
+- [Parameter sensitivity evaluation](#parameter-sensitivity-evaluation)
 
 
 
@@ -203,14 +204,14 @@ Each macro use case also contains a README.md file with specific information abo
   </tbody>
 </table>
 
-## 1) Drift detection performance evaluation
+## Drift detection performance evaluation
 This evaluation aims to determine the effectiveness of DriftLens in detecting windows containing drifted samples of varying severity.
 The drift detection problem is tackled as a binary classification task. The task consists in predicting whether a window of new samples contains drift. 
 
 The folder  contains the script to run the evaluation. These scripts can be used to reproduce Tables 3 and 4 in the paper.
 The script is organized as follows:
 
-## 2) Complexity evaluation
+## Complexity evaluation
 This evaluation aims to ascertain the effectiveness of DriftLens to
 perform near real-time drift detection. To this end, we compare the
 running time of the drift detectors by varying the reference and
@@ -219,13 +220,13 @@ data stream windows sizes, and the embedding dimensionality.
 The folder  contains the script to run the evaluation. These scripts can be used to reproduce Figures 5 and 6 in the paper.
 The script is organized as follows:
 
-## 3) Drift curve evaluation
+## Drift curve evaluation
 This evaluation aims to measure the ability of DriftLens to coherently represent and characterize the drift curve.
 
 The folder  contains the script to run the evaluation. These scripts can be used to reproduce Table 5 in the paper.
 The script is organized as follows:
 
-## 4) Drift curve evaluation
+## Parameter sensitivity evaluation
 This evaluation aims to determine the robustness and sensitivity of DriftLens to its parameters.
 
 The folder  contains the script to run the evaluation. These scripts can be used to reproduce Table 6 in the paper.
