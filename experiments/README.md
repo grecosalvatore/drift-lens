@@ -208,7 +208,8 @@ Each macro use case also contains a README.md file with specific information abo
 This evaluation aims to determine the effectiveness of DriftLens in detecting windows containing drifted samples of varying severity.
 The drift detection problem is tackled as a binary classification task. The task consists in predicting whether a window of new samples contains drift. 
 
-The folder  contains the script to run the evaluation. These scripts can be used to reproduce Tables 3 and 4 in the paper.
+The `scripts/1_drift_detection_performance_evaluation_scripts` folder contains the scripts to run the evaluation for all the use cases. These scripts can be used to reproduce Tables 3 and 4 in the paper.
+
 An example of drift detection performance evaluation script is the following:
 
 ```bash
