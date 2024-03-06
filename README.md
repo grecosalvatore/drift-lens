@@ -102,7 +102,7 @@ In both phases, the distributions are estimated as multivariate normal distribut
 DriftLens uses the Frechet Distance to measure the similarity between the reference (i.e., baseline) and the new window distributions.
 
 ## Experiments Reproducibility
-Instructions and scripts for the experimental evaluation reproducibility are located in the experiments folder.
+Instructions and scripts for the experimental evaluation reproducibility are located in the [experiments folder](experiments/README.md).
 
 ## References
 If you use the DriftLens, please cite the following papers:
