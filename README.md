@@ -28,6 +28,7 @@ The preliminary idea was first proposed in the paper:
 
 ## Installation
 DriftLens is available on PyPI and can be installed with pip for Python >= 3:
+**Warning: currently the package is avalaible only under test pypi repository because is under development. It will be available on pypi soon.**
 ```bash
 # Install latest stable version
 pip install drift-lens

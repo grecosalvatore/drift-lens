@@ -210,6 +210,7 @@ The drift detection problem is tackled as a binary classification task. The task
 
 The `scripts/1_drift_detection_performance_evaluation_scripts` folder contains the scripts to run the evaluation for all the use cases. These scripts can be used to reproduce Tables 3 and 4 in the paper.
 
+All the scripts for the different use cases are similar.
 An example of drift detection performance evaluation script is the following:
 
 ```bash
@@ -285,8 +286,41 @@ perform near real-time drift detection. To this end, we compare the
 running time of the drift detectors by varying the reference and
 data stream windows sizes, and the embedding dimensionality.
 
-The folder  contains the script to run the evaluation. These scripts can be used to reproduce Figures 5 and 6 in the paper.
-The script is organized as follows:
+The `scripts/2_complexity_evaluation_scripts` folder  contains the scripts to run the evaluation. These scripts can be used to reproduce Figures 5 and 6 in the paper.
+
+The folder contains the following scripts:
+
+```bash
+cd ../../..
+
+
+python -m experiments.running_time_comparison \
+  --number_of_runs 5 \
+  --training_label_list 0 1 2 \
+  --drift_label_list 3 \
+  --run_mmd \
+  --run_ks \
+  --run_lsdd \
+  --run_cvm \
+  --run_driftlens \
+  --run_experiment_reference_window \
+  --run_experiment_window_size \
+  --run_experiment_embedding_dimensionality \
+  --reference_window_size_range '5000:15000:2500' \
+  --datastream_window_size_range '500:2500:500' \
+  --embedding_dimensionality_range '500:2500:500' \
+  --fixed_reference_window_size 5000 \
+  --fixed_datastream_window_size 1000 \
+  --fixed_embedding_dimensionality 1000 \
+  --batch_n_p 150 \
+  --per_label_n_pc 75 \
+  --output_dir 'experiments/' \
+  --save_results \
+  --verbose \
+  --seed 42
+```
+
+
 
 ## Drift curve evaluation
 This evaluation aims to measure the ability of DriftLens to coherently represent and characterize the drift curve.
