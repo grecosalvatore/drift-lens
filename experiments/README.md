@@ -238,6 +238,49 @@ python -m experiments.use_case_1_ag_news_science_drift.use_case_1_drift_detectio
   --seed 42
 ```
 
+## Drift Detection Performance Evaluation Script Explanation
+
+This script evaluates the performance of drift detection. Below is an explanation of each argument used in the script:
+
+- `--number_of_runs` Specifies the number of times the evaluation should be repeated to ensure statistical significance. In the paper we used 10 runs.
+  
+- `--model_name` The name of the model to be used for the evaluation. In this case, 'bert' indicates that the BERT model is used.
+  
+- `--window_size` The size of the window ($m_w$), in terms of the number of samples it contains, for drift detection.
+  
+- `--number_of_windows` The total number of windows to be evaluated for drift detection.
+  
+- `--drift_percentage` A list of percentages that define the severity of drift in each window. The script evaluates the model's performance across different levels of drift severity.
+  
+- `--threshold_sensitivity` The sensitivity of the drift detection threshold. A higher value means the drift detection is more sensitive.
+  
+- `--threshold_number_of_estimation_samples` The number of samples used to estimate the threshold for drift detection.
+  
+- `--batch_n_p` The batch size used for processing samples.
+  
+- `--per_label_n_pc` The number of principal components used per label for dimensionality reduction in the preprocessing step.
+  
+- `--n_subsamples_sota` The number of subsamples used for state-of-the-art comparison.
+  
+- `--train_embedding_filepath` The file path to the saved embeddings of the training dataset.
+  
+- `--test_embedding_filepath` The file path to the saved embeddings of the test dataset.
+  
+- `--new_unseen_embedding_filepath` The file path to the saved embeddings of new, unseen samples.
+  
+- `--drift_embedding_filepath` The file path to the saved embeddings specifically representing drifted samples.
+  
+- `--output_dir` The directory where the output of the script (e.g., evaluation results, logs) will be saved.
+  
+- `--save_results` A flag indicating whether to save the results of the evaluation.
+  
+- `--cuda` A flag to enable CUDA (GPU acceleration) if available.
+  
+- `--verbose` A flag to enable verbose output, providing more detailed logs during execution.
+  
+- `--seed` The random seed for reproducibility of results.
+
+
 ## Complexity evaluation
 This evaluation aims to ascertain the effectiveness of DriftLens to
 perform near real-time drift detection. To this end, we compare the
