@@ -1,5 +1,5 @@
 # Experiments reproducibility
-This folder contains the scripts and instructions to reproduce the experiments of the paper:
+This folder contains the scripts and instructions to reproduce the experiments of the paper.
 
 ## Table of Contents
 - [Experimental use cases](#experimental-use-cases)
@@ -209,7 +209,33 @@ This evaluation aims to determine the effectiveness of DriftLens in detecting wi
 The drift detection problem is tackled as a binary classification task. The task consists in predicting whether a window of new samples contains drift. 
 
 The folder  contains the script to run the evaluation. These scripts can be used to reproduce Tables 3 and 4 in the paper.
-The script is organized as follows:
+An example of drift detection performance evaluation script is the following:
+
+```bash
+cd ../../..
+
+
+python -m experiments.use_case_1_ag_news_science_drift.use_case_1_drift_detection_accuracy \
+  --number_of_runs 10 \
+  --model_name 'bert' \
+  --window_size 2000 \
+  --number_of_windows 100 \
+  --drift_percentage 0 5 10 15 20 \
+  --threshold_sensitivity 99 \
+  --threshold_number_of_estimation_samples 10000 \
+  --batch_n_p 150 \
+  --per_label_n_pc 75 \
+  --n_subsamples_sota 5000 \
+  --train_embedding_filepath 'experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/bert/train_embedding_0_1_2.hdf5' \
+  --test_embedding_filepath 'experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/bert/test_embedding_0_1_2.hdf5' \
+  --new_unseen_embedding_filepath 'experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/bert/new_unseen_embedding_0_1_2.hdf5' \
+  --drift_embedding_filepath 'experiments/use_case_1_ag_news_science_drift/static/saved_embeddings/bert/drift_embedding_3.hdf5' \
+  --output_dir 'experiments/use_case_1_ag_news_science_drift/static/outputs/bert/' \
+  --save_results \
+  --cuda \
+  --verbose \
+  --seed 42
+```
 
 ## Complexity evaluation
 This evaluation aims to ascertain the effectiveness of DriftLens to
