@@ -18,6 +18,7 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
 - `{model}_training.ipynb`: Jupyter notebook to train the model
 - `{model}_embedding_extraction.py`: Jupyter notebook to extract the embedding representations the model
 
+Note that some use cases contains a single script for the model training and embedding extraction. Moreover, some use cases contains some scripts to prepare the dataset.
 Each macro use case also contains a README.md file with specific information about the use case and the simulated drift.
 
 <table>
