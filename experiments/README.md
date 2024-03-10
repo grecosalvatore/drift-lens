@@ -21,6 +21,8 @@ For each macro use case, there is a folder `model_training_and_embedding_extract
 Note that some use cases contains a single script for the model training and embedding extraction. Moreover, some use cases contains some scripts to prepare the dataset.
 Each macro use case also contains a README.md file with specific information about the use case and the simulated drift.
 
+To facilitate and speed up the reproducibility, the embedding representations already extracted will be provided soon.
+
 <table>
   <caption>Experimental use cases.</caption>
   <thead>
