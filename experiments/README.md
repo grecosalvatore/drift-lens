@@ -99,8 +99,8 @@ To facilitate and speed up the reproducibility, the embedding representations al
       <td rowspan="3">BERT</td>
       <td rowspan="3">0.87</td>
       <td rowspan="3"><b>Task</b>: Topic Classification. <BR>
-    <b>Training Labels</b>: <i>Technology</i>, <i>Sale-Ads</i>, <i>Politics</i>, <i>Religion</i>, <i>Science</i> <BR>
-    <b>Drift</b>: Simulated with one new class label: <i>Recreation</i></td>
+    <b>Training Labels</b>: <i>Technology</i>, <i>Sale-Ads</i>, <i>Politics</i>, <i>Religion</i>, <i>Science</i>, <i>Recreation.sports</i>  <BR>
+    <b>Drift</b>: Simulated with one sub-class label: <i>Recreation.autos</i></td>
     </tr>
     <tr>
     </tr>
@@ -168,7 +168,7 @@ To facilitate and speed up the reproducibility, the embedding representations al
       <td rowspan="3">0.90</td>
       <td rowspan="3"><b>Task</b>: Image Classification. <BR>
     <b>Training Labels</b>: <i>Airplane</i>, <i>Bird</i>, <i>Car</i>, <i>Cat</i>, <i>Deer</i>, <i>Dog</i>, <i>Horse</i>, <i>Monkey</i>, <i>Ship</i>, <i>Truck</i> <BR>
- <b>Drift</b>: Simulated with one new class label: <i>Recreation</i></td>
+ <b>Drift</b>: Simulated injecting Gaussian blur on images belonging all classes</td>
     </tr>
     <tr>
     </tr>
