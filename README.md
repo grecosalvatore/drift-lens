@@ -126,6 +126,15 @@ The paper is currently **under review**.
 
 3) Webapp tool
 ```bibtex
+@inproceedings{greco2024driftlens,
+  title={DriftLens: A Concept Drift Detection Tool},
+  author={Greco, Salvatore and Vacchetti, Bartolomeo and Apiletti, Daniele and Cerquitelli, Tania and others},
+  booktitle={Advances in Database Technology},
+  volume={27},
+  pages={806--809},
+  year={2024},
+  organization={Open proceedings}
+}
 ```
 
 # Authors
