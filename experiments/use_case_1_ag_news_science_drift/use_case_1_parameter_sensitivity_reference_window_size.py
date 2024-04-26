@@ -1,5 +1,4 @@
 import argparse
-from alibi_detect.cd import KSDrift, MMDDrift, LSDDDrift, CVMDrift, ChiSquareDrift
 from experiments.windows_manager.windows_generator import WindowsGenerator
 from driftlens.driftlens import DriftLens
 import os
@@ -154,10 +153,10 @@ def main():
 
     output_dict = {"params": vars(args)}
 
-    for reference_window_size in args.reference_window_size_percentage_list:
-        print(f"\nReference window size percentage: {reference_window_size}")
+    for current_reference_window_size_percentage in args.reference_window_size_percentage_list:
+        print(f"\nReference window size percentage: {current_reference_window_size_percentage}")
 
-        output_dict[reference_window_size] = {}
+        output_dict[current_reference_window_size_percentage] = {}
 
         driftlens_acc_dict = {str(p): [] for p in args.drift_percentage}
 
@@ -165,12 +164,15 @@ def main():
 
             print(f"\nRun {run_id + 1}/{args.number_of_runs}")
 
-            current_n_samples = int(len(Y_original_train)*reference_window_size/100)
+            current_n_samples = int(len(Y_original_train)*current_reference_window_size_percentage/100)
 
             E_subsample_train, Y_subsample_train = stratified_subsampling(E_train,
                                                                           Y_predicted_train,
                                                                           n_samples=current_n_samples,
                                                                           unique_labels=training_label_list)
+
+            print(f"current reference window percentage: {current_reference_window_size_percentage}")
+            print(f"current reference window size: {len(Y_subsample_train)}")
 
             # Initialize the WindowsGenerator - used for creating the windows
             wg = WindowsGenerator(training_label_list,
@@ -262,13 +264,13 @@ def main():
                 print("DriftLens: ", driftlens_acc)
 
                 # Create the output dictionary
-                output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "batch_n_pc":args.batch_n_pc, "DriftLens": driftlens_acc, "refence_window_size_percentage":reference_window_size}
+                output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "batch_n_pc":args.batch_n_pc, "DriftLens": driftlens_acc, "refence_window_size_percentage":current_reference_window_size_percentage}
                 output_dict_run_list.append(output_dict_run)
 
         output_dict["runs_log"] = output_dict_run_list
 
         for p in args.drift_percentage:
-            output_dict[reference_window_size][str(p)] = {"accuracy_list": {"DriftLens": driftlens_acc_dict[str(p)]},
+            output_dict[current_reference_window_size_percentage][str(p)] = {"accuracy_list": {"DriftLens": driftlens_acc_dict[str(p)]},
                                       "mean_accuracy": {"DriftLens": np.mean(driftlens_acc_dict[str(p)])},
                                       "standard_deviation_accuracy": {"DriftLens": np.std(driftlens_acc_dict[str(p)])}}
 
