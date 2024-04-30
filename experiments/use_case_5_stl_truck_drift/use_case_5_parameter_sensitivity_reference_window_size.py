@@ -103,9 +103,9 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
     # Now, selected_indices contains the indices of the stratified sample
     # Extract the corresponding elements from E
-    E_subsample = E[selected_indices]
+    E_subsample = E[selected_indices].copy()
 
-    return E_subsample, Y[selected_indices]
+    return E_subsample, Y[selected_indices].copy()
 
 
 def main():
