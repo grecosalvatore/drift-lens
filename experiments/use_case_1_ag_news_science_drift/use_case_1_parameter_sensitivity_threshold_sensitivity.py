@@ -212,9 +212,11 @@ def main():
                 print(f"\nThreshold sensitivity: {threshold_sensitivity}")
 
                 l = np.array(per_batch_distances_sorted)
-                if threshold_sensitivity != 100:
+                if threshold_sensitivity != 0:
                     # Calculate the threshold values
-                    l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
+                    left_tail = threshold_sensitivity/100
+                    right_tail = (100-threshold_sensitivity)
+                    l = l[(l > np.quantile(l, left_tail)) & (l < np.quantile(l, right_tail))].tolist()
                     per_batch_th = max(l)
                 else:
                     per_batch_th = max(l)

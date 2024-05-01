@@ -170,16 +170,15 @@ def main():
                                             per_label_n_pc=per_label_n_pc)
 
             # Estimate the threshold values with DriftLens
-            per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(
-                label_list=training_label_list,
-                E=E_test,
-                Y=Y_predicted_test,
-                batch_n_pc=args.batch_n_pc,
-                per_label_n_pc=per_label_n_pc,
-                window_size=window_size,
-                n_samples=args.threshold_number_of_estimation_samples,
-                flag_shuffle=True,
-                flag_replacement=True)
+            per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(label_list=training_label_list,
+                                                                                                             E=E_test,
+                                                                                                             Y=Y_predicted_test,
+                                                                                                             batch_n_pc=args.batch_n_pc,
+                                                                                                             per_label_n_pc=per_label_n_pc,
+                                                                                                             window_size=window_size,
+                                                                                                             n_samples=args.threshold_number_of_estimation_samples,
+                                                                                                             flag_shuffle=True,
+                                                                                                             flag_replacement=True)
 
             # Calculate the threshold values
             l = np.array(per_batch_distances_sorted)

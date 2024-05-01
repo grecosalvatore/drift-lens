@@ -8,7 +8,7 @@ python -m experiments.use_case_1_ag_news_science_drift.use_case_1_parameter_sens
   --window_size 1000 \
   --number_of_windows 100 \
   --drift_percentage 0 5 10 15 20 \
-  --threshold_sensitivity_list 100 99 95 90 75 \
+  --threshold_sensitivity_list 0 1 5 10 25 \
   --batch_n_pc 150 \
   --per_label_n_pc 75 \
   --threshold_number_of_estimation_samples 10000 \
