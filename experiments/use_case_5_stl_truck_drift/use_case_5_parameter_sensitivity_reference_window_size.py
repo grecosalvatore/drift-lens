@@ -38,31 +38,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def stratified_subsampling(E, Y, n_samples, unique_labels):
-    # Calculate samples per class
-    samples_per_class = int(n_samples / len(unique_labels))
-
-    # Placeholder for stratified sample indices
-    selected_indices = []
-
-    for label in unique_labels:
-        # Find indices where current label occurs
-        label_indices = np.where(Y == label)[0]
-
-        # If the class has fewer samples than samples_per_class, take them all
-        # Otherwise, randomly choose samples_per_class from them
-        if len(label_indices) <= samples_per_class:
-            selected_indices.extend(label_indices)
-        else:
-            selected_indices.extend(np.random.choice(label_indices, samples_per_class, replace=False))
-
-    # Now, selected_indices contains the indices of the stratified sample
-    # Extract the corresponding elements from E
-    E_subsample = E[selected_indices]
-
-    return E_subsample, Y[selected_indices]
-
-
 def load_embedding(filepath, E_name=None, Y_original_name=None, Y_predicted_name=None):
     if filepath is not None:
         with h5py.File(filepath, "r") as hf:
