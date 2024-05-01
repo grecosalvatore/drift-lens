@@ -24,7 +24,7 @@ def parse_args():
     parser.add_argument('--drift_percentage', type=int, nargs='+', default=[0, 5, 10, 15, 20]),
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
-    parser.add_argument('--threshold_sensitivity', type=int, default=99)
+    parser.add_argument('--threshold_sensitivity', type=int, default=1)
     parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
     parser.add_argument('--n_subsamples_sota', type=int, default=10000)
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/bert/train_embedding_0_1_2.hdf5")
@@ -174,7 +174,9 @@ def main():
 
         # Calculate the threshold values
         l = np.array(per_batch_distances_sorted)
-        l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
+        left_tail = args.threshold_sensitivity / 100
+        right_tail = (100 - args.threshold_sensitivity)
+        l = l[(l > np.quantile(l, left_tail)) & (l < np.quantile(l, right_tail))].tolist()
         per_batch_th = max(l)
 
         E_subsample, Y_subsample = stratified_subsampling(E_train,
