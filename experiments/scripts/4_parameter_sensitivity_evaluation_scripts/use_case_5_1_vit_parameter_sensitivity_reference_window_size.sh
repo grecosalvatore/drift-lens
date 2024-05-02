@@ -8,7 +8,7 @@ python -m experiments.use_case_5_stl_truck_drift.use_case_5_parameter_sensitivit
   --window_size 1000 \
   --number_of_windows 100 \
   --drift_percentage 0 5 10 15 20 \
-  --threshold_sensitivity 99 \
+  --threshold_sensitivity 1 \
   --batch_n_pc 150 \
   --reference_window_size_percentage_list 20 40 60 80 100 \
   --per_label_n_pc 75 \

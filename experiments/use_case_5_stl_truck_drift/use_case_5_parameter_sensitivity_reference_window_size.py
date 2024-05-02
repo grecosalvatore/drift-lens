@@ -141,10 +141,14 @@ def main():
 
             current_n_samples = int(len(Y_original_train)*current_reference_window_size_percentage/100)
 
-            E_subsample_train, Y_subsample_train = stratified_subsampling(E_train,
-                                                                          Y_predicted_train,
-                                                                          n_samples=current_n_samples,
-                                                                          unique_labels=training_label_list)
+            if current_reference_window_size_percentage != 100:
+                E_subsample_train, Y_subsample_train = stratified_subsampling(E_train,
+                                                                              Y_predicted_train,
+                                                                              n_samples=current_n_samples,
+                                                                              unique_labels=training_label_list)
+            else:
+                E_subsample_train = E_train
+                Y_subsample_train = Y_predicted_train
 
             print(f"current reference window percentage: {current_reference_window_size_percentage}")
             print(f"current reference window size: {len(Y_subsample_train)}")
@@ -180,12 +184,15 @@ def main():
                                                                                                              flag_shuffle=True,
                                                                                                              flag_replacement=True)
 
-            # Calculate the threshold values
             l = np.array(per_batch_distances_sorted)
-            l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
-            per_batch_th = max(l)
-
-
+            if args.threshold_sensitivity != 0:
+                # Calculate the threshold values
+                left_tail = args.threshold_sensitivity / 100
+                right_tail = (100 - args.threshold_sensitivity) / 100
+                l = l[(l > np.quantile(l, left_tail)) & (l < np.quantile(l, right_tail))].tolist()
+                per_batch_th = max(l)
+            else:
+                per_batch_th = max(l)
 
 
             for current_drift_percentage in args.drift_percentage:
@@ -204,20 +211,20 @@ def main():
                 # Generate windows and predict drift
                 for i in tqdm(range(n_windows)):
 
-                    if current_drift_percentage > 0:
-                        # Drift
+                    if current_drift_percentage > 0:  # Drift
                         E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_constant_drift_windows_generation(window_size=window_size,
                                                                                                                             n_windows=1,
                                                                                                                             drift_percentage=float(current_drift_percentage/100),
                                                                                                                             flag_shuffle=True,
                                                                                                                             flag_replacement=True)
 
-                    else:
-                        # No Drift
+                    else:  # No Drift
                         E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(window_size=window_size,
                                                                                                                           n_windows=1,
                                                                                                                           flag_shuffle=True,
                                                                                                                           flag_replacement=True)
+                    for w_id in range(len(E_windows)):
+                        E_windows[w_id] = np.float32(E_windows[w_id])
 
                     # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
                     dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
