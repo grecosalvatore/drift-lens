@@ -17,14 +17,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('--number_of_runs', type=int, default=1)
     parser.add_argument('--model_name', type=str, default='vit')
-    parser.add_argument('--window_size', type=int, default=2000)
+    parser.add_argument('--window_size', type=int, default=1000)
     parser.add_argument('--number_of_windows', type=int, default=10)
     parser.add_argument('--drift_percentage', type=int, nargs='+', default=[0, 5, 10, 15, 20]),
-    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
+    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=100)
     parser.add_argument('--reference_window_size_percentage_list', type=int, nargs='+', default=[20, 40, 60, 80, 100]),
     parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
-    parser.add_argument('--threshold_sensitivity', type=int, default=99)
+    parser.add_argument('--threshold_sensitivity', type=int, default=1)
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/vit/train_embedding.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/test_embedding.hdf5')
     parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/new_unseen_embedding.hdf5')
@@ -184,6 +184,8 @@ def main():
             l = np.array(per_batch_distances_sorted)
             l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
             per_batch_th = max(l)
+
+
 
 
             for current_drift_percentage in args.drift_percentage:

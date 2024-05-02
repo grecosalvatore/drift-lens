@@ -215,7 +215,7 @@ def main():
                 if threshold_sensitivity != 0:
                     # Calculate the threshold values
                     left_tail = threshold_sensitivity/100
-                    right_tail = (100-threshold_sensitivity)
+                    right_tail = (100-threshold_sensitivity)/100
                     l = l[(l > np.quantile(l, left_tail)) & (l < np.quantile(l, right_tail))].tolist()
                     per_batch_th = max(l)
                 else:
