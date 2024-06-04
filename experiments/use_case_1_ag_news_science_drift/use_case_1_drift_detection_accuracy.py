@@ -227,8 +227,6 @@ def main():
             E_subsample_ks = E_train
             Y_subsample_ks = Y_original_train
 
-        print(E_subsample_ks.shape)
-
         print(f"MMD reference window size: {E_subsample_mmd.shape[0]}")
         print(f"LSDD reference window size: {E_subsample_lsdd.shape[0]}")
         print(f"CVM reference window size: {E_subsample_cvm.shape[0]}")
