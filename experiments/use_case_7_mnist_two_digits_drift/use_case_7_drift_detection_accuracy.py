@@ -18,7 +18,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('--number_of_runs', type=int, default=1)
-    parser.add_argument('--model_name', type=str, default='wav2vec')
+    parser.add_argument('--model_name', type=str, default='vit')
     parser.add_argument('--window_size', type=int, default=1000)
     parser.add_argument('--number_of_windows', type=int, default=100)
     parser.add_argument('--drift_percentage', type=int, nargs='+', default=[0, 5, 10, 15, 20]),
@@ -31,11 +31,11 @@ def parse_args():
     parser.add_argument('--n_subsamples_cvm', type=int, default=10000)
     parser.add_argument('--n_subsamples_ks', type=int, default=10000)
     parser.add_argument('--run_driftlens', action='store_true')
-    parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/wav2vec/train_embedding.hdf5")
-    parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/wav2vec/test_embedding.hdf5')
-    parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/wav2vec/new_unseen_embedding.hdf5')
-    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/wav2vec/drift_embedding.hdf5')
-    parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/wav2vec/")
+    parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/vit/train_embedding.hdf5")
+    parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/test_embedding.hdf5')
+    parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/new_unseen_embedding.hdf5')
+    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_embedding.hdf5')
+    parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/vit/")
     parser.add_argument('--save_results', action='store_true')
     parser.add_argument('--cuda', action='store_true')
     parser.add_argument('--verbose', action='store_true')
@@ -90,7 +90,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 8")
+    print("Drift Detection Experiment - Use Case 7 - MNIST")
 
     # Parse arguments
     args = parse_args()
@@ -106,8 +106,8 @@ def main():
     print("Number of samples threshold: ", args.threshold_number_of_estimation_samples)
     print("Drift percentage: ", args.drift_percentage)
 
-    training_label_list = [0, 1]  # Labels used for training
-    drift_label_list = [2]  # Labels used for drift simulation
+    training_label_list = [0, 1, 2, 3, 4, 5, 6, 7]  # Labels used for training
+    drift_label_list = [8]  # Labels used for drift simulation
 
     if args.save_results:
         if not os.path.exists(args.output_dir):
@@ -123,15 +123,23 @@ def main():
     n_windows = args.number_of_windows
 
     # Load the embeddings
-    E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
-    E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
-    E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
-    E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
+    if args.model_name == "vgg16":
+        E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+    else:
+        E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
+        E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
+        E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
+        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
 
     print("Training samples:", len(E_train))
     print("Test samples:", len(E_test))
     print("New unseen samples:", len(E_new_unseen))
     print("Drift samples:", len(E_drift))
+
+    print(set(Y_original_drift))
 
     ks_acc_dict = {str(p): [] for p in args.drift_percentage}
     mmd_acc_dict = {str(p): [] for p in args.drift_percentage}
@@ -156,7 +164,6 @@ def main():
                               E_drift,
                               Y_predicted_drift,
                               Y_original_drift)
-
 
         if args.run_driftlens:
             # Initialize the DriftLens
@@ -307,7 +314,6 @@ def main():
             mmd_acc = accuracy_score(ground_truth, mmd_preds, normalize=True)
             lsdd_acc = accuracy_score(ground_truth, lsdd_preds, normalize=True)
             cvm_acc = accuracy_score(ground_truth, cvm_preds, normalize=True)
-
             if args.run_driftlens:
                 driftlens_acc = accuracy_score(ground_truth, dl_preds, normalize=True)
             else:
@@ -349,22 +355,18 @@ def main():
             mean_accuracy_drift_list_cvm.append(output_dict[str(p)]["mean_accuracy"]["CVM"])
             mean_accuracy_drift_list_driftlens.append(output_dict[str(p)]["mean_accuracy"]["DriftLens"])
 
-    hdd_mmd = statistics.harmonic_mean(
-        [output_dict['0']["mean_accuracy"]["MMD"], np.mean(mean_accuracy_drift_list_mmd)])
-    hdd_ks = statistics.harmonic_mean(
-        [output_dict['0']["mean_accuracy"]["KS"], np.mean(mean_accuracy_drift_list_ks)])
-    hdd_lsdd = statistics.harmonic_mean(
-        [output_dict['0']["mean_accuracy"]["LSDD"], np.mean(mean_accuracy_drift_list_lsdd)])
-    hdd_cvm = statistics.harmonic_mean(
-        [output_dict['0']["mean_accuracy"]["CVM"], np.mean(mean_accuracy_drift_list_cvm)])
+    hdd_mmd = statistics.harmonic_mean([output_dict['0']["mean_accuracy"]["MMD"], np.mean(mean_accuracy_drift_list_mmd)])
+    hdd_ks = statistics.harmonic_mean([output_dict['0']["mean_accuracy"]["KS"], np.mean(mean_accuracy_drift_list_ks)])
+    hdd_lsdd = statistics.harmonic_mean([output_dict['0']["mean_accuracy"]["LSDD"], np.mean(mean_accuracy_drift_list_lsdd)])
+    hdd_cvm = statistics.harmonic_mean([output_dict['0']["mean_accuracy"]["CVM"], np.mean(mean_accuracy_drift_list_cvm)])
     if args.run_driftlens:
         hdd_driftlens = statistics.harmonic_mean(
             [output_dict['0']["mean_accuracy"]["DriftLens"], np.mean(mean_accuracy_drift_list_driftlens)])
     else:
         hdd_driftlens = -1
 
-    output_dict["HDD"] = {"MMD": hdd_mmd, "KS": hdd_ks, "LSDD": hdd_lsdd, "CVM": hdd_cvm,
-                          "DriftLens": hdd_driftlens}
+
+    output_dict["HDD"] = {"MMD": hdd_mmd, "KS": hdd_ks, "LSDD": hdd_lsdd, "CVM": hdd_cvm, "DriftLens": hdd_driftlens}
     # Save the output dictionary
     with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
         json.dump(output_dict, fp)
