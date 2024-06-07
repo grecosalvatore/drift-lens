@@ -5,7 +5,7 @@ cd ../../..
 python -m experiments.use_case_7_mnist_two_digits_drift.use_case_7_drift_detection_accuracy \
   --number_of_runs 5 \
   --model_name 'vit' \
-  --window_size 1000 \
+  --window_size 500 \
   --number_of_windows 100 \
   --drift_percentage 0 5 10 15 20 \
   --threshold_sensitivity 99 \
