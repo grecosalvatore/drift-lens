@@ -124,10 +124,20 @@ def main():
 
     # Load the embeddings
     if args.model_name == "vgg16":
-        E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
-        E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
-        E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
-        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        #E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath, E_name="E", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        #E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath, E_name="E", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        #E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath, E_name="E", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        #E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath, E_name="E", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
+        E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
+        E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
+        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
+
+        E_train = E_train.reshape(E_train.shape[0], -1)
+        E_test = E_test.reshape(E_test.shape[0], -1)
+        E_new_unseen = E_new_unseen.reshape(E_new_unseen.shape[0], -1)
+        E_drift = E_drift.reshape(E_drift.shape[0], -1)
+
     else:
         E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
         E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
@@ -140,6 +150,7 @@ def main():
     print("Drift samples:", len(E_drift))
 
     print(set(Y_original_drift))
+
 
     ks_acc_dict = {str(p): [] for p in args.drift_percentage}
     mmd_acc_dict = {str(p): [] for p in args.drift_percentage}
