@@ -13,7 +13,7 @@ import time
 import torch
 import statistics
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
@@ -138,6 +138,8 @@ def main():
     E_test = E_test.reshape(E_test.shape[0], -1)
     E_new_unseen = E_new_unseen.reshape(E_new_unseen.shape[0], -1)
     E_drift = E_drift.reshape(E_drift.shape[0], -1)
+
+    print("Input shape", E_train.shape)
 
     print("Training samples:", len(E_train))
     print("Test samples:", len(E_test))

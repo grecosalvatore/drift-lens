@@ -12,7 +12,10 @@ python -m experiments.use_case_5_stl_truck_drift.use_case_5_drift_conv_detection
   --threshold_number_of_estimation_samples 10000 \
   --batch_n_p 150 \
   --per_label_n_pc 25 \
-  --n_subsamples_sota 5000 \
+  --n_subsamples_mmd 8500 \
+  --n_subsamples_lsdd 14000 \
+  --n_subsamples_cvm -1 \
+  --n_subsamples_ks -1 \
   --train_embedding_filepath 'experiments/use_case_5_stl_truck_drift/static/saved_embeddings/vgg16/train_embedding_conv.hdf5' \
   --test_embedding_filepath 'experiments/use_case_5_stl_truck_drift/static/saved_embeddings/vgg16/test_embedding_conv.hdf5' \
   --new_unseen_embedding_filepath 'experiments/use_case_5_stl_truck_drift/static/saved_embeddings/vgg16/new_unseen_embedding_conv.hdf5' \
