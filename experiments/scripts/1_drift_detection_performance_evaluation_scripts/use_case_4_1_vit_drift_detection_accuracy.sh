@@ -3,9 +3,9 @@ cd ../../..
 
 
 python -m experiments.use_case_4_intel_image_sea_drift.use_case_4_drift_detection_accuracy \
-  --number_of_runs 10 \
+  --number_of_runs 5 \
   --model_name 'vit' \
-  --window_size 250 \
+  --window_size 500 \
   --number_of_windows 100 \
   --drift_percentage 0 5 10 15 20 \
   --threshold_sensitivity 99 \
