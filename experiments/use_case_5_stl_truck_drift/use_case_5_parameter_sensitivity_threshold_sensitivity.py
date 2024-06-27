@@ -106,7 +106,7 @@ def main():
             os.makedirs(args.output_dir)
         ts = time.time()
         timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
-        output_filename = f"parameter_sensitivity_threshold_sensitivity_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
+        output_filename = f"parameter_sensitivity_number_of_threshold_sensitivity_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
 
     # Parse parameters
     window_size = args.window_size
@@ -132,7 +132,6 @@ def main():
         output_dict[str(threshold_sensitivity)] = {str(p): {} for p in args.drift_percentage}
         for p in args.drift_percentage:
             output_dict[str(threshold_sensitivity)][str(p)]["accuracy_list"] = []
-
 
     for run_id in range(args.number_of_runs):
 
@@ -214,13 +213,12 @@ def main():
                 l = np.array(per_batch_distances_sorted)
                 if threshold_sensitivity != 0:
                     # Calculate the threshold values
-                    left_tail = threshold_sensitivity/100
-                    right_tail = (100-threshold_sensitivity)/100
+                    left_tail = threshold_sensitivity / 100
+                    right_tail = (100 - threshold_sensitivity) / 100
                     l = l[(l > np.quantile(l, left_tail)) & (l < np.quantile(l, right_tail))].tolist()
                     per_batch_th = max(l)
                 else:
                     per_batch_th = max(l)
-
 
                 dl_preds = []
                 for dl_distance in dl_distances:
@@ -232,19 +230,22 @@ def main():
                 # Calculate the accuracy of the drift detectors
                 driftlens_acc = accuracy_score(ground_truth, dl_preds, normalize=True)
 
-                output_dict[str(threshold_sensitivity)][str(current_drift_percentage)]["accuracy_list"].append(driftlens_acc)
+                output_dict[str(threshold_sensitivity)][str(current_drift_percentage)]["accuracy_list"].append(
+                    driftlens_acc)
 
                 # Create the output dictionary
-                output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "threshold_sensitivity":threshold_sensitivity, "DriftLens": driftlens_acc}
+                output_dict_run = {f"run_id": run_id, "drift_percentage": current_drift_percentage,
+                                   "threshold_sensitivity": threshold_sensitivity, "DriftLens": driftlens_acc}
                 output_dict_run_list.append(output_dict_run)
 
         output_dict["runs_log"] = output_dict_run_list
 
         for threshold_sensitivity in args.threshold_sensitivity_list:
             for p in args.drift_percentage:
-                output_dict[str(threshold_sensitivity)][str(p)]["mean_accuracy"] = np.mean(output_dict[str(threshold_sensitivity)][str(p)]["accuracy_list"])
-                output_dict[str(threshold_sensitivity)][str(p)]["standard_deviation_accuracy"] = np.std(output_dict[str(threshold_sensitivity)][str(p)]["accuracy_list"])
-
+                output_dict[str(threshold_sensitivity)][str(p)]["mean_accuracy"] = np.mean(
+                    output_dict[str(threshold_sensitivity)][str(p)]["accuracy_list"])
+                output_dict[str(threshold_sensitivity)][str(p)]["standard_deviation_accuracy"] = np.std(
+                    output_dict[str(threshold_sensitivity)][str(p)]["accuracy_list"])
 
         # Save the output dictionary
         with open(os.path.join(args.output_dir, output_filename), 'w') as fp:

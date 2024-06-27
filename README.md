@@ -106,12 +106,20 @@ Instructions and scripts for the experimental evaluation reproducibility are loc
 If you use the DriftLens, please cite the following papers:
 
 1) DriftLens methodology and evaluation
-The paper is currently **under review**.
+The paper is currently **under review**. The pre-print is available at:
 ```bibtex
-Under Review
+@misc{greco2024unsupervisedconceptdriftdetection,
+      title={Unsupervised Concept Drift Detection from Deep Learning Representations in Real-time}, 
+      author={Salvatore Greco and Bartolomeo Vacchetti and Daniele Apiletti and Tania Cerquitelli},
+      year={2024},
+      eprint={2406.17813},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2406.17813}, 
+}
 ```
 
-2) Preliminary idea
+2) Preliminary idea and evaluation
 ```bibtex
 @INPROCEEDINGS{driftlens,
   author={Greco, Salvatore and Cerquitelli, Tania},
