@@ -13,7 +13,7 @@ import time
 import torch
 import statistics
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
@@ -237,8 +237,8 @@ def main():
 
         # Initialize drift detectors used for comparison
         ks_detector = KSDrift(E_subsample_ks, p_val=.05)
-        mmd_detector = MMDDrift(E_subsample_mmd, p_val=.05, n_permutations=100, backend="pytorch")
-        lsdd_detector = LSDDDrift(E_subsample_lsdd, backend='pytorch', p_val=.05)
+        mmd_detector = MMDDrift(E_subsample_mmd, p_val=.05, n_permutations=100, backend="pytorch", device=device)
+        lsdd_detector = LSDDDrift(E_subsample_lsdd, backend='pytorch', p_val=.05 , device=device)
         cvm_detector = CVMDrift(E_subsample_cvm, p_val=.05)
 
         for current_drift_percentage in args.drift_percentage:
