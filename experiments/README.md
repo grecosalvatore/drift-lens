@@ -142,16 +142,16 @@ To facilitate and speed up the reproducibility, the embedding representations al
       <th rowspan=2">Image</th>
       <th rowspan="2">Intel-Image</th>
       <th>5.1</th>
-      <td>VGG16</td>
-      <td>0.89</td>
+      <td>VisionTransformer</td>
+      <td>0.90</td>
       <td rowspan="2"> <b>Task</b>: Image Classification. <BR>
 <b>Training Labels</b>: <i>Forest</i>, <i>Glacier</i>, <i>Mountain</i>, <i>Building</i>, <i>Street</i> <BR>
 <b>Drift</b>: Simulated with one new class label: <i>Sea</i></td>
     </tr>
     <tr>
       <th>5.2</th>
-      <td>VisionTransformer</td>
-      <td>0.90</td>
+      <td>VGG16</td>
+      <td>0.89</td>
     </tr>
     <tr class="separator">
       <td></td>
@@ -165,16 +165,16 @@ To facilitate and speed up the reproducibility, the embedding representations al
       <th rowspan="2">Image</th>
       <th rowspan="2">STL-10</th>
       <th>6.1</th>
-      <td>VGG16</td>
-      <td>0.82</td>
+      <td>VisionTransformer</td>
+      <td>0.96</td>
       <td rowspan="2"> <b>Task</b>: Image Classification. <BR>
 <b>Training Labels</b>: <i>Airplane</i>, <i>Bird</i>, <i>Car</i>, <i>Cat</i>, <i>Deer</i>, <i>Dog</i>, <i>Horse</i>, <i>Monkey</i>, <i>Ship</i> <BR>
 <b>Drift</b>: Simulated with one new class label: <i>Truck</i></td>
     </tr>
     <tr>
       <th>6.2</th>
-      <td>VisionTransformer</td>
-      <td>0.96</td>
+      <td>VGG16</td>
+      <td>0.82</td>
     </tr>
     <tr class="separator">
       <td></td>
@@ -188,7 +188,7 @@ To facilitate and speed up the reproducibility, the embedding representations al
       <th rowspan="3">Image</th>
       <th rowspan="3">STL-10</th>
       <th rowspan="3">7</th>
-      <td rowspan="3">VisualTransformer</td>
+      <td rowspan="3">VisionTransformer</td>
       <td rowspan="3">0.90</td>
       <td rowspan="3"><b>Task</b>: Image Classification. <BR>
     <b>Training Labels</b>: <i>Airplane</i>, <i>Bird</i>, <i>Car</i>, <i>Cat</i>, <i>Deer</i>, <i>Dog</i>, <i>Horse</i>, <i>Monkey</i>, <i>Ship</i>, <i>Truck</i> <BR>

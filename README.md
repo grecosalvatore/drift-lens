@@ -119,7 +119,7 @@ The paper is currently **under review**. The pre-print is available at:
 }
 ```
 
-2) Preliminary idea and evaluation
+2) Preliminary idea 
 ```bibtex
 @INPROCEEDINGS{driftlens,
   author={Greco, Salvatore and Cerquitelli, Tania},
