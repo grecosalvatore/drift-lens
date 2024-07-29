@@ -21,9 +21,8 @@ def parse_args():
     parser.add_argument('--window_size', type=int, default=2000)
     parser.add_argument('--number_of_windows', type=int, default=10)
     parser.add_argument('--drift_percentage', type=int, nargs='+', default=[0, 5, 10, 15, 20]),
-    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
-    parser.add_argument('--batch_n_pc_list', type=int, nargs='+', default=[50, 100, 150, 200, 250]),
-    #parser.add_argument('--batch_n_pc', type=int, default=150)
+    parser.add_argument('--threshold_number_of_estimation_samples_list', type=int, nargs='+', default=[1000, 5000, 10000, 15000, 25000]),
+    parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/vit/train_embedding.hdf5")
@@ -85,7 +84,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 1")
+    print("Drift Detection Experiment - Use Case 6")
 
     # Parse arguments
     args = parse_args()
@@ -94,8 +93,7 @@ def main():
     print("Number of runs: ", args.number_of_runs)
     print("Window size: ", args.window_size)
     print("Number of windows: ", args.number_of_windows)
-    print("Number of principal componenets sampling: ", args.batch_n_pc_list)
-    print("Number of threshold samples: ", args.threshold_number_of_estimation_samples)
+    print("Number of th sampling: ", args.threshold_number_of_estimation_samples_list)
     print("Drift percentage: ", args.drift_percentage)
 
     training_label_list = [0, 1, 2, 3, 4, 5, 6, 7, 8]  # Labels used for training
@@ -106,10 +104,11 @@ def main():
             os.makedirs(args.output_dir)
         ts = time.time()
         timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
-        output_filename = f"parameter_sensitivity_number_of_principal_components_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
+        output_filename = f"parameter_sensitivity_number_of_th_sampling_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
 
     # Parse parameters
     window_size = args.window_size
+    batch_n_pc = args.batch_n_pc
     per_label_n_pc = args.per_label_n_pc
     n_windows = args.number_of_windows
 
@@ -118,6 +117,7 @@ def main():
     E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
     E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
     E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
+
 
     print("Training samples:", len(E_train))
     print("Test samples:", len(E_test))
@@ -128,10 +128,10 @@ def main():
 
     output_dict = {"params": vars(args)}
 
-    for batch_n_pc in args.batch_n_pc_list:
-        print(f"\nBatch Number of principal components: {batch_n_pc}")
+    for threshold_number_of_estimation_samples in args.threshold_number_of_estimation_samples_list:
+        print(f"\nThreshold number of estimation samples: {threshold_number_of_estimation_samples}")
 
-        output_dict[batch_n_pc] = {}
+        output_dict[threshold_number_of_estimation_samples] = {}
 
         driftlens_acc_dict = {str(p): [] for p in args.drift_percentage}
 
@@ -167,7 +167,7 @@ def main():
                 batch_n_pc=batch_n_pc,
                 per_label_n_pc=per_label_n_pc,
                 window_size=window_size,
-                n_samples=args.threshold_number_of_estimation_samples,
+                n_samples=threshold_number_of_estimation_samples,
                 flag_shuffle=True,
                 flag_replacement=True)
 
@@ -229,13 +229,13 @@ def main():
                 print("DriftLens: ", driftlens_acc)
 
                 # Create the output dictionary
-                output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "batch_n_pc":batch_n_pc, "DriftLens": driftlens_acc}
+                output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "number_of_th_sampling":threshold_number_of_estimation_samples, "DriftLens": driftlens_acc}
                 output_dict_run_list.append(output_dict_run)
 
         output_dict["runs_log"] = output_dict_run_list
 
         for p in args.drift_percentage:
-            output_dict[batch_n_pc][str(p)] = {"accuracy_list": {"DriftLens": driftlens_acc_dict[str(p)]},
+            output_dict[threshold_number_of_estimation_samples][str(p)] = {"accuracy_list": {"DriftLens": driftlens_acc_dict[str(p)]},
                                       "mean_accuracy": {"DriftLens": np.mean(driftlens_acc_dict[str(p)])},
                                       "standard_deviation_accuracy": {"DriftLens": np.std(driftlens_acc_dict[str(p)])}}
 

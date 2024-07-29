@@ -90,7 +90,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 4")
+    print("Drift Detection Experiment - Use Case 5")
 
     # Parse arguments
     args = parse_args()
@@ -133,6 +133,13 @@ def main():
         E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
         E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
         E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
+
+    E_train = E_train.reshape(E_train.shape[0], -1)
+    E_test = E_test.reshape(E_test.shape[0], -1)
+    E_new_unseen = E_new_unseen.reshape(E_new_unseen.shape[0], -1)
+    E_drift = E_drift.reshape(E_drift.shape[0], -1)
+
+    print("Input shape", E_train.shape)
 
     print("Training samples:", len(E_train))
     print("Test samples:", len(E_test))
@@ -190,6 +197,7 @@ def main():
             l = np.array(per_batch_distances_sorted)
             l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
             per_batch_th = max(l)
+
         else:
             print("DriftLens skipped")
 
@@ -237,8 +245,8 @@ def main():
 
         # Initialize drift detectors used for comparison
         ks_detector = KSDrift(E_subsample_ks, p_val=.05)
-        mmd_detector = MMDDrift(E_subsample_mmd, p_val=.05, n_permutations=100, backend="pytorch")
-        lsdd_detector = LSDDDrift(E_subsample_lsdd, backend='pytorch', p_val=.05)
+        mmd_detector = MMDDrift(E_subsample_mmd, p_val=.05, n_permutations=100, backend="pytorch", device=device)
+        lsdd_detector = LSDDDrift(E_subsample_lsdd, backend='pytorch', p_val=.05, device=device)
         cvm_detector = CVMDrift(E_subsample_cvm, p_val=.05)
 
         for current_drift_percentage in args.drift_percentage:
@@ -353,18 +361,22 @@ def main():
             mean_accuracy_drift_list_cvm.append(output_dict[str(p)]["mean_accuracy"]["CVM"])
             mean_accuracy_drift_list_driftlens.append(output_dict[str(p)]["mean_accuracy"]["DriftLens"])
 
-    hdd_mmd = statistics.harmonic_mean([output_dict['0']["mean_accuracy"]["MMD"], np.mean(mean_accuracy_drift_list_mmd)])
-    hdd_ks = statistics.harmonic_mean([output_dict['0']["mean_accuracy"]["KS"], np.mean(mean_accuracy_drift_list_ks)])
-    hdd_lsdd = statistics.harmonic_mean([output_dict['0']["mean_accuracy"]["LSDD"], np.mean(mean_accuracy_drift_list_lsdd)])
-    hdd_cvm = statistics.harmonic_mean([output_dict['0']["mean_accuracy"]["CVM"], np.mean(mean_accuracy_drift_list_cvm)])
+    hdd_mmd = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["MMD"], np.mean(mean_accuracy_drift_list_mmd)])
+    hdd_ks = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["KS"], np.mean(mean_accuracy_drift_list_ks)])
+    hdd_lsdd = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["LSDD"], np.mean(mean_accuracy_drift_list_lsdd)])
+    hdd_cvm = statistics.harmonic_mean(
+        [output_dict['0']["mean_accuracy"]["CVM"], np.mean(mean_accuracy_drift_list_cvm)])
     if args.run_driftlens:
         hdd_driftlens = statistics.harmonic_mean(
             [output_dict['0']["mean_accuracy"]["DriftLens"], np.mean(mean_accuracy_drift_list_driftlens)])
     else:
         hdd_driftlens = -1
 
-
-    output_dict["HDD"] = {"MMD": hdd_mmd, "KS": hdd_ks, "LSDD": hdd_lsdd, "CVM": hdd_cvm, "DriftLens": hdd_driftlens}
+    output_dict["HDD"] = {"MMD": hdd_mmd, "KS": hdd_ks, "LSDD": hdd_lsdd, "CVM": hdd_cvm,
+                          "DriftLens": hdd_driftlens}
     # Save the output dictionary
     with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
         json.dump(output_dict, fp)

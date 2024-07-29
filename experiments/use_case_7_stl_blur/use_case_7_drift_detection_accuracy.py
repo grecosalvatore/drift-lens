@@ -20,12 +20,12 @@ def parse_args():
     parser.add_argument('--number_of_runs', type=int, default=1)
     parser.add_argument('--model_name', type=str, default='vit')
     parser.add_argument('--window_size', type=int, default=1000)
-    parser.add_argument('--number_of_windows', type=int, default=100)
+    parser.add_argument('--number_of_windows', type=int, default=10)
     parser.add_argument('--drift_percentage', type=int, nargs='+', default=[0, 5, 10, 15, 20]),
     parser.add_argument('--batch_n_pc', type=int, default=150)
-    parser.add_argument('--per_label_n_pc', type=int, default=75)
+    parser.add_argument('--per_label_n_pc', type=int, default=25)
     parser.add_argument('--threshold_sensitivity', type=int, default=99)
-    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
+    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10)
     parser.add_argument('--n_subsamples_mmd', type=int, default=10000)
     parser.add_argument('--n_subsamples_lsdd', type=int, default=10000)
     parser.add_argument('--n_subsamples_cvm', type=int, default=10000)
@@ -34,7 +34,10 @@ def parse_args():
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/vit/train_embedding.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/test_embedding.hdf5')
     parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/new_unseen_embedding.hdf5')
-    parser.add_argument('--drift_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_embedding.hdf5')
+    parser.add_argument('--drift_5_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_5_embedding_radius2.hdf5')
+    parser.add_argument('--drift_10_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_10_embedding_radius2.hdf5')
+    parser.add_argument('--drift_15_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_15_embedding_radius2.hdf5')
+    parser.add_argument('--drift_20_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/drift_20_embedding_radius2.hdf5')
     parser.add_argument('--output_dir', type=str, default=f"{os.getcwd()}/static/outputs/vit/")
     parser.add_argument('--save_results', action='store_true')
     parser.add_argument('--cuda', action='store_true')
@@ -90,7 +93,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 5")
+    print("Drift Detection Experiment - Use Case 7")
 
     # Parse arguments
     args = parse_args()
@@ -106,15 +109,15 @@ def main():
     print("Number of samples threshold: ", args.threshold_number_of_estimation_samples)
     print("Drift percentage: ", args.drift_percentage)
 
-    training_label_list = [0, 1, 2, 3, 4, 5, 6, 7, 8]  # Labels used for training
-    drift_label_list = [9]  # Labels used for drift simulation
+    training_label_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # Labels used for training
+    drift_label_list = training_label_list  # Labels used for drift simulation
 
     if args.save_results:
         if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)
         ts = time.time()
         timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
-        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
+        output_filename = f"drift_detection_accuracy_model_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_radius2_{timestamp}.json"
 
     # Parse parameters
     window_size = args.window_size
@@ -132,12 +135,19 @@ def main():
         E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
         E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
         E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
-        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
+        E_drift_5, Y_original_drift_5, Y_predicted_drift_5 = load_embedding(args.drift_5_embedding_filepath)
+        E_drift_10, Y_original_drift_10, Y_predicted_drift_10 = load_embedding(args.drift_10_embedding_filepath)
+        E_drift_15, Y_original_drift_15, Y_predicted_drift_15 = load_embedding(args.drift_15_embedding_filepath)
+        E_drift_20, Y_original_drift_20, Y_predicted_drift_20 = load_embedding(args.drift_20_embedding_filepath)
+
 
     print("Training samples:", len(E_train))
     print("Test samples:", len(E_test))
     print("New unseen samples:", len(E_new_unseen))
-    print("Drift samples:", len(E_drift))
+    print("Drift samples 5%:", len(E_drift_5))
+    print("Drift samples 10%:", len(E_drift_10))
+    print("Drift samples 15%:", len(E_drift_15))
+    print("Drift samples 20%:", len(E_drift_20))
 
     ks_acc_dict = {str(p): [] for p in args.drift_percentage}
     mmd_acc_dict = {str(p): [] for p in args.drift_percentage}
@@ -153,16 +163,6 @@ def main():
 
         print(f"\nRun {run_id + 1}/{args.number_of_runs}")
 
-        # Initialize the WindowsGenerator - used for creating the windows
-        wg = WindowsGenerator(training_label_list,
-                              drift_label_list,
-                              E_new_unseen,
-                              Y_predicted_new_unseen,
-                              Y_original_new_unseen,
-                              E_drift,
-                              Y_predicted_drift,
-                              Y_original_drift)
-
         if args.run_driftlens:
             # Initialize the DriftLens
             dl = DriftLens()
@@ -173,6 +173,8 @@ def main():
                                             label_list=training_label_list,
                                             batch_n_pc=batch_n_pc,
                                             per_label_n_pc=per_label_n_pc)
+
+
 
             # Estimate the threshold values with DriftLens
             per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(
@@ -196,36 +198,36 @@ def main():
         if (args.n_subsamples_mmd < len(E_train)) and (args.n_subsamples_mmd != -1):
 
             E_subsample_mmd, Y_subsample_mmd = stratified_subsampling(E_train,
-                                                              Y_original_train,
-                                                              n_samples=args.n_subsamples_mmd,
-                                                              unique_labels=training_label_list)
+                                                                      Y_original_train,
+                                                                      n_samples=args.n_subsamples_mmd,
+                                                                      unique_labels=training_label_list)
         else:
             E_subsample_mmd, Y_subsample_mmd = (E_train, Y_original_train)
 
         if (args.n_subsamples_lsdd < len(E_train)) and (args.n_subsamples_lsdd != -1):
 
             E_subsample_lsdd, Y_subsample_lsdd = stratified_subsampling(E_train,
-                                                              Y_original_train,
-                                                              n_samples=args.n_subsamples_lsdd,
-                                                              unique_labels=training_label_list)
+                                                                        Y_original_train,
+                                                                        n_samples=args.n_subsamples_lsdd,
+                                                                        unique_labels=training_label_list)
         else:
             E_subsample_lsdd, Y_subsample_lsdd = (E_train, Y_original_train)
 
         if (args.n_subsamples_cvm < len(E_train)) and (args.n_subsamples_cvm != -1):
 
             E_subsample_cvm, Y_subsample_cvm = stratified_subsampling(E_train,
-                                                              Y_original_train,
-                                                              n_samples=args.n_subsamples_cvm,
-                                                              unique_labels=training_label_list)
+                                                                      Y_original_train,
+                                                                      n_samples=args.n_subsamples_cvm,
+                                                                      unique_labels=training_label_list)
         else:
             E_subsample_cvm, Y_subsample_cvm = (E_train, Y_original_train)
 
         if (args.n_subsamples_ks < len(E_train)) and (args.n_subsamples_ks != -1):
 
             E_subsample_ks, Y_subsample_ks = stratified_subsampling(E_train,
-                                                              Y_original_train,
-                                                              n_samples=args.n_subsamples_ks,
-                                                              unique_labels=training_label_list)
+                                                                    Y_original_train,
+                                                                    n_samples=args.n_subsamples_ks,
+                                                                    unique_labels=training_label_list)
         else:
             E_subsample_ks = E_train
             Y_subsample_ks = Y_original_train
@@ -238,7 +240,7 @@ def main():
         # Initialize drift detectors used for comparison
         ks_detector = KSDrift(E_subsample_ks, p_val=.05)
         mmd_detector = MMDDrift(E_subsample_mmd, p_val=.05, n_permutations=100, backend="pytorch", device=device)
-        lsdd_detector = LSDDDrift(E_subsample_lsdd, backend='pytorch', p_val=.05 , device=device)
+        lsdd_detector = LSDDDrift(E_subsample_lsdd, backend='pytorch', p_val=.05, device=device)
         cvm_detector = CVMDrift(E_subsample_cvm, p_val=.05)
 
         for current_drift_percentage in args.drift_percentage:
@@ -262,14 +264,52 @@ def main():
             for i in tqdm(range(n_windows)):
 
                 if current_drift_percentage > 0:
+
+                    if current_drift_percentage == 5:
+                        E_current_drift = E_drift_5
+                        Y_predicted_current_dirft = Y_predicted_drift_5
+                        Y_original_current_dirft = Y_original_drift_5
+                    elif current_drift_percentage == 10:
+                        E_current_drift = E_drift_10
+                        Y_predicted_current_dirft = Y_predicted_drift_10
+                        Y_original_current_dirft = Y_original_drift_10
+                    elif current_drift_percentage == 15:
+                        E_current_drift = E_drift_15
+                        Y_predicted_current_dirft = Y_predicted_drift_15
+                        Y_original_current_dirft = Y_original_drift_15
+                    else:
+                        E_current_drift = E_drift_20
+                        Y_predicted_current_dirft = Y_predicted_drift_20
+                        Y_original_current_dirft = Y_original_drift_20
+
+
+                    # Initialize the WindowsGenerator - used for creating the windows
+                    wg = WindowsGenerator(training_label_list,
+                                          drift_label_list,
+                                          E_current_drift,
+                                          Y_predicted_current_dirft,
+                                          Y_original_current_dirft,
+                                          None,
+                                          None,
+                                          None)
+
                     # Drift
-                    E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_constant_drift_windows_generation(window_size=window_size,
-                                                                                                                        n_windows=1,
-                                                                                                                        drift_percentage=float(current_drift_percentage/100),
-                                                                                                                        flag_shuffle=True,
-                                                                                                                        flag_replacement=True)
+                    E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(window_size=window_size,
+                                                                                                                      n_windows=1,
+                                                                                                                      flag_shuffle=True,
+                                                                                                                      flag_replacement=True)
 
                 else:
+                    # Initialize the WindowsGenerator - used for creating the windows
+                    wg = WindowsGenerator(training_label_list,
+                                          drift_label_list,
+                                          E_new_unseen,
+                                          Y_predicted_new_unseen,
+                                          Y_original_new_unseen,
+                                          None,
+                                          None,
+                                          None)
+
                     # No Drift
                     E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(window_size=window_size,
                                                                                                                       n_windows=1,
@@ -297,7 +337,6 @@ def main():
 
                 if args.run_driftlens:
                     dl_distances.append(dl_distance)
-
 
             if args.run_driftlens:
                 dl_preds = []
@@ -362,7 +401,6 @@ def main():
             [output_dict['0']["mean_accuracy"]["DriftLens"], np.mean(mean_accuracy_drift_list_driftlens)])
     else:
         hdd_driftlens = -1
-
 
     output_dict["HDD"] = {"MMD": hdd_mmd, "KS": hdd_ks, "LSDD": hdd_lsdd, "CVM": hdd_cvm, "DriftLens": hdd_driftlens}
     # Save the output dictionary

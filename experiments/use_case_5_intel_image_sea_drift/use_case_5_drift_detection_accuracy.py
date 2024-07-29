@@ -90,7 +90,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 7 - MNIST")
+    print("Drift Detection Experiment - Use Case 5")
 
     # Parse arguments
     args = parse_args()
@@ -106,8 +106,8 @@ def main():
     print("Number of samples threshold: ", args.threshold_number_of_estimation_samples)
     print("Drift percentage: ", args.drift_percentage)
 
-    training_label_list = [0, 1, 2, 3, 4, 5, 6, 7]  # Labels used for training
-    drift_label_list = [8]  # Labels used for drift simulation
+    training_label_list = [0, 1, 2, 3, 4]  # Labels used for training
+    drift_label_list = [5]  # Labels used for drift simulation
 
     if args.save_results:
         if not os.path.exists(args.output_dir):
@@ -124,20 +124,10 @@ def main():
 
     # Load the embeddings
     if args.model_name == "vgg16":
-        #E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath, E_name="E", Y_original_name="original_label", Y_predicted_name="predicted_label")
-        #E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath, E_name="E", Y_original_name="original_label", Y_predicted_name="predicted_label")
-        #E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath, E_name="E", Y_original_name="original_label", Y_predicted_name="predicted_label")
-        #E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath, E_name="E", Y_original_name="original_label", Y_predicted_name="predicted_label")
-        E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
-        E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
-        E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
-        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
-
-        E_train = E_train.reshape(E_train.shape[0], -1)
-        E_test = E_test.reshape(E_test.shape[0], -1)
-        E_new_unseen = E_new_unseen.reshape(E_new_unseen.shape[0], -1)
-        E_drift = E_drift.reshape(E_drift.shape[0], -1)
-
+        E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
+        E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath, E_name="embedding", Y_original_name="original_label", Y_predicted_name="predicted_label")
     else:
         E_train, Y_original_train, Y_predicted_train = load_embedding(args.train_embedding_filepath)
         E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
@@ -148,9 +138,6 @@ def main():
     print("Test samples:", len(E_test))
     print("New unseen samples:", len(E_new_unseen))
     print("Drift samples:", len(E_drift))
-
-    print(set(Y_original_drift))
-
 
     ks_acc_dict = {str(p): [] for p in args.drift_percentage}
     mmd_acc_dict = {str(p): [] for p in args.drift_percentage}
@@ -209,36 +196,36 @@ def main():
         if (args.n_subsamples_mmd < len(E_train)) and (args.n_subsamples_mmd != -1):
 
             E_subsample_mmd, Y_subsample_mmd = stratified_subsampling(E_train,
-                                                              Y_original_train,
-                                                              n_samples=args.n_subsamples_mmd,
-                                                              unique_labels=training_label_list)
+                                                                      Y_original_train,
+                                                                      n_samples=args.n_subsamples_mmd,
+                                                                      unique_labels=training_label_list)
         else:
             E_subsample_mmd, Y_subsample_mmd = (E_train, Y_original_train)
 
         if (args.n_subsamples_lsdd < len(E_train)) and (args.n_subsamples_lsdd != -1):
 
             E_subsample_lsdd, Y_subsample_lsdd = stratified_subsampling(E_train,
-                                                              Y_original_train,
-                                                              n_samples=args.n_subsamples_lsdd,
-                                                              unique_labels=training_label_list)
+                                                                        Y_original_train,
+                                                                        n_samples=args.n_subsamples_lsdd,
+                                                                        unique_labels=training_label_list)
         else:
             E_subsample_lsdd, Y_subsample_lsdd = (E_train, Y_original_train)
 
         if (args.n_subsamples_cvm < len(E_train)) and (args.n_subsamples_cvm != -1):
 
             E_subsample_cvm, Y_subsample_cvm = stratified_subsampling(E_train,
-                                                              Y_original_train,
-                                                              n_samples=args.n_subsamples_cvm,
-                                                              unique_labels=training_label_list)
+                                                                      Y_original_train,
+                                                                      n_samples=args.n_subsamples_cvm,
+                                                                      unique_labels=training_label_list)
         else:
             E_subsample_cvm, Y_subsample_cvm = (E_train, Y_original_train)
 
         if (args.n_subsamples_ks < len(E_train)) and (args.n_subsamples_ks != -1):
 
             E_subsample_ks, Y_subsample_ks = stratified_subsampling(E_train,
-                                                              Y_original_train,
-                                                              n_samples=args.n_subsamples_ks,
-                                                              unique_labels=training_label_list)
+                                                                    Y_original_train,
+                                                                    n_samples=args.n_subsamples_ks,
+                                                                    unique_labels=training_label_list)
         else:
             E_subsample_ks = E_train
             Y_subsample_ks = Y_original_train
