@@ -121,8 +121,8 @@ To facilitate and speed up the reproducibility, the embedding representations al
       <td>VGG16</td>
       <td>0.89</td>
       <td rowspan="2"> <b>Task</b>: Image Classification. <BR>
-    <b>Training Labels</b>: <i>Forest</i>, <i>Glacier</i>, <i>Mountain</i>, <i>Building</i>, <i>Street</i> <BR>
-    <b>Drift</b>: Simulated with one new class label: <i>Sea</i></td>
+    <b>Training Labels</b>: Digits from 0 to 7<BR>
+    <b>Drift</b>: Simulated with two new class labels: Digit 8 and 9</td>
         </tr>
         <tr>
           <th>4.2</th>
