@@ -3,7 +3,7 @@ cd ../../..
 
 
 python -m experiments.drift_curve_correlation \
-  --training_label_list 0 1 2 3 4 \
+  --training_label_list 0 1 2 3 4 5 6 7 \
   --drift_label_list 5 \
   --number_of_runs 10 \
   --model_name 'vgg16' \
@@ -19,11 +19,11 @@ python -m experiments.drift_curve_correlation \
   --periodic_drift_duration 20 \
   --batch_n_p 150 \
   --per_label_n_pc 75 \
-  --train_embedding_filepath 'experiments/use_case_4_intel_image_sea_drift/static/saved_embeddings/vgg16/train_embedding.hdf5' \
-  --test_embedding_filepath 'experiments/use_case_4_intel_image_sea_drift/static/saved_embeddings/vgg16/test_embedding.hdf5' \
-  --new_unseen_embedding_filepath 'experiments/use_case_4_intel_image_sea_drift/static/saved_embeddings/vgg16/new_unseen_embedding.hdf5' \
-  --drift_embedding_filepath 'experiments/use_case_4_intel_image_sea_drift/static/saved_embeddings/vgg16/drift_embedding.hdf5' \
-  --output_dir 'experiments/use_case_4_intel_image_sea_drift/static/outputs/vgg16/' \
+  --train_embedding_filepath 'experiments/use_case_4_mnist_two_digits_drift/static/saved_embeddings/vgg16/train_embedding.hdf5' \
+  --test_embedding_filepath 'experiments/use_case_4_mnist_two_digits_drift/static/saved_embeddings/vgg16/test_embedding.hdf5' \
+  --new_unseen_embedding_filepath 'experiments/use_case_4_mnist_two_digits_drift/static/saved_embeddings/vgg16/new_unseen_embedding.hdf5' \
+  --drift_embedding_filepath 'experiments/use_case_4_mnist_two_digits_drift/static/saved_embeddings/vgg16/drift_embedding.hdf5' \
+  --output_dir 'experiments/use_case_4_mnist_two_digits_drift/static/outputs/vgg16/' \
   --save_results \
   --verbose \
   --seed 42

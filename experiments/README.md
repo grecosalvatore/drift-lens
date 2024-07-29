@@ -114,10 +114,34 @@ To facilitate and speed up the reproducibility, the embedding representations al
       <td></td>
       <td></td>
     </tr>
-  <tr>
+    <tr>
+      <th rowspan=2">Image</th>
+      <th rowspan="2">MNIST</th>
+      <th>4.1</th>
+      <td>VGG16</td>
+      <td>0.89</td>
+      <td rowspan="2"> <b>Task</b>: Image Classification. <BR>
+    <b>Training Labels</b>: <i>Forest</i>, <i>Glacier</i>, <i>Mountain</i>, <i>Building</i>, <i>Street</i> <BR>
+    <b>Drift</b>: Simulated with one new class label: <i>Sea</i></td>
+        </tr>
+        <tr>
+          <th>4.2</th>
+          <td>VisionTransformer</td>
+          <td>0.90</td>
+        </tr>
+        <tr class="separator">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      <tr>
+      <tr>
       <th rowspan=2">Image</th>
       <th rowspan="2">Intel-Image</th>
-      <th>4.1</th>
+      <th>5.1</th>
       <td>VGG16</td>
       <td>0.89</td>
       <td rowspan="2"> <b>Task</b>: Image Classification. <BR>
@@ -125,7 +149,7 @@ To facilitate and speed up the reproducibility, the embedding representations al
 <b>Drift</b>: Simulated with one new class label: <i>Sea</i></td>
     </tr>
     <tr>
-      <th>4.2</th>
+      <th>5.2</th>
       <td>VisionTransformer</td>
       <td>0.90</td>
     </tr>
@@ -140,7 +164,7 @@ To facilitate and speed up the reproducibility, the embedding representations al
   <tr>
       <th rowspan="2">Image</th>
       <th rowspan="2">STL-10</th>
-      <th>5.1</th>
+      <th>6.1</th>
       <td>VGG16</td>
       <td>0.82</td>
       <td rowspan="2"> <b>Task</b>: Image Classification. <BR>
@@ -148,7 +172,7 @@ To facilitate and speed up the reproducibility, the embedding representations al
 <b>Drift</b>: Simulated with one new class label: <i>Truck</i></td>
     </tr>
     <tr>
-      <th>5.2</th>
+      <th>6.2</th>
       <td>VisionTransformer</td>
       <td>0.96</td>
     </tr>
@@ -163,7 +187,7 @@ To facilitate and speed up the reproducibility, the embedding representations al
     <tr>
       <th rowspan="3">Image</th>
       <th rowspan="3">STL-10</th>
-      <th rowspan="3">6</th>
+      <th rowspan="3">7</th>
       <td rowspan="3">VisualTransformer</td>
       <td rowspan="3">0.90</td>
       <td rowspan="3"><b>Task</b>: Image Classification. <BR>
@@ -185,7 +209,7 @@ To facilitate and speed up the reproducibility, the embedding representations al
 <tr>
       <th rowspan="3">Speech</th>
       <th rowspan="3">Common Voice</th>
-      <th rowspan="3">7</th>
+      <th rowspan="3">8</th>
       <td rowspan="3">Wav2Vec</td>
       <td rowspan="3">0.91</td>
       <td rowspan="3"><b>Task</b>: Gender Classification. <BR>
