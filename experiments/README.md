@@ -286,7 +286,13 @@ python -m experiments.use_case_1_ag_news_science_drift.use_case_1_drift_detectio
   
 - `--per_label_n_pc` The number of principal components used to reduce the per-label embedding ($d'_l$). In the paper, we set this value to 75 as a default.
   
-- `--n_subsamples_sota` The number of subsamples used to create the reference windows for the compared state-of-the-art drift detectors. In the paper, we set this value to 5000 as a default.
+- `--n_subsamples_mmd` The number of subsamples used to create the reference windows for the MMD detector. In the paper, we set this value to 8500 as a default. -1 indicates that no subsampling is performed.
+
+- `--n_subsamples_lsdd` The number of subsamples used to create the reference windows for the LSDD detector. In the paper, we set this value to 14000 as a default. -1 indicates that no subsampling is performed.
+
+- `--n_subsamples_cvm` The number of subsamples used to create the reference windows for the CVM detector. In the paper, we set this value to the full dataset as a default. -1 indicates that no subsampling is performed.
+
+- `--n_subsamples_ks` The number of subsamples used to create the reference windows for the KS detector. In the paper, we set this value to the full dataset as a default. -1 indicates that no subsampling is performed.
   
 - `--train_embedding_filepath` The file path to the saved embeddings of the training dataset. The embeddings of the training dataset are used to estimate the DriftLens baseline, and to create the reference windows for the compared state-of-the-art drift detectors.
   
