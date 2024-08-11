@@ -268,41 +268,41 @@ python -m experiments.use_case_1_ag_news_science_drift.use_case_1_drift_detectio
 
  Below is an explanation of each argument used in the script:
 
-- `--number_of_runs` Specifies the number of times the evaluation should be repeated to ensure statistical significance. In the paper we used 10 runs.
+- `--number_of_runs` (int) Specifies the number of times the evaluation should be repeated to ensure statistical significance. In the paper we used 10 runs.
   
-- `--model_name` The name of the model to be used for the evaluation. In this case, 'bert' indicates that the BERT model is used.
+- `--model_name` (str) The name of the model to be used for the evaluation. In this case, 'bert' indicates that the BERT model is used.
   
-- `--window_size` The size of the window ($m_w$), in terms of the number of samples it contains, for drift detection. In the paper, we used window sizes in range [250, 500, 1000, 2500] depending on the use case.
+- `--window_size` (int) The size of the window ($m_w$), in terms of the number of samples it contains, for drift detection. In the paper, we used window sizes in range [250, 500, 1000, 2500] depending on the use case.
   
-- `--number_of_windows` The total number of windows to be evaluated for drift detection. At each run, the script evaluates the model's performance across different windows. In the paper, we used 100 windows.
+- `--number_of_windows` (int) The total number of windows to be evaluated for drift detection. At each run, the script evaluates the model's performance across different windows. In the paper, we used 100 windows.
   
-- `--drift_percentage` A list of percentages that define the severity of drift in each window. The script evaluates the model's performance across different levels of drift severity. In the paper, we used drift percentages in range [0, 5, 10, 15, 20].
+- `--drift_percentage` (int) A list of percentages that define the severity of drift in each window. The script evaluates the model's performance across different levels of drift severity. In the paper, we used drift percentages in range [0, 5, 10, 15, 20].
   
-- `--threshold_sensitivity` The sensitivity of the drift detection threshold ($T_\alpha$). A higher value means the drift detection is more sensitive. The default value is 0.01.
+- `--threshold_sensitivity` (int) The sensitivity of the drift detection threshold ($T_\alpha$). A higher value means the drift detection is more sensitive. The default value is 0.01.
   
-- `--threshold_number_of_estimation_samples` The number of sampled windows ($n_{th}$) used to estimate the threshold for drift detection. In the paper, we set this value to 10000 as a default.
+- `--threshold_number_of_estimation_samples` (int) The number of sampled windows ($n_{th}$) used to estimate the threshold for drift detection. In the paper, we set this value to 10000 as a default.
   
-- `--batch_n_p` The number of principal component used to reduce the per-batch embedding ($d'$). In the paper, we set this value to 150 as a default.
+- `--batch_n_p` (int) The number of principal component used to reduce the per-batch embedding ($d'$). In the paper, we set this value to 150 as a default.
   
-- `--per_label_n_pc` The number of principal components used to reduce the per-label embedding ($d'_l$). In the paper, we set this value to 75 as a default.
+- `--per_label_n_pc` (int) The number of principal components used to reduce the per-label embedding ($d'_l$). In the paper, we set this value to 75 as a default.
   
-- `--n_subsamples_mmd` The number of subsamples used to create the reference windows for the MMD detector. In the paper, we set this value to 8500 as a default. -1 indicates that no subsampling is performed.
+- `--n_subsamples_mmd` (int) The number of subsamples used to create the reference windows for the MMD detector. In the paper, we set this value to 8500 as a default. -1 indicates that no subsampling is performed.
 
-- `--n_subsamples_lsdd` The number of subsamples used to create the reference windows for the LSDD detector. In the paper, we set this value to 14000 as a default. -1 indicates that no subsampling is performed.
+- `--n_subsamples_lsdd` (int) The number of subsamples used to create the reference windows for the LSDD detector. In the paper, we set this value to 14000 as a default. -1 indicates that no subsampling is performed.
 
-- `--n_subsamples_cvm` The number of subsamples used to create the reference windows for the CVM detector. In the paper, we set this value to the full dataset as a default. -1 indicates that no subsampling is performed.
+- `--n_subsamples_cvm` (int) The number of subsamples used to create the reference windows for the CVM detector. In the paper, we set this value to the full dataset as a default. -1 indicates that no subsampling is performed.
 
-- `--n_subsamples_ks` The number of subsamples used to create the reference windows for the KS detector. In the paper, we set this value to the full dataset as a default. -1 indicates that no subsampling is performed.
+- `--n_subsamples_ks` (int) The number of subsamples used to create the reference windows for the KS detector. In the paper, we set this value to the full dataset as a default. -1 indicates that no subsampling is performed.
   
-- `--train_embedding_filepath` The file path to the saved embeddings of the training dataset. The embeddings of the training dataset are used to estimate the DriftLens baseline, and to create the reference windows for the compared state-of-the-art drift detectors.
+- `--train_embedding_filepath` (str) The file path to the saved embeddings of the training dataset. The embeddings of the training dataset are used to estimate the DriftLens baseline, and to create the reference windows for the compared state-of-the-art drift detectors.
   
-- `--test_embedding_filepath` The file path to the saved embeddings of the test dataset. The embedding of the test dataset are used to estimate the DriftLens threshold.
+- `--test_embedding_filepath` (str) The file path to the saved embeddings of the test dataset. The embedding of the test dataset are used to estimate the DriftLens threshold.
   
-- `--new_unseen_embedding_filepath` The file path to the saved embeddings of new, unseen samples. The embeddings of the new, unseen samples are used to generate windows without drift (i.e., with the same distribution of the training dataset).
+- `--new_unseen_embedding_filepath` (str) The file path to the saved embeddings of new, unseen samples. The embeddings of the new, unseen samples are used to generate windows without drift (i.e., with the same distribution of the training dataset).
   
-- `--drift_embedding_filepath` The file path to the saved embeddings specifically representing drifted samples. The embeddings of the drifted samples are used to generate windows with drift.
+- `--drift_embedding_filepath` (str) The file path to the saved embeddings specifically representing drifted samples. The embeddings of the drifted samples are used to generate windows with drift.
   
-- `--output_dir` The directory where the output of the script (e.g., evaluation results) will be saved.
+- `--output_dir` (str) The directory where the output of the script (e.g., evaluation results) will be saved.
   
 - `--save_results` A flag indicating whether to save the results of the evaluation.
   
