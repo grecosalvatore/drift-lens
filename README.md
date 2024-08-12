@@ -150,6 +150,6 @@ The paper is currently **under review**. The pre-print is available at:
 # Authors
 
 - **Salvatore Greco**, *Politecnico di Torino* - [Homepage](https://grecosalvatore.github.io/) - [GitHub](https://github.com/grecosalvatore) - [Twitter](https://twitter.com/_salvatoregreco)
-- **Bartolomeo Vacchetti**, *Politecnico di Torino* - [Homepage]()
+- **Bartolomeo Vacchetti**, *Politecnico di Torino* 
 - **Daniele Apiletti**, *Politecnico di Torino* - [Homepage](https://www.polito.it/en/staff?p=daniele.apiletti)
 - **Tania Cerquitelli**, *Politecnico di Torino* - [Homepage](https://dbdmg.polito.it/dbdmg_web/people/tania-cerquitelli/)
