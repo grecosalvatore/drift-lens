@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="driftlens",
-    version="0.1.5",
+    version="0.1.2",
     packages=find_packages(),
     description="DriftLens: an Unsupervised Drift Detection framework",
     long_description=open('README.md').read(),
@@ -15,7 +15,7 @@ setup(
         "scikit-learn>=0.24.2",
         "matplotlib~=3.5.1",
         "pandas>=1.1.3",
-        "scipy>=1.5.0",
+        "scipy>=1.10.0",
         "tqdm~=4.64.1",
         "setuptools~=58.0.4",
     ],
