@@ -6,6 +6,7 @@ Representations on Unstructured Data in Real-time</h4>
 </div>
 <br/>
 
+![Version](https://img.shields.io/pypi/v/driftlens?color=blue)](https://pypi.org/project/driftlens)
 
 *DriftLens* is an **unsupervised drift detection** framework for deep learning classifiers on unstructured data.
 
