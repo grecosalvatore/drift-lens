@@ -1,6 +1,6 @@
 #
 <div align="center">
-  <img src="docs/source/_static/Drift_Lens_Logo.png" width="300"/>
+  <img src="docs/_static/images/Drift_Lens_Logo.png" width="300"/>
   <h4>Unsupervised Concept Drift Detection <br> from Deep Learning
 Representations on Unstructured Data in Real-time</h4>
 </div>
@@ -75,7 +75,7 @@ dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted
 
 ## DriftLens Methodology
 <div align="center">
-  <img src="docs/source/_static/drift-lens-architecture.png" width="600"/>
+  <img src="docs/_static/images/drift-lens-architecture.png" width="600"/>
   <h4>DriftLens Methodology.</h4>
 </div>
 <br/>
