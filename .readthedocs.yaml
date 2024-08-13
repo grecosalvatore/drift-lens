@@ -1,0 +1,11 @@
+version: 2
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
+
+# Set the Python version and install dependencies
+python:
+  version: 3.9
+  install:
+    - requirements: docs/requirements.txt
