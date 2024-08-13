@@ -1,19 +1,16 @@
-/* Example of custom CSS to change header and footer colors */
-.wy-side-nav-search, .bd-footer {
-    background-color: #00A1D6;  /* Replace with your primary color */
+/* Custom CSS to add logo to the header */
+div.header {
+    display: flex;
+    align-items: center;
 }
 
-.wy-nav-side {
-    background-color: #00405D;  /* Replace with a complementary color */
+div.header .logo img {
+    content: url("/_static/images/Drift_Lens_Logo.png");
+    max-height: 50px;  /* Adjust the height as needed */
+    width: auto;       /* Maintain aspect ratio */
 }
 
-.bd-footer-links a {
-    color: #FFFFFF !important;  /* Footer link color */
+/* Hide default project name if necessary */
+div.header .project-title {
+    display: none;
 }
-
-.bd-header, .bd-header a {
-    background-color: #00A1D6;  /* Header color */
-    color: #FFFFFF !important;  /* Header link color */
-}
-
-/* Additional customizations as needed */
