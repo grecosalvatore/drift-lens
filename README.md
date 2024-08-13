@@ -9,6 +9,7 @@ Representations on Unstructured Data in Real-time</h4>
 [![Documentation Status](https://readthedocs.org/projects/driftlens/badge/?version=latest)](https://driftlens.readthedocs.io/en/latest/?version=latest)
 [![Version](https://img.shields.io/pypi/v/driftlens?color=blue)](https://pypi.org/project/driftlens)
 [![License](https://img.shields.io/github/license/grecosalvatore/drift-lens)](https://github.com/grecosalvatore/drift-lens/blob/main/LICENSE)
+[![arxiv preprint](https://img.shields.io/badge/arXiv-2406.17813-b31b1b.svg)](https://arxiv.org/abs/2406.17813)
 
 *DriftLens* is an **unsupervised drift detection** framework for deep learning classifiers on unstructured data.
 
