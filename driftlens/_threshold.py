@@ -90,7 +90,7 @@ class ThresholdClass:
             json_dict = json.load(json_file)
 
         if json_dict is None:
-            raise Exception(f'Error: imopossible to parse threshold json.')
+            raise Exception(f'Error: impossible to parse threshold json.')
         else:
             try:
                 self._fit_from_dict(json_dict)

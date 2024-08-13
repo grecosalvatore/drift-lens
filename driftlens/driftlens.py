@@ -186,7 +186,7 @@ class DriftLens:
             distribution_distance_metric (str):
         Returns:
             a list of dictionaries containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
-            (window_distribution_distances_dict[per-label][label]) distribution distances computed for the each passed window
+            (window_distribution_distances_dict[per-label][label]) distribution distances computed for each input window
             with respect to the baseline.
         """
         window_distribution_list = []
