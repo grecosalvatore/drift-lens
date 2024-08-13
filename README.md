@@ -6,6 +6,7 @@ Representations on Unstructured Data in Real-time</h4>
 </div>
 <br/>
 
+[![Documentation Status](https://readthedocs.org/projects/driftlens/badge/?version=latest)](https://driftlens.readthedocs.io/en/latest/?version=latest)
 [![Version](https://img.shields.io/pypi/v/driftlens?color=blue)](https://pypi.org/project/driftlens)
 [![License](https://img.shields.io/github/license/grecosalvatore/drift-lens)](https://github.com/grecosalvatore/drift-lens/blob/main/LICENSE)
 

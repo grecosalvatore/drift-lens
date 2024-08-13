@@ -5,7 +5,7 @@
 
 Welcome to DriftLens's documentation!
 =====================================
-The documentation will be updated soon! 
+The documentation will be updated soon!
 
 .. toctree::
    :maxdepth: 2
