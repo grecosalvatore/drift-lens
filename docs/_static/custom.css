@@ -1,0 +1,19 @@
+/* Example of custom CSS to change header and footer colors */
+.wy-side-nav-search, .bd-footer {
+    background-color: #00A1D6;  /* Replace with your primary color */
+}
+
+.wy-nav-side {
+    background-color: #00405D;  /* Replace with a complementary color */
+}
+
+.bd-footer-links a {
+    color: #FFFFFF !important;  /* Footer link color */
+}
+
+.bd-header, .bd-header a {
+    background-color: #00A1D6;  /* Header color */
+    color: #FFFFFF !important;  /* Header link color */
+}
+
+/* Additional customizations as needed */
