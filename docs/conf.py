@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'driftlens'
+project = 'DriftLens'
 copyright = '2024, Salvatore Greco'
 author = 'Salvatore Greco'
 release = '0.1.2'
