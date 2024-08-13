@@ -16,6 +16,14 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'sphinx_rtd_theme'
 
+# Add the path to the static files
+html_static_path = ['_static']
+
+html_logo = "_static/images/Drift_Lens_Logo.png"
+html_theme_options = {
+    'logo_only': True,
+    'display_version': False,
+}
 
 # Context for the "Edit on GitHub" button
 html_context = {
@@ -25,13 +33,4 @@ html_context = {
     "doc_path": "docs",               # The path to your documentation source files
 }
 
-# Update HTML context for the logo
-html_theme_options = {
-    'logo_only': True,  # Show only the logo without the project name
-}
 
-# Add your custom CSS file
-html_static_path = ['_static']
-html_css_files = [
-    'custom.css',
-]
