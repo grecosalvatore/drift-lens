@@ -1,5 +1,6 @@
 include README.md
 include LICENSE
 include setup.py
-recursive-include src *.py
+recursive-include docs/_static/images *
+recursive-include driftlens *.py
 prune experiments
