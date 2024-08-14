@@ -7,9 +7,18 @@ Welcome to DriftLens's documentation!
 =====================================
 The documentation will be updated soon!
 
+
+`DriftLens <https://github.com/grecosalvatore/drift-lens>`_ is an unsupervised concept drift detection technique for deep learning classifiers dealing with unstructured data. It is based on the distribution distances between the internal representations (i.e., embedding) produced by deep learning classifiers on unstructured data, such as texts, images, and audios.
+
+This documentation will guide you through everything you need to know to use, configure, and contribute to DriftLens.
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   introduction
+   installation
 
 
 

@@ -9,7 +9,7 @@ with open(here / 'README.md', encoding='utf-8') as f:
 
 setup(
     name="driftlens",
-    version="0.1.3",
+    version="0.1.4",
     description="DriftLens: an Unsupervised Drift Detection framework",
     long_description=long_description,  # Use the variable here
     long_description_content_type="text/markdown",
