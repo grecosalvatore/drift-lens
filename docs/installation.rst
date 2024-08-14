@@ -8,7 +8,7 @@ System Requirements
 
 Before installing DriftLens, ensure that you have:
 
-- Python 3.8 or higher
+- Python 3.9 or higher
 - pip (Python package installer) installed on your system
 
 Installing DriftLens
