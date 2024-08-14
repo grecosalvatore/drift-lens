@@ -16,7 +16,7 @@ If you use the DriftLens, please cite the following papers:
           eprint={2406.17813},
           archivePrefix={arXiv},
           primaryClass={cs.LG},
-          url={https://arxiv.org/abs/2406.17813},
+          url={https://arxiv.org/abs/2406.17813}}
 
 
 2) Preliminary idea and experiments
@@ -31,8 +31,7 @@ If you use the DriftLens, please cite the following papers:
       volume={},
       number={},
       pages={341-349},
-      doi={10.1109/ICDMW53433.2021.00049}
-      }
+      doi={10.1109/ICDMW53433.2021.00049}}
 
 
 3) Webapp tool

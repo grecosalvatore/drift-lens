@@ -20,6 +20,7 @@ This documentation will guide you through everything you need to know to use, co
    introduction
    citation
    installation
+   examples
 
 
 

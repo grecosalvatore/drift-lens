@@ -339,10 +339,10 @@ class StandardThresholdEstimator(ThresholdEstimatorMethod):
 
 
 class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
-    """ Maximum Threshold Estimator Class: Implementation of the ThresholdEstimatorMethod Abstract Class. """
+    """ Random Sampling Threshold Estimator Class: Implementation of the ThresholdEstimatorMethod Abstract Class. """
 
     def __init__(self, label_list):
-        ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="MaximumThresholdEstimator")
+        ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="RandomSamplingThresholdEstimator")
         return
 
     def estimate_threshold(self, E, Y, baseline, window_size, n_samples, flag_replacement=True, flag_shuffle=True, proportional_flag=False, proportions_dict=None):
