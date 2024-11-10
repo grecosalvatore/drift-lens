@@ -107,7 +107,7 @@ DriftLens uses the Frechet Distance to measure the similarity between the refere
 Instructions and scripts for the experimental evaluation reproducibility are located in the [experiments folder](experiments/README.md).
 
 ## References
-If you use the DriftLens, please cite the following papers:
+If you use DriftLens, please cite the following papers:
 
 1) DriftLens methodology and evaluation is currently **under review**. The pre-print is available at:
 ```bibtex
