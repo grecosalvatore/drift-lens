@@ -149,7 +149,7 @@ If you use DriftLens, please cite the following papers:
 }
 ```
 
-# Authors
+## Authors
 
 - **Salvatore Greco**, *Politecnico di Torino* - [Homepage](https://grecosalvatore.github.io/) - [GitHub](https://github.com/grecosalvatore) - [Twitter](https://twitter.com/_salvatoregreco)
 - **Bartolomeo Vacchetti**, *Politecnico di Torino* 

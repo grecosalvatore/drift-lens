@@ -75,7 +75,7 @@ class DriftLens:
     def save_threshold(self, folder_path, threshold_name):
         """ Stores persistently on disk the threshold.
         Args:
-            folder_path (str): Folder path where save the baseline.
+            folder_path (str): Folder path where save the threshold.
             threshold_name (str): Filename of the threshold file.
         Returns:
             (str): threshold filepath.
@@ -89,8 +89,8 @@ class DriftLens:
     def load_baseline(self, folder_path, baseline_name):
         """ Loads the baseline from disk into a BaselineClass object.
         Args:
-            folder_path (str):
-            baseline_name (str):
+            folder_path (str): Folder path with the saved baseline.
+            baseline_name (str): Filename of the baseline folder.
         Returns:
             BaselineClass: the loaded baseline.
         """
@@ -103,10 +103,22 @@ class DriftLens:
         return baseline
 
     def set_baseline(self, baseline):
+        """ Sets the baseline object.
+        Args:
+            baseline:
+        Returns:
+            None
+        """
         self.baseline = baseline
         return
 
     def set_threshold(self, threshold):
+        """ Sets the threshold object.
+        Args:
+            threshold:
+        Returns:
+            None
+        """
         self.threshold = threshold
         return
 

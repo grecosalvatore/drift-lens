@@ -12,9 +12,9 @@ class ThresholdClass:
     """ Threshold Class: it contains all the attributes and methods of the threshold. """
     def __init__(self):
         self.label_list = None  # List of labels used to train the model
-        self.batch_n_pc = None
-        self.per_label_n_pc = None
-        self.window_size = None
+        self.batch_n_pc = None  # Number of principal components to reduce the embedding for the entire batch drift
+        self.per_label_n_pc = None  # number of principal components to reduce embedding for the per-label drift
+        self.window_size = None  # Window size that will be used in the online phase
 
         self.mean_distances_dict = {}
         self.std_distances_dict = {}
@@ -32,7 +32,14 @@ class ThresholdClass:
         return
 
     def fit(self, batch_mean, batch_std, per_label_mean_dict, per_label_std_dict, label_list, batch_n_pc, per_label_n_pc, window_size, distribution_distances_list,  threshold_method_name=""):
-        """ Fits the threshold attributes. """
+        """ Fits the threshold attributes.
+        Args:
+            batch_mean:
+
+        Returns:
+            None
+        """
+
         self.mean_distances_dict["batch"] = batch_mean
         self.std_distances_dict["batch"] = batch_std
 
@@ -50,13 +57,12 @@ class ThresholdClass:
         return
 
     def _fit_from_dict(self, threshold_dict):
-        """ Fits the treshold class attributes from a dictionary. """
+        """ Fits the threshold class attributes from a dictionary. """
         self.__dict__.update(threshold_dict)
         return
 
     def save(self, folderpath, threshold_name):
         """ Saves persistently on disk the threshold.
-
         Args:
             folderpath (str): Folder path where save the threshold.
             threshold_name (str): Filename of the threshold file.
@@ -76,7 +82,6 @@ class ThresholdClass:
 
     def load(self, folderpath, threshold_name):
         """ Loads the threshold from folder.
-
         Args:
             folderpath: (str) folderpath containing the threshold json.
             threshold_name: (str) name of the threshold json file.
