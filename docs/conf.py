@@ -1,7 +1,7 @@
 # -- Project information -----------------------------------------------------
 project = 'DriftLens'
-copyright = '2024, Your Name'
-author = 'Your Name'
+copyright = '2024, Salvatore Greco'
+author = 'Salvatore Greco'
 
 # -- General configuration ---------------------------------------------------
 extensions = [
