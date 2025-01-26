@@ -9,7 +9,16 @@ import json
 
 
 class BaselineClass:
-    """ Baseline CLass: it contains all the attributes and methods of the baseline. """
+    """ Baseline CLass: it contains all the attributes and methods of the baseline.
+
+    Attributes:
+        label_list (:obj:`list(str)`): List of labels used to train the model
+        batch_n_pc (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift
+        per_label_n_pc (:obj:`int`): number of principal components to reduce embedding for the per-label drift
+        mean_vectors_dict (:obj:`dict`): Dict containing the mean vectors: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+        covariance_matrices_dict (:obj:`dict`): Dict containing the covariance matrices: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+        PCA_models_dict (:obj:`dict`): Dict containing the PCA models: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+    """
     def __init__(self):
         self.label_list = None  # List of labels used to train the model
         self.batch_n_pc = None  # Number of principal components to reduce the embedding for the entire batch drift
@@ -35,12 +44,13 @@ class BaselineClass:
 
     def fit(self, label_list, batch_n_pc, per_label_n_pc,
             per_label_mean_dict, per_label_covariance_dict, per_label_PCA_models, per_label_n_samples,
-            batch_mean_vector=None, batch_covariance_matrix=None, batch_PCA_model=None, batch_n_samples=None, description=""):
+            batch_mean_vector=None, batch_covariance_matrix=None, batch_PCA_model=None, batch_n_samples=None, description="") -> None:
         """ Fits the baseline attributes.
+
         Args:
-            label_list (list): List of labels used to train the model.
-            batch_n_pc (int): Number of principal components to reduce the embedding for the entire batch drift.
-            per_label_n_pc (int): Number of principal components to reduce embedding for the per-label drift.
+            label_list (:obj:`list(str)`): List of labels used to train the model.
+            batch_n_pc (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift.
+            per_label_n_pc (:obj:`int`): Number of principal components to reduce embedding for the per-label drift.
             per_label_mean_dict (dict): Dict containing the per-label mean vectors ["label"]: mean(label).
             per_label_covariance_dict (dict): Dict containing the per-label covariance matrices ["label"]: covariance(label).
             per_label_PCA_models (dict): Dict containing the per-label PCA models ["label"]: PCA(label).
@@ -50,6 +60,7 @@ class BaselineClass:
             batch_PCA_model (PCA): PCA model for the entire batch.
             batch_n_samples (int): Number of samples in the entire batch.
             description (str): Description of the baseline.
+
         Returns:
             None
         """
