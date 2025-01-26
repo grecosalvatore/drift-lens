@@ -13,7 +13,17 @@ from scipy import stats
 
 
 class DriftLens:
-    """ DriftLens Class. """
+    """ DriftLens Class.
+
+    Attributes:
+        baseline (:obj:`BaselineClass`): BaselineClass object.
+        threshold (:obj:`ThresholdClass`): ThresholdClass object.
+        label_list (:obj:`list(str)`): List of class labels.
+        batch_n_pc (:obj:`int`): Number of principal components to use for the per-batch.
+        per_label_n_pc (:obj:`int`): Number of principal components to use for the per-label.
+        baseline_algorithms (:obj:`dict`): Dictionary of possible baseline algorithms.
+        threshold_estimators (:obj:`dict`): Dictionary of possible threshold estimators.
+    """
     def __init__(self, label_list=None):
 
         self.baseline = None  # BaselineClass object
@@ -26,17 +36,19 @@ class DriftLens:
         self.baseline_algorithms = {"StandardBaselineEstimator": "Description"}
         self.threshold_estimators = {"KFoldThresholdEstimator": "Description"}
 
-    def estimate_baseline(self, E, Y,  label_list, batch_n_pc, per_label_n_pc, baseline_algorithm="StandardBaselineEstimator"):
-        """ Estimates the baseline.
+    def estimate_baseline(self, E, Y,  label_list, batch_n_pc, per_label_n_pc, baseline_algorithm="StandardBaselineEstimator") -> _baseline.BaselineClass:
+        r""" Estimates the baseline.
+
         Args:
-            label_list (list): List of class labels used to train the model.
-            batch_n_pc (int): Number of principal components to use for the per-batch.
-            per_label_n_pc (int): Number of principal components to use for the per-label.
-            E (np.array): Embedding matrix of shape (m, d), where m is the number of samples and d the embedding dimensionality.
-            Y (np.array): Vector of predicted labels of shape (m, 1), where m is the number of samples.
-            baseline_algorithm (str): Baseline estimation algorithm to use. Possible values are: "StandardBaselineEstimator".
-         Returns:
-            (BaselineClass): BaselineClass object performing the offline phase of DriftLens.
+            label_list (:obj:`list(str)`): List of class labels used to train the model.
+            batch_n_pc (:obj:`int`): Number of principal components to use for the per-batch.
+            per_label_n_pc (:obj:`int`): Number of principal components to use for the per-label.
+            E (:obj:`numpy.ndarray`): Embedding matrix of shape (m, d), where m is the number of samples and d the embedding dimensionality.
+            Y (:obj:`numpy.ndarray`): Vector of predicted labels of shape (m, 1), where m is the number of samples.
+            baseline_algorithm (:obj:`str`, `optional`): Baseline estimation algorithm to use. Possible values are: "StandardBaselineEstimator". If not provided, the default value is "StandardBaselineEstimator".
+
+        Returns:
+            :class:`~driftlens._baseline.BaselineClass`: An instance of the `BaselineClass` class from the `_baseline.py` module, performing the offline phase of DriftLens.
         """
 
         self.label_list = label_list
@@ -58,13 +70,15 @@ class DriftLens:
 
         return self.baseline
 
-    def save_baseline(self, folder_path, baseline_name):
+    def save_baseline(self, folder_path, baseline_name) -> str:
         """ Stores persistently on disk the baseline.
+
         Args:
-            folder_path (str): Folder path where save the baseline.
-            baseline_name (str): Filename of the baseline folder.
+            folder_path (:obj:`str`): Folder path where save the baseline.
+            baseline_name (:obj:`str`): Filename of the baseline folder.
+
         Returns:
-            (str): Baseline folder path.
+            :obj:`str`: Baseline folder path.
         """
         if self.baseline is not None:
             baseline_path = self.baseline.save(folder_path, baseline_name)
@@ -74,6 +88,7 @@ class DriftLens:
 
     def save_threshold(self, folder_path, threshold_name):
         """ Stores persistently on disk the threshold.
+
         Args:
             folder_path (str): Folder path where save the threshold.
             threshold_name (str): Filename of the threshold file.
@@ -86,13 +101,14 @@ class DriftLens:
             raise Exception(f'Error: Threshold has not yet been estimated. You should first call the "estimate_threshold" method.')
         return threshold_path
 
-    def load_baseline(self, folder_path, baseline_name):
-        """ Loads the baseline from disk into a BaselineClass object.
+    def load_baseline(self, folder_path, baseline_name) -> _baseline.BaselineClass:
+        r""" Loads the baseline from disk into a BaselineClass object.
+
         Args:
-            folder_path (str): Folder path with the saved baseline.
-            baseline_name (str): Filename of the baseline folder.
+            folder_path (:obj:`str`): Folder path with the saved baseline.
+            baseline_name (:obj:`str`): Filename of the baseline folder.
         Returns:
-            BaselineClass: the loaded baseline.
+            :class:`~driftlens._baseline.BaselineClass`: the loaded baseline.
         """
         baseline = _baseline.BaselineClass()
 
@@ -102,20 +118,24 @@ class DriftLens:
         self.label_list = baseline.get_label_list()
         return baseline
 
-    def set_baseline(self, baseline):
-        """ Sets the baseline object.
+    def set_baseline(self, baseline) -> None:
+        """ Sets the baseline attribute with a BaselineClass object.
+
         Args:
-            baseline:
+            :class:`~driftlens._baseline.BaselineClass`: The baseline object to set.
+
         Returns:
             None
         """
         self.baseline = baseline
         return
 
-    def set_threshold(self, threshold):
-        """ Sets the threshold object.
+    def set_threshold(self, threshold) -> None:
+        """ Sets the threshold attribute with a ThresholdClass object.
+
         Args:
-            threshold:
+            :class:`~driftlens._threshold.ThresholdClass`: The threshold object to set.
+
         Returns:
             None
         """
@@ -158,13 +178,15 @@ class DriftLens:
             raise Exception(f'Error in estimating the threshold: {e}')
         return self.threshold
 
-    def load_threshold(self, folder_path, threshold_name):
+    def load_threshold(self, folder_path, threshold_name) -> _threshold.ThresholdClass:
         """ Loads the threshold from disk into a ThresholdClass object.
+
         Args:
-            folder_path (str):
-            threshold_name (str):
+            folder_path (:obj:`str`): Folder path with the saved threshold
+            threshold_name (:obj:`str`): Filename of the threshold file.
+
         Returns:
-            ThresholdClass: the loaded threshold.
+            :class:`~driftlens._threshold.ThresholdClass`: The loaded threshold.
         """
         threshold = _threshold.ThresholdClass()
 
@@ -175,10 +197,12 @@ class DriftLens:
 
     def compute_window_distribution_distances(self, E_w, Y_w, distribution_distance_metric="frechet_inception_distance"):
         """ Computes the per-batch and per-label distribution distances for an embedding window.
+
         Args:
             E_w:
             Y_w:
             distribution_distance_metric (str):
+
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
             (window_distribution_distances_dict[per-label][label]) distribution distances computed for the passed window
@@ -196,6 +220,7 @@ class DriftLens:
             E_w_list:
             Y_w_list:
             distribution_distance_metric (str):
+
         Returns:
             a list of dictionaries containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
             (window_distribution_distances_dict[per-label][label]) distribution distances computed for each input window
