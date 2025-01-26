@@ -22,6 +22,12 @@ This documentation will guide you through everything you need to know to use, co
    installation
    examples
 
+.. toctree::
+   :maxdepth: 2
+   :caption: DriftLens API
+
+   driftlens
+
 
 
 Indices and tables

@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
+
 # -- Project information -----------------------------------------------------
 project = 'DriftLens'
 copyright = '2024, Salvatore Greco'
@@ -9,6 +13,12 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
 ]
+
+autodoc_default_options = {
+    'members': True,  # Include members of classes and functions
+    'undoc-members': True,  # Include members without docstrings
+    'private-members': True,  # Include private members
+}
 
 templates_path = ['_templates']
 exclude_patterns = []
