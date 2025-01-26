@@ -3,6 +3,8 @@ numpy
 scikit-learn
 pandas
 tqdm
+matplotlib
+setuptools
 sphinx
 sphinx_rtd_theme
 sphinx_autodoc_typehints
