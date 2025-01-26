@@ -218,6 +218,7 @@ class DriftLens:
 
     def compute_window_list_distribution_distances(self, E_w_list, Y_w_list, distribution_distance_metric="frechet_inception_distance"):
         """ Computes the per-batch and per-label distribution distances for each embedding window.
+
         Args:
             E_w_list:
             Y_w_list:
@@ -279,6 +280,7 @@ class DriftLens:
             E_w: The embeddings of the current window.
             Y_w: The predicted labels of the current window.
             window_id:
+
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
         """
@@ -326,8 +328,15 @@ class DriftLens:
         return window_distribution_distances_dict
 
     @staticmethod
-    def convert_distribution_distances_list_to_dataframe(distribution_distances_list):
+    def convert_distribution_distances_list_to_dataframe(distribution_distances_list) -> pd.DataFrame:
+        """ Convert the list of distribution distances to a pandas DataFrame.
+        
+        Args:   
+            distribution_distances_list (:obj:`list(dict)`): A list of dictionaries containing the distribution distances.
 
+        Returns:
+            :obj:`pd.DataFrame`: A pandas DataFrame containing the distribution distances.
+        """
         if type(distribution_distances_list) is dict:
             distribution_distances_list = [distribution_distances_list]
 
