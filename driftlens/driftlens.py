@@ -145,6 +145,25 @@ class DriftLens:
         return
 
     def random_sampling_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, n_samples, flag_shuffle=True, flag_replacement=True, proportional_flag=False, proportions_dict=None):
+        """ Estimates the threshold using the random sampling algorithm.
+
+        Args:
+            label_list (:obj:`list(int)`): List of class label ids used to train the model.
+            E (:obj:`numpy.ndarray`): Embedding matrix of shape *(m, d)*, where *m* is the number of samples and *d* the embedding dimensionality.
+            Y (:obj:`numpy.ndarray`): Vector of predicted labels of shape *(m, 1)*, where m is the number of samples.
+            batch_n_pc (:obj:`int`): Number of principal components to use for the per-batch.
+            per_label_n_pc (:obj:`int`): Number of principal components to use for the per-label.
+            window_size (:obj:`int`): Size of the window to use for the threshold estimation.
+            n_samples (:obj:`int`): Number of windows randomly sampled to use for the threshold estimation.
+            flag_shuffle (:obj:`bool`, `optional`): Flag to shuffle the samples before the threshold estimation. Default is True.
+            flag_replacement (:obj:`bool`, `optional`): Flag to sample with replacement the windows. Default is True.
+            proportional_flag (:obj:`bool`, `optional`): Flag to use the windows with proportional distribution between labels. Default is False.
+            proportions_dict (:obj:`dict`, `optional`): Dictionary with the proportions of the labels to use for the proportional sampling. Default is None.
+
+        Returns:
+            :obj:`tuple(numpy.ndarray, numpy.ndarray)`: Tuple with the per-batch distances sorted and the per-label distances.
+        """
+
         threshold_algorithm = _threshold.RandomSamplingThresholdEstimator(label_list)
         # Execute the threshold estimation
         try:

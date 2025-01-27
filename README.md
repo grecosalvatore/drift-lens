@@ -47,7 +47,7 @@ from driftlens.driftlens import DriftLens
 batch_n_pc = 150 # Number of principal components to reduce per-batch embeddings
 per_label_n_pc = 75 # Number of principal components to reduce per-label embeddings
 window_size = 1000 # Window size for drift detection
-threshold_number_of_estimation_samples = 1000 # Number of sampled windows to estimate the threshold values
+threshold_number_of_estimation_samples = 10000 # Number of sampled windows to estimate the threshold values
 
 # Initialize DriftLens
 dl = DriftLens()
