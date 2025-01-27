@@ -201,9 +201,9 @@ class DriftLens:
         """ Computes the per-batch and per-label distribution distances for an embedding window.
 
         Args:
-            E_w
-            Y_w:
-            distribution_distance_metric (:obj:`str`):
+            E_w (:obj:`numpy.ndarray`): Embeddings of the window.
+            Y_w (:obj:`numpy.ndarray`): Predicted labels of the window.
+            distribution_distance_metric (:obj:`str`, `optional`): The distribution distance metric to use. Currently, only the Frechet Inception Distance is supported.
 
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
@@ -220,12 +220,12 @@ class DriftLens:
         """ Computes the per-batch and per-label distribution distances for each embedding window.
 
         Args:
-            E_w_list:
-            Y_w_list:
-            distribution_distance_metric (str):
+            E_w_list (:obj:`list`(:obj:`numpy.ndarray`)`): List of embeddings of the windows.
+            Y_w_list (:obj:`list`(:obj:`numpy.ndarray`)`): List of predicted labels of the windows.
+            distribution_distance_metric (:obj:`str`, `optional`): The distribution distance metric to use. Currently, only the Frechet Inception Distance is supported.
 
         Returns:
-            a list of dictionaries containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
+            :obj:`tuple`: A tuple containing a list of dictionaries containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
             (window_distribution_distances_dict[per-label][label]) distribution distances computed for each input window
             with respect to the baseline.
         """
