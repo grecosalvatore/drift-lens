@@ -184,49 +184,59 @@ class BaselineClass:
 
     def get_PCA_model_by_label(self, label):
         """ Gets the PCA model of a label (per-label).
+
         Args:
-            label (int): Label.
+            label (:obj:`int`): Label to get the PCA model.
+
         Returns:
-            PCA: PCA model of the label.
+            :obj:`sklearn.decomposition.PCA`: PCA model of the label.
         """
         return self.PCA_models_dict["per-label"][str(label)]
 
     def get_mean_vector_by_label(self, label):
         """ Gets the mean vector of a label (per-label).
+
         Args:
-            label (int): Label.
+            label (:obj:`int`): Label to get the mean vector.
+
         Returns:
-            np.ndarray: Mean vector of the label.
+            :obj:`np.ndarray`: Mean vector of the label.
         """
         return self.mean_vectors_dict["per-label"][str(label)]
 
     def get_covariance_matrix_by_label(self, label):
         """ Gets the covariance matrix of a label (per-label).
+
         Args:
-            label (int): Label.
+            label (:obj:`int`): Label to get the covariance matrix.
+
         Returns:
-            np.ndarray: Covariance matrix of the label.
+            :obj:`np.ndarray`: Covariance matrix of the label.
         """
         return self.covariance_matrices_dict["per-label"][str(label)]
 
     def get_n_samples_by_label(self, label):
         """ Gets the number of samples of a label (per-label).
+
         Args:
-            label (int): Label.
+            label (:obj:`int`): Label to get the number of samples.
+
         Returns:
-            int: Number of samples of the label.
+            :obj:`int`: Number of samples of the label.
         """
         return self.n_samples_dict["per-label"][str(label)]
 
     def get_per_label_mean_vectors(self):
         """ Gets the mean vectors of each label (per-label).
+
         Returns:
-            dict: Mean vectors of each label.
+            :obj:`dict`: Mean vectors of each label.
         """
         return self.mean_vectors_dict["per-label"]
 
     def get_per_label_covariance_matrices(self):
         """ Gets the covariance matrices of each label (per-label).
+
         Returns:
             dict: Covariance matrices of each label.
         """
@@ -305,7 +315,14 @@ class BaselineClass:
 
 
 class BaselineEstimatorMethod(ABC):
-    """ Abstract Baseline Estimator Method class. """
+    """ Abstract Baseline Estimator Method class.
+
+    Attributes:
+        label_list (:obj:`list(int)`): List of labels used to train the model.
+        batch_n_pc (:obj:`int`): Number of principal components for PCA for the entire batch.
+        per_label_n_pc (:obj:`dict`): Number of principal components for PCA for each label.
+
+    """
 
     def __init__(self, label_list, batch_n_pc, per_label_n_pc):
         self.batch_n_pc = batch_n_pc  # Number of principal components for PCA for the entire batch
@@ -322,11 +339,12 @@ class BaselineEstimatorMethod(ABC):
         """ Fits a PCA for each label and for the entire batch.
 
         Args:
-             E (np.array): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
-             Y (np.array): Labels (predicted/original) of shape (m, 1), where m is the number of samples.
-         Returns:
-             sklearn.decomposition.PCA: the PCA computed over the entire batch.
-             dict: dictionary containing the per-label PCA fitted for each label {'label': PCA_l}.
+            E (:obj:`np.ndarray`): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
+            Y (:obj:`np.ndarray`): Labels (predicted/original) of shape (m, 1), where m is the number of samples.
+
+        Returns:
+            :obj:`sklearn.decomposition.PCA`: PCA computed over the entire batch.
+            :obj:`dict`: Dictionary containing the per-label PCA fitted for each label {'label': PCA_l}.
         """
         # Fit the PCA for the entire batch of data (per-batch)
         batch_PCA = PCA(n_components=self.batch_n_pc)
