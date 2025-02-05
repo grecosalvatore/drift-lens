@@ -28,9 +28,7 @@ def pre_save(xx,yy):
 
 
 
-data_path="/Users/bartolomeovacchetti/Desktop/Drift/Stl-10/"
-#test_path="/Users/bartolomeovacchetti/Desktop/archive/seg_test/seg_test/"
-#test_path="/Users/bartolomeovacchetti/Desktop/archive/"
+data_path="Stl-10/"
 
 data_tot=[]
 
@@ -78,10 +76,10 @@ drift=np.array(drift)
 X_valtest, X_train, Y_valtest, y_train= train_test_split(X, Y, test_size=0.5, stratify=Y, random_state=42)
 X_test, X_val, y_test, y_val= train_test_split(X_valtest, Y_valtest, test_size=0.5, stratify=Y_valtest, random_state=42)
 
-train_file_path = '/Users/bartolomeovacchetti/Desktop/archive/stl_train.pickle'
-test_file_path = '/Users/bartolomeovacchetti/Desktop/archive/stl_test.pickle'
-val_file_path = '/Users/bartolomeovacchetti/Desktop/archive/stl_val.pickle'
-deg_file_path = '/Users/bartolomeovacchetti/Desktop/archive/stl_deg.pickle'
+train_file_path = 'stl_train.pickle'
+test_file_path = 'stl_test.pickle'
+val_file_path = 'stl_val.pickle'
+deg_file_path = 'stl_deg.pickle'
 
 final_train=pre_save(X_train, y_train)
 final_test=pre_save(X_test, y_test)
