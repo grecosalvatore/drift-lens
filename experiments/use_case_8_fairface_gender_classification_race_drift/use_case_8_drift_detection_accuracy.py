@@ -90,7 +90,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 5")
+    print("Drift Detection Experiment - Use Case 8")
 
     # Parse arguments
     args = parse_args()
@@ -106,8 +106,8 @@ def main():
     print("Number of samples threshold: ", args.threshold_number_of_estimation_samples)
     print("Drift percentage: ", args.drift_percentage)
 
-    training_label_list = [0, 1, 2, 3, 4]  # Labels used for training
-    drift_label_list = [5]  # Labels used for drift simulation
+    training_label_list = [0, 1]  # Labels used for training
+    drift_label_list = [2]  # Labels used for drift simulation
 
     if args.save_results:
         if not os.path.exists(args.output_dir):
@@ -133,6 +133,12 @@ def main():
         E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
         E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
         E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
+        Y_original_drift = np.array([2] * len(Y_original_drift))
+
+        E_train = E_train.astype(np.float32)
+        E_test = E_test.astype(np.float32)
+        E_new_unseen = E_new_unseen.astype(np.float32)
+        E_drift = E_drift.astype(np.float32)
 
     print("Training samples:", len(E_train))
     print("Test samples:", len(E_test))
