@@ -19,11 +19,11 @@ python -m experiments.drift_curve_correlation \
   --periodic_drift_duration 20 \
   --batch_n_p 25 \
   --per_label_n_pc 25 \
-  --train_embedding_filepath 'experiments/use_case_8_common_voice_gender_classification_accent_drift/static/saved_embeddings/wav2vec/train_embedding.hdf5' \
-  --test_embedding_filepath 'experiments/use_case_8_common_voice_gender_classification_accent_drift/static/saved_embeddings/wav2vec/test_embedding.hdf5' \
-  --new_unseen_embedding_filepath 'experiments/use_case_8_common_voice_gender_classification_accent_drift/static/saved_embeddings/wav2vec/new_unseen_embedding.hdf5' \
-  --drift_embedding_filepath 'experiments/use_case_8_common_voice_gender_classification_accent_drift/static/saved_embeddings/wav2vec/drift_embedding.hdf5' \
-  --output_dir 'experiments/use_case_8_common_voice_gender_classification_accent_drift/static/outputs/wav2vec/' \
+  --train_embedding_filepath 'experiments/use_case_9_common_voice_gender_classification_accent_drift/static/saved_embeddings/wav2vec/train_embedding.hdf5' \
+  --test_embedding_filepath 'experiments/use_case_9_common_voice_gender_classification_accent_drift/static/saved_embeddings/wav2vec/test_embedding.hdf5' \
+  --new_unseen_embedding_filepath 'experiments/use_case_9_common_voice_gender_classification_accent_drift/static/saved_embeddings/wav2vec/new_unseen_embedding.hdf5' \
+  --drift_embedding_filepath 'experiments/use_case_9_common_voice_gender_classification_accent_drift/static/saved_embeddings/wav2vec/drift_embedding.hdf5' \
+  --output_dir 'experiments/use_case_9_common_voice_gender_classification_accent_drift/static/outputs/wav2vec/' \
   --save_results \
   --verbose \
   --seed 42
