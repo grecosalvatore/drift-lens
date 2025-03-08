@@ -120,7 +120,7 @@ To facilitate and speed up the reproducibility, the embedding representations al
       <th rowspan="3">4</th>
       <td rowspan="3">BERT</td>
       <td rowspan="3">0.94</td>
-      <td rowspan="3"><b>Task</b>: Topic Classification. <BR>
+      <td rowspan="3"><b>Task</b>: Occupation Classification. <BR>
     <b>Training Labels</b>: <i>Professor</i>, <i>Physician</i>, <i>Attorney</i>, <i>Photographer</i>, <i>Journalist</i> (Male gender); <i>Nurse</i> (Female gender)  <BR>
     <b>Drift</b>: Simulated with bios from same labels but opposite gender (Male nurses and Female for all others occupations)</i></td>
     </tr>
