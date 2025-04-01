@@ -350,8 +350,10 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
         ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="RandomSamplingThresholdEstimator")
         return
 
-    def estimate_threshold(self, E, Y, baseline, window_size, n_samples, flag_replacement=True, flag_shuffle=True, proportional_flag=False, proportions_dict=None):
+    def estimate_threshold(self, E, Y, baseline, window_size, n_samples, flag_replacement=True, flag_shuffle=True, proportional_flag=False, proportions_dict=None, distribution_distance_metric="frechet_inception_distance"):
         """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object. """
+
+        print(f"Estimating threshold using {distribution_distance_metric} metric")
 
         per_batch_distances = []
         per_label_distances = {label: [] for label in self.label_list}
@@ -384,7 +386,8 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
 
             dl_th = driftlens.DriftLens(self.label_list)
             dl_th.set_baseline(baseline)
-            distribution_distances = dl_th.compute_window_list_distribution_distances(E_windows, Y_predicted_windows)
+            distribution_distances = dl_th.compute_window_list_distribution_distances(E_windows, Y_predicted_windows, distribution_distance_metric=distribution_distance_metric)
+
 
             per_batch_distances.append(distribution_distances[0][0]["per-batch"])
             for l in self.label_list:

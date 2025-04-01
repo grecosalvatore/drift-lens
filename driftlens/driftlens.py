@@ -1,6 +1,8 @@
 import os.path
 
 from driftlens import _frechet_drift_distance as fdd
+from driftlens import _mahalanobis_drift_distance as mdd
+from driftlens import _kullback_leibler_drift_divergence as kldd
 from driftlens import _baseline as _baseline
 from driftlens import _threshold as _threshold
 
@@ -144,7 +146,7 @@ class DriftLens:
         self.threshold = threshold
         return
 
-    def random_sampling_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, n_samples, flag_shuffle=True, flag_replacement=True, proportional_flag=False, proportions_dict=None):
+    def random_sampling_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, n_samples, flag_shuffle=True, flag_replacement=True, proportional_flag=False, proportions_dict=None, distribution_distance_metric="frechet_inception_distance"):
         """ Estimates the threshold using the random sampling algorithm.
 
         Args:
@@ -167,7 +169,7 @@ class DriftLens:
         threshold_algorithm = _threshold.RandomSamplingThresholdEstimator(label_list)
         # Execute the threshold estimation
         try:
-            per_batch_distances_sorted, per_label_distances = threshold_algorithm.estimate_threshold(E, Y, self.baseline, window_size, n_samples, flag_shuffle=flag_shuffle, flag_replacement=flag_replacement, proportional_flag=proportional_flag, proportions_dict=proportions_dict)
+            per_batch_distances_sorted, per_label_distances = threshold_algorithm.estimate_threshold(E, Y, self.baseline, window_size, n_samples, flag_shuffle=flag_shuffle, flag_replacement=flag_replacement, proportional_flag=proportional_flag, proportions_dict=proportions_dict, distribution_distance_metric=distribution_distance_metric)
         except Exception as e:
             raise Exception(f'Error in estimating the threshold: {e}')
         return per_batch_distances_sorted, per_label_distances
@@ -231,11 +233,15 @@ class DriftLens:
         """
         if distribution_distance_metric == "frechet_inception_distance":
             window_distribution_distances_dict = self._compute_frechet_distribution_distances(self.label_list, self.baseline, E_w, Y_w)
+        elif distribution_distance_metric == "mahalanobis_drift_distance":
+            window_distribution_distances_dict = self._compute_mahalanobis_drift_distances(self.label_list, self.baseline, E_w, Y_w)
+        elif distribution_distance_metric == "kullback_leibler_drift_divergence":
+            window_distribution_distances_dict = self._compute_kullback_leibler_distribution_divergences(self.label_list, self.baseline, E_w, Y_w)
         else:
             return None
         return window_distribution_distances_dict
 
-    def compute_window_list_distribution_distances(self, E_w_list, Y_w_list, distribution_distance_metric="frechet_inception_distance"):
+    def compute_window_list_distribution_distances(self, E_w_list, Y_w_list, distribution_distance_metric="frechet_drift_distance"):
         """ Computes the per-batch and per-label distribution distances for each embedding window.
 
         Args:
@@ -251,12 +257,26 @@ class DriftLens:
         window_distribution_list = []
 
         for window_id in range(len(E_w_list)):
-            if distribution_distance_metric == "frechet_inception_distance":
+            if distribution_distance_metric == "frechet_drift_distance":
                 window_distribution_distances_dict = self._compute_frechet_distribution_distances(self.label_list,
                                                                                                   self.baseline,
                                                                                                   E_w_list[window_id],
                                                                                                   Y_w_list[window_id],
                                                                                                   window_id)
+                window_distribution_list.append(window_distribution_distances_dict)
+            elif distribution_distance_metric == "mahalanobis_drift_distance":
+                window_distribution_distances_dict = self._compute_mahalanobis_drift_distances(self.label_list,
+                                                                                                  self.baseline,
+                                                                                                  E_w_list[window_id],
+                                                                                                  Y_w_list[window_id],
+                                                                                                  window_id)
+                window_distribution_list.append(window_distribution_distances_dict)
+            elif distribution_distance_metric == "kullback_leibler_drift_divergence":
+                window_distribution_distances_dict = self._compute_kullback_leibler_distribution_divergences(self.label_list,
+                                                                                                      self.baseline,
+                                                                                                      E_w_list[window_id],
+                                                                                                      Y_w_list[window_id],
+                                                                                                      window_id)
                 window_distribution_list.append(window_distribution_distances_dict)
             else:
                 return None
@@ -339,6 +359,116 @@ class DriftLens:
             covariance_w_l = fdd.get_covariance(E_w_l_reduced)
 
             distribution_distance_l = fdd.frechet_distance(mean_b_l,
+                                                           mean_w_l,
+                                                           covariance_b_l,
+                                                           covariance_w_l)
+
+            window_distribution_distances_dict["per-label"][str(label)] = distribution_distance_l
+        return window_distribution_distances_dict
+
+    @staticmethod
+    def _compute_mahalanobis_drift_distances(label_list, baseline, E_w, Y_w, window_id=0):
+        """ Computes the mahalanobis distribution distance per-batch and per-label.
+
+        Args:
+            label_list (:obj:`list(str)`):
+            baseline (:obj:`BaselineClass`): The baseline object.
+            E_w: The embeddings of the current window.
+            Y_w: The predicted labels of the current window.
+            window_id:
+
+        Returns:
+            a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
+        """
+        window_distribution_distances_dict = {"window_id": window_id}
+
+        mean_b_batch = baseline.get_batch_mean_vector()
+        covariance_b_batch = baseline.get_batch_covariance_matrix()
+
+        # Reduce the embedding dimensionality with PCA for the entire current window w
+        E_w_reduced = baseline.get_batch_PCA_model().transform(E_w)
+
+        mean_w_batch = mdd.get_mean(E_w_reduced)
+
+        distribution_distance_batch = mdd.mahalanobis_distance(mean_b_batch,
+                                                               mean_w_batch,
+                                                               covariance_b_batch)
+
+
+        window_distribution_distances_dict["per-batch"] = distribution_distance_batch
+        window_distribution_distances_dict["per-label"] = {}
+
+        for label in label_list:
+            mean_b_l = baseline.get_mean_vector_by_label(label)
+            covariance_b_l = baseline.get_covariance_matrix_by_label(label)
+
+            # Select examples of of the current window w predicted with label l
+            E_w_l_idxs = np.nonzero(Y_w == label)
+            E_w_l = E_w[E_w_l_idxs]
+
+            # Reduce the embedding dimensionality with PCA_l for current window w
+            E_w_l_reduced = baseline.get_PCA_model_by_label(label).transform(E_w_l)
+
+            # Estimate the mean vector and the covariance matrix for the label l in the current window w
+            mean_w_l = mdd.get_mean(E_w_l_reduced)
+
+            distribution_distance_l = mdd.mahalanobis_distance(mean_b_l,
+                                                           mean_w_l,
+                                                           covariance_b_l)
+
+            window_distribution_distances_dict["per-label"][str(label)] = distribution_distance_l
+
+        return window_distribution_distances_dict
+
+    @staticmethod
+    def _compute_kullback_leibler_distribution_divergences(label_list, baseline, E_w, Y_w, window_id=0):
+        """ Computes the frechet distribution distance (FID) per-batch and per-label.
+
+        Args:
+            label_list (:obj:`list(str)`):
+            baseline (:obj:`BaselineClass`): The baseline object.
+            E_w: The embeddings of the current window.
+            Y_w: The predicted labels of the current window.
+            window_id:
+
+        Returns:
+            a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
+        """
+        window_distribution_distances_dict = {"window_id": window_id}
+
+        mean_b_batch = baseline.get_batch_mean_vector()
+        covariance_b_batch = baseline.get_batch_covariance_matrix()
+
+        # Reduce the embedding dimensionality with PCA for the entire current window w
+        E_w_reduced = baseline.get_batch_PCA_model().transform(E_w)
+
+        mean_w_batch = kldd.get_mean(E_w_reduced)
+        covariance_w_batch = kldd.get_covariance(E_w_reduced)
+
+        distribution_distance_batch = kldd.kl_divergence(mean_b_batch,
+                                                           mean_w_batch,
+                                                           covariance_b_batch,
+                                                           covariance_w_batch)
+
+        window_distribution_distances_dict["per-batch"] = distribution_distance_batch
+        window_distribution_distances_dict["per-label"] = {}
+
+        for label in label_list:
+            mean_b_l = baseline.get_mean_vector_by_label(label)
+            covariance_b_l = baseline.get_covariance_matrix_by_label(label)
+
+            # Select examples of of the current window w predicted with label l
+            E_w_l_idxs = np.nonzero(Y_w == label)
+            E_w_l = E_w[E_w_l_idxs]
+
+            # Reduce the embedding dimensionality with PCA_l for current window w
+            E_w_l_reduced = baseline.get_PCA_model_by_label(label).transform(E_w_l)
+
+            # Estimate the mean vector and the covariance matrix for the label l in the current window w
+            mean_w_l = kldd.get_mean(E_w_l_reduced)
+            covariance_w_l = kldd.get_covariance(E_w_l_reduced)
+
+            distribution_distance_l = kldd.kl_divergence(mean_b_l,
                                                            mean_w_l,
                                                            covariance_b_l,
                                                            covariance_w_l)
