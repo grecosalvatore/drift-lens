@@ -3,6 +3,8 @@ import os.path
 from driftlens import _frechet_drift_distance as fdd
 from driftlens import _mahalanobis_drift_distance as mdd
 from driftlens import _kullback_leibler_drift_divergence as kldd
+from driftlens import _bhattacharyya_drift_distance as bdd
+from driftlens import _jensen_shannon_drift_divergence as jsdd
 from driftlens import _baseline as _baseline
 from driftlens import _threshold as _threshold
 
@@ -237,6 +239,10 @@ class DriftLens:
             window_distribution_distances_dict = self._compute_mahalanobis_drift_distances(self.label_list, self.baseline, E_w, Y_w)
         elif distribution_distance_metric == "kullback_leibler_drift_divergence":
             window_distribution_distances_dict = self._compute_kullback_leibler_distribution_divergences(self.label_list, self.baseline, E_w, Y_w)
+        elif distribution_distance_metric == "bhattacharyya_drift_distance":
+            window_distribution_distances_dict = self._compute_bhattacharyya_distribution_distances(self.label_list, self.baseline, E_w, Y_w)
+        elif distribution_distance_metric == "jensen_shannon_drift_divergence":
+            window_distribution_distances_dict = self._compute_jensen_shannon_distribution_divergences(self.label_list, self.baseline, E_w, Y_w)
         else:
             return None
         return window_distribution_distances_dict
@@ -277,6 +283,20 @@ class DriftLens:
                                                                                                       E_w_list[window_id],
                                                                                                       Y_w_list[window_id],
                                                                                                       window_id)
+                window_distribution_list.append(window_distribution_distances_dict)
+            elif distribution_distance_metric == "bhattacharyya_drift_distance":
+                window_distribution_distances_dict = self._compute_bhattacharyya_distribution_distances(self.label_list,
+                                                                                                          self.baseline,
+                                                                                                          E_w_list[window_id],
+                                                                                                          Y_w_list[window_id],
+                                                                                                          window_id)
+                window_distribution_list.append(window_distribution_distances_dict)
+            elif distribution_distance_metric == "jensen_shannon_drift_divergence":
+                window_distribution_distances_dict = self._compute_jensen_shannon_distribution_divergences(self.label_list,
+                                                                                                          self.baseline,
+                                                                                                          E_w_list[window_id],
+                                                                                                          Y_w_list[window_id],
+                                                                                                          window_id)
                 window_distribution_list.append(window_distribution_distances_dict)
             else:
                 return None
@@ -472,6 +492,118 @@ class DriftLens:
                                                            mean_w_l,
                                                            covariance_b_l,
                                                            covariance_w_l)
+
+            window_distribution_distances_dict["per-label"][str(label)] = distribution_distance_l
+        return window_distribution_distances_dict
+
+    @staticmethod
+    def _compute_bhattacharyya_distribution_distances(label_list, baseline, E_w, Y_w, window_id=0):
+        """ Computes the bhattacharyya distribution distance (FID) per-batch and per-label.
+
+        Args:
+            label_list (:obj:`list(str)`):
+            baseline (:obj:`BaselineClass`): The baseline object.
+            E_w: The embeddings of the current window.
+            Y_w: The predicted labels of the current window.
+            window_id:
+
+        Returns:
+            a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
+        """
+        window_distribution_distances_dict = {"window_id": window_id}
+
+        mean_b_batch = baseline.get_batch_mean_vector()
+        covariance_b_batch = baseline.get_batch_covariance_matrix()
+
+        # Reduce the embedding dimensionality with PCA for the entire current window w
+        E_w_reduced = baseline.get_batch_PCA_model().transform(E_w)
+
+        mean_w_batch = fdd.get_mean(E_w_reduced)
+        covariance_w_batch = bdd.get_covariance(E_w_reduced)
+
+        distribution_distance_batch = bdd.bhattacharyya_distance(mean_b_batch,
+                                                                   mean_w_batch,
+                                                                   covariance_b_batch,
+                                                                   covariance_w_batch)
+
+        window_distribution_distances_dict["per-batch"] = distribution_distance_batch
+        window_distribution_distances_dict["per-label"] = {}
+
+        for label in label_list:
+            mean_b_l = baseline.get_mean_vector_by_label(label)
+            covariance_b_l = baseline.get_covariance_matrix_by_label(label)
+
+            # Select examples of of the current window w predicted with label l
+            E_w_l_idxs = np.nonzero(Y_w == label)
+            E_w_l = E_w[E_w_l_idxs]
+
+            # Reduce the embedding dimensionality with PCA_l for current window w
+            E_w_l_reduced = baseline.get_PCA_model_by_label(label).transform(E_w_l)
+
+            # Estimate the mean vector and the covariance matrix for the label l in the current window w
+            mean_w_l = bdd.get_mean(E_w_l_reduced)
+            covariance_w_l = bdd.get_covariance(E_w_l_reduced)
+
+            distribution_distance_l = bdd.bhattacharyya_distance(mean_b_l,
+                                                                   mean_w_l,
+                                                                   covariance_b_l,
+                                                                   covariance_w_l)
+
+            window_distribution_distances_dict["per-label"][str(label)] = distribution_distance_l
+        return window_distribution_distances_dict
+
+    @staticmethod
+    def _compute_jensen_shannon_distribution_divergences(label_list, baseline, E_w, Y_w, window_id=0):
+        """ Computes the jensen shannon distribution distance (FID) per-batch and per-label.
+
+        Args:
+            label_list (:obj:`list(str)`):
+            baseline (:obj:`BaselineClass`): The baseline object.
+            E_w: The embeddings of the current window.
+            Y_w: The predicted labels of the current window.
+            window_id:
+
+        Returns:
+            a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
+        """
+        window_distribution_distances_dict = {"window_id": window_id}
+
+        mean_b_batch = baseline.get_batch_mean_vector()
+        covariance_b_batch = baseline.get_batch_covariance_matrix()
+
+        # Reduce the embedding dimensionality with PCA for the entire current window w
+        E_w_reduced = baseline.get_batch_PCA_model().transform(E_w)
+
+        mean_w_batch = jsdd.get_mean(E_w_reduced)
+        covariance_w_batch = jsdd.get_covariance(E_w_reduced)
+
+        distribution_distance_batch = jsdd.jensen_shannon_divergence(mean_b_batch,
+                                                                 mean_w_batch,
+                                                                 covariance_b_batch,
+                                                                 covariance_w_batch)
+
+        window_distribution_distances_dict["per-batch"] = distribution_distance_batch
+        window_distribution_distances_dict["per-label"] = {}
+
+        for label in label_list:
+            mean_b_l = baseline.get_mean_vector_by_label(label)
+            covariance_b_l = baseline.get_covariance_matrix_by_label(label)
+
+            # Select examples of of the current window w predicted with label l
+            E_w_l_idxs = np.nonzero(Y_w == label)
+            E_w_l = E_w[E_w_l_idxs]
+
+            # Reduce the embedding dimensionality with PCA_l for current window w
+            E_w_l_reduced = baseline.get_PCA_model_by_label(label).transform(E_w_l)
+
+            # Estimate the mean vector and the covariance matrix for the label l in the current window w
+            mean_w_l = jsdd.get_mean(E_w_l_reduced)
+            covariance_w_l = jsdd.get_covariance(E_w_l_reduced)
+
+            distribution_distance_l = jsdd.jensen_shannon_divergence(mean_b_l,
+                                                                     mean_w_l,
+                                                                     covariance_b_l,
+                                                                     covariance_w_l)
 
             window_distribution_distances_dict["per-label"][str(label)] = distribution_distance_l
         return window_distribution_distances_dict
