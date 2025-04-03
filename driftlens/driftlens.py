@@ -148,7 +148,7 @@ class DriftLens:
         self.threshold = threshold
         return
 
-    def random_sampling_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, n_samples, flag_shuffle=True, flag_replacement=True, proportional_flag=False, proportions_dict=None, distribution_distance_metric="frechet_inception_distance"):
+    def random_sampling_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, n_samples, flag_shuffle=True, flag_replacement=True, proportional_flag=False, proportions_dict=None, distribution_distance_metric="frechet_drift_distance"):
         """ Estimates the threshold using the random sampling algorithm.
 
         Args:
@@ -220,7 +220,7 @@ class DriftLens:
         self.threshold = threshold
         return threshold
 
-    def compute_window_distribution_distances(self, E_w, Y_w, distribution_distance_metric="frechet_inception_distance"):
+    def compute_window_distribution_distances(self, E_w, Y_w, distribution_distance_metric="frechet_drift_distance"):
         """ Computes the per-batch and per-label distribution distances for an embedding window.
 
         Args:
@@ -233,7 +233,7 @@ class DriftLens:
             (window_distribution_distances_dict[per-label][label]) distribution distances computed for the passed window
             with respect to the baseline.
         """
-        if distribution_distance_metric == "frechet_inception_distance":
+        if distribution_distance_metric == "frechet_drift_distance":
             window_distribution_distances_dict = self._compute_frechet_distribution_distances(self.label_list, self.baseline, E_w, Y_w)
         elif distribution_distance_metric == "mahalanobis_drift_distance":
             window_distribution_distances_dict = self._compute_mahalanobis_drift_distances(self.label_list, self.baseline, E_w, Y_w)
