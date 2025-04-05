@@ -12,7 +12,8 @@ Representations on Unstructured Data in Real-time</h4>
 [![arxiv preprint](https://img.shields.io/badge/arXiv-2406.17813-b31b1b.svg)](https://arxiv.org/abs/2406.17813)
 [![Downloads](https://static.pepy.tech/badge/driftlens)](https://pepy.tech/project/driftlens)
 
-*DriftLens* is an **unsupervised drift detection** framework for deep learning classifiers on unstructured data.
+*DriftLens* is an **unsupervised** framework for real-time *concept drift* **detection** and **characterization**. 
+It is designed for deep learning classifiers handling unstructured data, and leverages distribution distances in deep learning representations to enable efficient and accurate detection.
 
 The latest advancements in the *DriftLens* methodology and its evaluation is currently **Under Review** ([arxiv](https://www.arxiv.org/abs/2406.17813)). 
 
