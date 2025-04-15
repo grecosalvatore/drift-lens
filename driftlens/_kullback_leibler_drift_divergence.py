@@ -15,7 +15,17 @@ def matrix_sqrt(X) -> np.ndarray:
     return np.real_if_close(sqrt_X)  # Ensure real output for numerical stability
 
 def kl_divergence(mu_x, mu_y, sigma_x, sigma_y) -> float:
-    """ Computes the Kullback-Leibler (KL) divergence between two multivariate Gaussian distributions."""
+    """ Computes the Kullback-Leibler (KL) divergence between two multivariate Gaussian distributions.
+
+    Args:
+        mu_x (:obj:`numpy.ndarray`): Mean of the first Gaussian, of shape *(n_features)*.
+        mu_y (:obj:`numpy.ndarray`): Mean of the second Gaussian, of shape *(n_features)*.
+        sigma_x (:obj:`numpy.ndarray`): Covariance matrix of the first Gaussian, of shape *(n_features, n_features)*.
+        sigma_y (:obj:`numpy.ndarray`): Covariance matrix of the second Gaussian, of shape *(n_features, n_features)*.
+
+    Returns:
+        :obj:`float`: Kullback-Leibler divergence between the two Gaussian distributions.
+    """
     d = mu_x.shape[0]  # Dimensionality
 
     # Regularization to improve numerical stability

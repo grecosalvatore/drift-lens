@@ -39,7 +39,7 @@ def matrix_sqrt(X) -> np.ndarray:
 
 
 def frechet_distance(mu_x, mu_y, sigma_x, sigma_y) -> float:
-    """ Computes the Fréchet distance between multivariate Gaussian distributions x and y, parameterized by their means and covariance matrices.
+    """ Computes the Fréchet distance between multivariate Gaussian distributions.
 
     Args:
         mu_x (:obj:`numpy.ndarray`): Mean of the first Gaussian, of shape *(n_features)*.
