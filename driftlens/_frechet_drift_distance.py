@@ -49,6 +49,5 @@ def frechet_distance(mu_x, mu_y, sigma_x, sigma_y) -> float:
 
     Returns:
         :obj:`float`: Fréchet distance between the two Gaussian distributions.
-
     """
     return np.linalg.norm(mu_x - mu_y) + np.trace(sigma_x + sigma_y - 2*matrix_sqrt(sigma_x @ sigma_y))

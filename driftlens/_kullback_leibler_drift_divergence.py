@@ -2,11 +2,25 @@ import numpy as np
 import scipy.linalg
 
 def get_covariance(E) -> np.ndarray:
-    """ Computes the covariance matrix."""
+    """ Computes the covariance matrix.
+
+    Args:
+        E (:obj:`numpy.ndarray`): Embedding matrix of shape *(n_samples, n_features)*.
+
+    Returns:
+        :obj:`numpy.ndarray` Covariance matrix of shape *(n_features, n_features)*.
+    """
     return np.cov(E, rowvar=False)
 
 def get_mean(E) -> np.ndarray:
-    """ Compute the Mean vector."""
+    """ Compute the Mean vector.
+
+    Args:
+        E (:obj:`numpy.ndarray`): Embedding matrix of shape *(n_samples, n_features)*.
+
+    Returns:
+        :obj:`numpy.ndarray`: Mean vector of shape *(n_features)*.
+    """
     return E.mean(axis=0)
 
 def matrix_sqrt(X) -> np.ndarray:
