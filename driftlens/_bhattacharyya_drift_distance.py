@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def get_covariance(E) -> np.ndarray:
     """ Computes the covariance matrix.
 
@@ -11,6 +12,7 @@ def get_covariance(E) -> np.ndarray:
     """
     return np.cov(E, rowvar=False)
 
+
 def get_mean(E) -> np.ndarray:
     """ Compute the Mean vector.
 
@@ -21,6 +23,7 @@ def get_mean(E) -> np.ndarray:
         :obj:`numpy.ndarray`: Mean vector of shape *(n_features,)*.
     """
     return E.mean(axis=0)
+
 
 def bhattacharyya_distance(mu_x, mu_y, sigma_x, sigma_y) -> float:
     """ Computes the Bhattacharyya distance between two multivariate Gaussian distributions.

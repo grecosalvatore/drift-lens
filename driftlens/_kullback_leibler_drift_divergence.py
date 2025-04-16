@@ -28,6 +28,7 @@ def matrix_sqrt(X) -> np.ndarray:
     sqrt_X = scipy.linalg.sqrtm(X)
     return np.real_if_close(sqrt_X)  # Ensure real output for numerical stability
 
+
 def kl_divergence(mu_x, mu_y, sigma_x, sigma_y) -> float:
     """ Computes the Kullback-Leibler (KL) divergence between two multivariate Gaussian distributions.
 

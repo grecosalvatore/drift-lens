@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.linalg
 
 
 def get_covariance(E) -> np.ndarray:
