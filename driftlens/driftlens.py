@@ -1,5 +1,7 @@
 import os.path
 
+from typing import List, Tuple
+
 from driftlens.distribution_distances import frechet_drift_distance as fdd
 from driftlens.distribution_distances import mahalanobis_drift_distance as mdd
 from driftlens.distribution_distances import kullback_leibler_drift_divergence as kldd
@@ -294,10 +296,10 @@ class DriftLens:
         return window_distribution_distances_dict
 
     def compute_window_list_distribution_distances(self,
-                                                   E_w_list: list[np.ndarray],
-                                                   Y_w_list: list[np.ndarray],
+                                                   E_w_list: List[np.ndarray],
+                                                   Y_w_list: List[np.ndarray],
                                                    distribution_distance_metric: str = "frechet_drift_distance"
-                                                   ) -> tuple(list[dict], list[dict]):
+                                                   ) -> Tuple[List[dict], List[dict]]:
         """ Computes the per-batch and per-label distribution distances for each embedding window.
 
         Args:
