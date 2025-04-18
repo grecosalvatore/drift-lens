@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from sklearn.decomposition import PCA
 
 import numpy as np
-from driftlens import _frechet_drift_distance as fdd
+from driftlens.distribution_distances import frechet_drift_distance as fdd
 import os
 import pickle
 import json
