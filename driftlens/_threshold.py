@@ -9,7 +9,19 @@ from tqdm import tqdm
 
 
 class ThresholdClass:
-    """ Threshold Class: it contains all the attributes and methods of the threshold. """
+    """ Threshold Class: it contains all the attributes and methods of the threshold.
+
+    Attributes:
+        label_list                  (:obj:`list(int)`): List of label ids used to train the model
+        batch_n_pc                  (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift
+        per_label_n_pc              (:obj:`int`): number of principal components to reduce embedding for the per-label drift
+        window_size                 (:obj:`int`): Window size that will be used in the online phase
+        mean_distances_dict         (:obj:`dict`): Dictionary containing the mean distances for the batch and per-label drift
+        std_distances_dict          (:obj:`dict`): Dictionary containing the standard deviation distances for the batch and per-label drift
+        distribution_distances_list (:obj:`list`): List of distances for the batch and per-label drift
+        description                 (:obj:`str`): Description of the threshold
+        threshold_method_name       (:obj:`str`): Name of the threshold method
+    """
     def __init__(self):
         self.label_list = None  # List of labels used to train the model
         self.batch_n_pc = None  # Number of principal components to reduce the embedding for the entire batch drift
@@ -31,7 +43,11 @@ class ThresholdClass:
         self.threshold_method_name = ""
         return
 
-    def fit(self, batch_mean, batch_std, per_label_mean_dict, per_label_std_dict, label_list, batch_n_pc, per_label_n_pc, window_size, distribution_distances_list,  threshold_method_name=""):
+    def fit(self,
+            batch_mean,
+            batch_std,
+            per_label_mean_dict,
+            per_label_std_dict, label_list, batch_n_pc, per_label_n_pc, window_size, distribution_distances_list,  threshold_method_name=""):
         """ Fits the threshold attributes.
         Args:
             batch_mean:
@@ -56,18 +72,21 @@ class ThresholdClass:
         self.threshold_method_name = threshold_method_name
         return
 
-    def _fit_from_dict(self, threshold_dict):
+    def _fit_from_dict(self, threshold_dict: dict) -> None:
         """ Fits the threshold class attributes from a dictionary. """
+
         self.__dict__.update(threshold_dict)
         return
 
-    def save(self, folderpath, threshold_name):
+    def save(self, folderpath: str, threshold_name: str) -> None:
         """ Saves persistently on disk the threshold.
+
         Args:
-            folderpath (str): Folder path where save the threshold.
-            threshold_name (str): Filename of the threshold file.
+            folderpath      (:obj:`str`): Folder path where save the threshold.
+            threshold_name  (:obj:`str`): Filename of the threshold file.
+
         Returns:
-            (str): Threshold filepath.
+            (:obj:`str`):: Threshold filepath.
         """
 
         # Serialize the self object to json
@@ -80,11 +99,12 @@ class ThresholdClass:
             json.dump(experiment_json_dict, fp)
         return
 
-    def load(self, folderpath, threshold_name):
+    def load(self, folderpath, threshold_name) -> None:
         """ Loads the threshold from folder.
+
         Args:
-            folderpath: (str) folderpath containing the threshold json.
-            threshold_name: (str) name of the threshold json file.
+            folderpath      (:obj:`str`): folderpath containing the threshold json.
+            threshold_name  (:obj:`str`): name of the threshold json file.
         """
         if threshold_name.endswith(".json"):
             threshold_filepath = os.path.join(folderpath, threshold_name)
@@ -104,25 +124,28 @@ class ThresholdClass:
 
         return
 
-    def set_description(self, description):
+    def set_description(self, description) -> None:
         """ Sets the 'description' attribute of the threshold.
+
         Args:
-            (str): Description of the threshold.
+            description     (:obj:`str`): Description of the threshold.
         """
         self.description = description
         return
 
-    def get_description(self):
+    def get_description(self) -> str:
         """ Gets the 'description' attribute of the threshold.
+
          Returns:
-             (str): Description of the threshold.
+             (:obj:`str`): Description of the threshold.
         """
         return self.description
 
-    def get_label_list(self):
+    def get_label_list(self) -> list:
         """ Gets the 'label_list' attribute of the threshold. It contains the list of labels.
+
         Returns:
-            (list): List of labels used to train the model.
+            (:obj:`list`): List of labels used to train the model.
         """
         return self.label_list
 
@@ -154,7 +177,13 @@ class ThresholdClass:
 class ThresholdEstimatorMethod(ABC):
     """ Abstract Baseline Estimator Method class. """
 
-    def __init__(self, label_list, threshold_method_name):
+    def __init__(self, label_list: list, threshold_method_name: str):
+        """ Constructor of the ThresholdEstimatorMethod class.
+
+        Args:
+            label_list              (:obj:`list`): List of label ids used to train the model.
+            threshold_method_name   (:obj:`str`): Name of the threshold method.
+        """
         self.label_list = label_list
         self.threshold_method_name = threshold_method_name
         return

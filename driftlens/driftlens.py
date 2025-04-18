@@ -45,7 +45,7 @@ class DriftLens:
     def estimate_baseline(self,
                           E: np.ndarray,
                           Y: np.ndarray,
-                          label_list: list[int],
+                          label_list: List[int],
                           batch_n_pc: int,
                           per_label_n_pc: int,
                           baseline_algorithm: str = "StandardBaselineEstimator"
