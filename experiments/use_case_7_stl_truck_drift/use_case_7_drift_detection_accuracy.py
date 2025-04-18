@@ -90,7 +90,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 8")
+    print("Drift Detection Experiment - Use Case 7")
 
     # Parse arguments
     args = parse_args()
@@ -106,8 +106,8 @@ def main():
     print("Number of samples threshold: ", args.threshold_number_of_estimation_samples)
     print("Drift percentage: ", args.drift_percentage)
 
-    training_label_list = [0, 1]  # Labels used for training
-    drift_label_list = [2]  # Labels used for drift simulation
+    training_label_list = [0, 1, 2, 3, 4, 5, 6, 7, 8]  # Labels used for training
+    drift_label_list = [9]  # Labels used for drift simulation
 
     if args.save_results:
         if not os.path.exists(args.output_dir):
@@ -133,12 +133,6 @@ def main():
         E_test, Y_original_test, Y_predicted_test = load_embedding(args.test_embedding_filepath)
         E_new_unseen, Y_original_new_unseen, Y_predicted_new_unseen = load_embedding(args.new_unseen_embedding_filepath)
         E_drift, Y_original_drift, Y_predicted_drift = load_embedding(args.drift_embedding_filepath)
-        Y_original_drift = np.array([2] * len(Y_original_drift))
-
-        E_train = E_train.astype(np.float32)
-        E_test = E_test.astype(np.float32)
-        E_new_unseen = E_new_unseen.astype(np.float32)
-        E_drift = E_drift.astype(np.float32)
 
     print("Training samples:", len(E_train))
     print("Test samples:", len(E_test))
@@ -193,15 +187,8 @@ def main():
                 flag_replacement=True)
 
             # Calculate the threshold values
-            #l = np.array(per_batch_distances_sorted)
-            #l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
-            #per_batch_th = max(l)
-
-            # Calculate the threshold values
             l = np.array(per_batch_distances_sorted)
-            left_tail = args.threshold_sensitivity / 100
-            right_tail = (100 - args.threshold_sensitivity)/100
-            l = l[(l > np.quantile(l, left_tail)) & (l < np.quantile(l, right_tail))].tolist()
+            l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
             per_batch_th = max(l)
         else:
             print("DriftLens skipped")
@@ -209,36 +196,36 @@ def main():
         if (args.n_subsamples_mmd < len(E_train)) and (args.n_subsamples_mmd != -1):
 
             E_subsample_mmd, Y_subsample_mmd = stratified_subsampling(E_train,
-                                                                      Y_original_train,
-                                                                      n_samples=args.n_subsamples_mmd,
-                                                                      unique_labels=training_label_list)
+                                                              Y_original_train,
+                                                              n_samples=args.n_subsamples_mmd,
+                                                              unique_labels=training_label_list)
         else:
             E_subsample_mmd, Y_subsample_mmd = (E_train, Y_original_train)
 
         if (args.n_subsamples_lsdd < len(E_train)) and (args.n_subsamples_lsdd != -1):
 
             E_subsample_lsdd, Y_subsample_lsdd = stratified_subsampling(E_train,
-                                                                        Y_original_train,
-                                                                        n_samples=args.n_subsamples_lsdd,
-                                                                        unique_labels=training_label_list)
+                                                              Y_original_train,
+                                                              n_samples=args.n_subsamples_lsdd,
+                                                              unique_labels=training_label_list)
         else:
             E_subsample_lsdd, Y_subsample_lsdd = (E_train, Y_original_train)
 
         if (args.n_subsamples_cvm < len(E_train)) and (args.n_subsamples_cvm != -1):
 
             E_subsample_cvm, Y_subsample_cvm = stratified_subsampling(E_train,
-                                                                      Y_original_train,
-                                                                      n_samples=args.n_subsamples_cvm,
-                                                                      unique_labels=training_label_list)
+                                                              Y_original_train,
+                                                              n_samples=args.n_subsamples_cvm,
+                                                              unique_labels=training_label_list)
         else:
             E_subsample_cvm, Y_subsample_cvm = (E_train, Y_original_train)
 
         if (args.n_subsamples_ks < len(E_train)) and (args.n_subsamples_ks != -1):
 
             E_subsample_ks, Y_subsample_ks = stratified_subsampling(E_train,
-                                                                    Y_original_train,
-                                                                    n_samples=args.n_subsamples_ks,
-                                                                    unique_labels=training_label_list)
+                                                              Y_original_train,
+                                                              n_samples=args.n_subsamples_ks,
+                                                              unique_labels=training_label_list)
         else:
             E_subsample_ks = E_train
             Y_subsample_ks = Y_original_train
@@ -250,8 +237,8 @@ def main():
 
         # Initialize drift detectors used for comparison
         ks_detector = KSDrift(E_subsample_ks, p_val=.05)
-        mmd_detector = MMDDrift(E_subsample_mmd, p_val=.05, n_permutations=100, backend="pytorch")
-        lsdd_detector = LSDDDrift(E_subsample_lsdd, backend='pytorch', p_val=.05)
+        mmd_detector = MMDDrift(E_subsample_mmd, p_val=.05, n_permutations=100, backend="pytorch", device=device)
+        lsdd_detector = LSDDDrift(E_subsample_lsdd, backend='pytorch', p_val=.05 , device=device)
         cvm_detector = CVMDrift(E_subsample_cvm, p_val=.05)
 
         for current_drift_percentage in args.drift_percentage:

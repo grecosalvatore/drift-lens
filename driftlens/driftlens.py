@@ -100,7 +100,6 @@ class DriftLens:
         Returns:
             :obj:`str`: The threshold filepath.
         """
-
         if self.threshold is not None:
             threshold_path = self.threshold.save(folder_path, threshold_name)
         else:
@@ -113,6 +112,7 @@ class DriftLens:
         Args:
             folder_path (:obj:`str`): Folder path with the saved baseline.
             baseline_name (:obj:`str`): Filename of the baseline folder.
+
         Returns:
             :class:`~driftlens._baseline.BaselineClass`: the loaded baseline.
         """
@@ -226,7 +226,7 @@ class DriftLens:
         Args:
             E_w (:obj:`numpy.ndarray`): Embeddings of the window.
             Y_w (:obj:`numpy.ndarray`): Predicted labels of the window.
-            distribution_distance_metric (:obj:`str`, `optional`): The distribution distance metric to use. Currently, only the Frechet Inception Distance is supported.
+            distribution_distance_metric (:obj:`str`, `optional`): The distribution distance metric to use. The Frechet Distance is used by default. Options are: ...
 
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label

@@ -16,16 +16,15 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train model')
-    parser.add_argument('--number_of_runs', type=int, default=1)
-    parser.add_argument('--model_name', type=str, default='bert')
-    parser.add_argument('--window_size', type=int, default=2000)
+    parser.add_argument('--number_of_runs', type=int, default=3)
+    parser.add_argument('--model_name', type=str, default='vit')
+    parser.add_argument('--window_size', type=int, default=1000)
     parser.add_argument('--number_of_windows', type=int, default=10)
     parser.add_argument('--drift_percentage', type=int, nargs='+', default=[0, 5, 10, 15, 20]),
-    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10000)
-    parser.add_argument('--batch_n_pc_list', type=int, nargs='+', default=[50, 100, 150, 200, 250]),
-    #parser.add_argument('--batch_n_pc', type=int, default=150)
+    parser.add_argument('--threshold_number_of_estimation_samples', type=int, default=10)
+    parser.add_argument('--threshold_sensitivity_list', type=int, nargs='+', default=[100, 99, 95, 90, 75]),
+    parser.add_argument('--batch_n_pc', type=int, default=150)
     parser.add_argument('--per_label_n_pc', type=int, default=75)
-    parser.add_argument('--threshold_sensitivity', type=int, default=99)
     parser.add_argument('--train_embedding_filepath', type=str, default=f"{os.getcwd()}/static/saved_embeddings/vit/train_embedding.hdf5")
     parser.add_argument('--test_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/test_embedding.hdf5')
     parser.add_argument('--new_unseen_embedding_filepath', type=str, default=f'{os.getcwd()}/static/saved_embeddings/vit/new_unseen_embedding.hdf5')
@@ -85,7 +84,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 6")
+    print("Drift Detection Experiment - Use Case 7")
 
     # Parse arguments
     args = parse_args()
@@ -94,8 +93,9 @@ def main():
     print("Number of runs: ", args.number_of_runs)
     print("Window size: ", args.window_size)
     print("Number of windows: ", args.number_of_windows)
-    print("Number of principal componenets sampling: ", args.batch_n_pc_list)
+    print("Number of principal componenets: ", args.batch_n_pc)
     print("Number of threshold samples: ", args.threshold_number_of_estimation_samples)
+    print("Threshold sensitivity list: ", args.threshold_sensitivity_list)
     print("Drift percentage: ", args.drift_percentage)
 
     training_label_list = [0, 1, 2, 3, 4, 5, 6, 7, 8]  # Labels used for training
@@ -106,7 +106,7 @@ def main():
             os.makedirs(args.output_dir)
         ts = time.time()
         timestamp = str(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M%S'))
-        output_filename = f"parameter_sensitivity_number_of_principal_components_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
+        output_filename = f"parameter_sensitivity_number_of_threshold_sensitivity_{args.model_name}_win_size_{args.window_size}_n_windows_{args.number_of_windows}_{timestamp}.json"
 
     # Parse parameters
     window_size = args.window_size
@@ -128,91 +128,97 @@ def main():
 
     output_dict = {"params": vars(args)}
 
-    for batch_n_pc in args.batch_n_pc_list:
-        print(f"\nBatch Number of principal components: {batch_n_pc}")
+    for threshold_sensitivity in args.threshold_sensitivity_list:
+        output_dict[str(threshold_sensitivity)] = {str(p): {} for p in args.drift_percentage}
+        for p in args.drift_percentage:
+            output_dict[str(threshold_sensitivity)][str(p)]["accuracy_list"] = []
 
-        output_dict[batch_n_pc] = {}
+    for run_id in range(args.number_of_runs):
 
-        driftlens_acc_dict = {str(p): [] for p in args.drift_percentage}
+        print(f"\nRun {run_id + 1}/{args.number_of_runs}")
 
-        for run_id in range(args.number_of_runs):
+        # Initialize the WindowsGenerator - used for creating the windows
+        wg = WindowsGenerator(training_label_list,
+                              drift_label_list,
+                              E_new_unseen,
+                              Y_predicted_new_unseen,
+                              Y_original_new_unseen,
+                              E_drift,
+                              Y_predicted_drift,
+                              Y_original_drift)
 
-            print(f"\nRun {run_id + 1}/{args.number_of_runs}")
+        # Initialize the DriftLens
+        dl = DriftLens()
 
-            # Initialize the WindowsGenerator - used for creating the windows
-            wg = WindowsGenerator(training_label_list,
-                                  drift_label_list,
-                                  E_new_unseen,
-                                  Y_predicted_new_unseen,
-                                  Y_original_new_unseen,
-                                  E_drift,
-                                  Y_predicted_drift,
-                                  Y_original_drift)
+        # Estimate the baseline with DriftLens
+        baseline = dl.estimate_baseline(E=E_train,
+                                        Y=Y_predicted_train,
+                                        label_list=training_label_list,
+                                        batch_n_pc=args.batch_n_pc,
+                                        per_label_n_pc=per_label_n_pc)
 
-            # Initialize the DriftLens
-            dl = DriftLens()
+        # Estimate the threshold values with DriftLens
+        per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(
+            label_list=training_label_list,
+            E=E_test,
+            Y=Y_predicted_test,
+            batch_n_pc=args.batch_n_pc,
+            per_label_n_pc=per_label_n_pc,
+            window_size=window_size,
+            n_samples=args.threshold_number_of_estimation_samples,
+            flag_shuffle=True,
+            flag_replacement=True)
 
-            # Estimate the baseline with DriftLens
-            baseline = dl.estimate_baseline(E=E_train,
-                                            Y=Y_predicted_train,
-                                            label_list=training_label_list,
-                                            batch_n_pc=batch_n_pc,
-                                            per_label_n_pc=per_label_n_pc)
+        for current_drift_percentage in args.drift_percentage:
 
-            # Estimate the threshold values with DriftLens
-            per_batch_distances_sorted, per_label_distances_sorted = dl.random_sampling_threshold_estimation(
-                label_list=training_label_list,
-                E=E_test,
-                Y=Y_predicted_test,
-                batch_n_pc=batch_n_pc,
-                per_label_n_pc=per_label_n_pc,
-                window_size=window_size,
-                n_samples=args.threshold_number_of_estimation_samples,
-                flag_shuffle=True,
-                flag_replacement=True)
+            print(f" Drift percentage: {current_drift_percentage}")
 
-            # Calculate the threshold values
-            l = np.array(per_batch_distances_sorted)
-            l = l[(l > np.quantile(l, 0.01)) & (l < np.quantile(l, 0.99))].tolist()
-            per_batch_th = max(l)
+            # Initialize empty lists of predictions
+            dl_distances = []
 
+            # Ground truth
+            if current_drift_percentage > 0:
+                ground_truth = [1] * n_windows
+            else:
+                ground_truth = [0] * n_windows
 
-            for current_drift_percentage in args.drift_percentage:
+            # Generate windows and predict drift
+            for i in tqdm(range(n_windows)):
 
-                print(f" Drift percentage: {current_drift_percentage}")
-
-                # Initialize empty lists of predictions
-                dl_distances = []
-
-                # Ground truth
                 if current_drift_percentage > 0:
-                    ground_truth = [1] * n_windows
+                    # Drift
+                    E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_constant_drift_windows_generation(
+                        window_size=window_size,
+                        n_windows=1,
+                        drift_percentage=float(current_drift_percentage / 100),
+                        flag_shuffle=True,
+                        flag_replacement=True)
+
                 else:
-                    ground_truth = [0] * n_windows
+                    # No Drift
+                    E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(
+                        window_size=window_size,
+                        n_windows=1,
+                        flag_shuffle=True,
+                        flag_replacement=True)
 
-                # Generate windows and predict drift
-                for i in tqdm(range(n_windows)):
+                # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
+                dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
 
-                    if current_drift_percentage > 0:
-                        # Drift
-                        E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_constant_drift_windows_generation(window_size=window_size,
-                                                                                                                            n_windows=1,
-                                                                                                                            drift_percentage=float(current_drift_percentage/100),
-                                                                                                                            flag_shuffle=True,
-                                                                                                                            flag_replacement=True)
+                dl_distances.append(dl_distance)
 
-                    else:
-                        # No Drift
-                        E_windows, Y_predicted_windows, Y_original_windows = wg.balanced_without_drift_windows_generation(window_size=window_size,
-                                                                                                                          n_windows=1,
-                                                                                                                          flag_shuffle=True,
-                                                                                                                          flag_replacement=True)
+            for threshold_sensitivity in args.threshold_sensitivity_list:
+                print(f"\nThreshold sensitivity: {threshold_sensitivity}")
 
-                    # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
-                    dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
-
-                    dl_distances.append(dl_distance)
-
+                l = np.array(per_batch_distances_sorted)
+                if threshold_sensitivity != 0:
+                    # Calculate the threshold values
+                    left_tail = threshold_sensitivity / 100
+                    right_tail = (100 - threshold_sensitivity) / 100
+                    l = l[(l > np.quantile(l, left_tail)) & (l < np.quantile(l, right_tail))].tolist()
+                    per_batch_th = max(l)
+                else:
+                    per_batch_th = max(l)
 
                 dl_preds = []
                 for dl_distance in dl_distances:
@@ -224,21 +230,22 @@ def main():
                 # Calculate the accuracy of the drift detectors
                 driftlens_acc = accuracy_score(ground_truth, dl_preds, normalize=True)
 
-                driftlens_acc_dict[str(current_drift_percentage)].append(driftlens_acc)
-
-                print("DriftLens: ", driftlens_acc)
+                output_dict[str(threshold_sensitivity)][str(current_drift_percentage)]["accuracy_list"].append(
+                    driftlens_acc)
 
                 # Create the output dictionary
-                output_dict_run = {f"run_id":run_id, "drift_percentage": current_drift_percentage, "batch_n_pc":batch_n_pc, "DriftLens": driftlens_acc}
+                output_dict_run = {f"run_id": run_id, "drift_percentage": current_drift_percentage,
+                                   "threshold_sensitivity": threshold_sensitivity, "DriftLens": driftlens_acc}
                 output_dict_run_list.append(output_dict_run)
 
         output_dict["runs_log"] = output_dict_run_list
 
-        for p in args.drift_percentage:
-            output_dict[batch_n_pc][str(p)] = {"accuracy_list": {"DriftLens": driftlens_acc_dict[str(p)]},
-                                      "mean_accuracy": {"DriftLens": np.mean(driftlens_acc_dict[str(p)])},
-                                      "standard_deviation_accuracy": {"DriftLens": np.std(driftlens_acc_dict[str(p)])}}
-
+        for threshold_sensitivity in args.threshold_sensitivity_list:
+            for p in args.drift_percentage:
+                output_dict[str(threshold_sensitivity)][str(p)]["mean_accuracy"] = np.mean(
+                    output_dict[str(threshold_sensitivity)][str(p)]["accuracy_list"])
+                output_dict[str(threshold_sensitivity)][str(p)]["standard_deviation_accuracy"] = np.std(
+                    output_dict[str(threshold_sensitivity)][str(p)]["accuracy_list"])
 
         # Save the output dictionary
         with open(os.path.join(args.output_dir, output_filename), 'w') as fp:
