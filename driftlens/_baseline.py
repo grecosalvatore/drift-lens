@@ -12,25 +12,27 @@ class BaselineClass:
     """ Baseline CLass: it contains all the attributes and methods of the baseline.
 
     Attributes:
-        label_list (:obj:`list(str)`): List of labels used to train the model
-        batch_n_pc (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift
-        per_label_n_pc (:obj:`int`): number of principal components to reduce embedding for the per-label drift
-        mean_vectors_dict (:obj:`dict`): Dict containing the mean vectors: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
-        covariance_matrices_dict (:obj:`dict`): Dict containing the covariance matrices: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
-        PCA_models_dict (:obj:`dict`): Dict containing the PCA models: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+        label_list                  (:obj:`list(str)`): List of labels used to train the model
+        batch_n_pc                  (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift
+        per_label_n_pc              (:obj:`int`): number of principal components to reduce embedding for the per-label drift
+        mean_vectors_dict           (:obj:`dict`): Dict containing the mean vectors: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+        covariance_matrices_dict    (:obj:`dict`): Dict containing the covariance matrices: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+        PCA_models_dict             (:obj:`dict`): Dict containing the PCA models: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
     """
+
     def __init__(self):
         self.label_list = None  # List of labels used to train the model
         self.batch_n_pc = None  # Number of principal components to reduce the embedding for the entire batch drift
         self.per_label_n_pc = None  # number of principal components to reduce embedding for the per-label drift
 
-        self. mean_vectors_dict = {}  # Dict containing the mean vectors: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
-        self. covariance_matrices_dict = {}  # Dict containing the covariance matrices: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+        self.mean_vectors_dict = {}  # Dict containing the mean vectors: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+        self.covariance_matrices_dict = {}  # Dict containing the covariance matrices: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
         self.PCA_models_dict = {}  # Dict containing the PCA models: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
         self.n_samples_dict = {}  # Dict containing the number of samples: 1) per-label ["per-label"] and 2) in the entire batch ["batch"]
 
         self.mean_vectors_dict["per-label"] = {}  # Dict containing the per-label mean vectors ["label"]: mean(label)
-        self.covariance_matrices_dict["per-label"] = {}  # Dict containing the per-label covariance matrices ["label"]: covariance(label)
+        self.covariance_matrices_dict[
+            "per-label"] = {}  # Dict containing the per-label covariance matrices ["label"]: covariance(label)
         self.PCA_models_dict["per-label"] = {}  # Dict containing the per-label PCA models ["label"]: PCA(label)
         self.n_samples_dict["per-label"] = {}  # Dict containing the per-label number of samples
 
@@ -42,27 +44,38 @@ class BaselineClass:
         self.description = ""
         return
 
-    def fit(self, label_list, batch_n_pc, per_label_n_pc,
-            per_label_mean_dict, per_label_covariance_dict, per_label_PCA_models, per_label_n_samples,
-            batch_mean_vector=None, batch_covariance_matrix=None, batch_PCA_model=None, batch_n_samples=None, description="") -> None:
+    def fit(self,
+            label_list: list[int],
+            batch_n_pc: int,
+            per_label_n_pc: int,
+            per_label_mean_dict: dict,
+            per_label_covariance_dict: dict,
+            per_label_PCA_models,
+            per_label_n_samples,
+            batch_mean_vector=None,
+            batch_covariance_matrix=None,
+            batch_PCA_model=None,
+            batch_n_samples=None,
+            description=""
+            ) -> None:
         """ Fits the baseline attributes.
 
-        Args:
-            label_list (:obj:`list(str)`): List of labels used to train the model.
-            batch_n_pc (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift.
-            per_label_n_pc (:obj:`int`): Number of principal components to reduce embedding for the per-label drift.
-            per_label_mean_dict (dict): Dict containing the per-label mean vectors ["label"]: mean(label).
-            per_label_covariance_dict (dict): Dict containing the per-label covariance matrices ["label"]: covariance(label).
-            per_label_PCA_models (dict): Dict containing the per-label PCA models ["label"]: PCA(label).
-            per_label_n_samples (dict): Dict containing the per-label number of samples.
-            batch_mean_vector (np.array): Mean vector for the entire batch.
-            batch_covariance_matrix (np.array): Covariance matrix for the entire batch.
-            batch_PCA_model (PCA): PCA model for the entire batch.
-            batch_n_samples (int): Number of samples in the entire batch.
-            description (str): Description of the baseline.
+            Args:
+                label_list                  (:obj:`list(int)`): List of label ids used to train the model.
+                batch_n_pc                  (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift.
+                per_label_n_pc              (:obj:`int`): Number of principal components to reduce embedding for the per-label drift.
+                per_label_mean_dict         (dict): Dict containing the per-label mean vectors ["label"]: mean(label).
+                per_label_covariance_dict   (dict): Dict containing the per-label covariance matrices ["label"]: covariance(label).
+                per_label_PCA_models        (dict): Dict containing the per-label PCA models ["label"]: PCA(label).
+                per_label_n_samples         (dict): Dict containing the per-label number of samples.
+                batch_mean_vector           (np.array): Mean vector for the entire batch.
+                batch_covariance_matrix     (np.array): Covariance matrix for the entire batch.
+                batch_PCA_model             (PCA): PCA model for the entire batch.
+                batch_n_samples             (int): Number of samples in the entire batch.
+                description                 (str): Description of the baseline.
 
-        Returns:
-            None
+            Returns:
+                None
         """
         self.label_list = label_list
         self.batch_n_pc = batch_n_pc
@@ -133,7 +146,8 @@ class BaselineClass:
         outfile = os.path.join(BASELINE_STATISTICS_FOLDER, "baseline_covariance_batch")
         np.save(outfile, self.covariance_matrices_dict["batch"])
 
-        baseline_info_dict = {"label_list": self.label_list, "per_label_n_pc": self.per_label_n_pc, "batch_n_pc": self.batch_n_pc,
+        baseline_info_dict = {"label_list": self.label_list, "per_label_n_pc": self.per_label_n_pc,
+                              "batch_n_pc": self.batch_n_pc,
                               "n_samples_dict": self.n_samples_dict, "description": self.description}
         try:
             with open(os.path.join(BASELINE_PATH, 'baseline_info.json'), 'w') as fp:
@@ -168,17 +182,22 @@ class BaselineClass:
 
         for label in self.label_list:
             pca_l_filename = "baseline_pca_l_{}.pkl".format(str(label))
-            self.PCA_models_dict["per-label"][str(label)] = pickle.load(open(os.path.join(BASELINE_PCA_FOLDER, pca_l_filename), 'rb'))
+            self.PCA_models_dict["per-label"][str(label)] = pickle.load(
+                open(os.path.join(BASELINE_PCA_FOLDER, pca_l_filename), 'rb'))
 
             mean_l_filename = "baseline_mean_l_{}.npy".format(str(label))
-            self.mean_vectors_dict["per-label"][str(label)] = np.load(os.path.join(BASELINE_STATISTICS_FOLDER, mean_l_filename))
+            self.mean_vectors_dict["per-label"][str(label)] = np.load(
+                os.path.join(BASELINE_STATISTICS_FOLDER, mean_l_filename))
 
             covariance_l_filename = "baseline_covariance_l_{}.npy".format(str(label))
-            self.covariance_matrices_dict["per-label"][str(label)] = np.load(os.path.join(BASELINE_STATISTICS_FOLDER, covariance_l_filename))
+            self.covariance_matrices_dict["per-label"][str(label)] = np.load(
+                os.path.join(BASELINE_STATISTICS_FOLDER, covariance_l_filename))
 
-        self.PCA_models_dict["batch"] = pickle.load(open(os.path.join(BASELINE_PCA_FOLDER, "baseline_pca_batch.pkl"), 'rb'))
+        self.PCA_models_dict["batch"] = pickle.load(
+            open(os.path.join(BASELINE_PCA_FOLDER, "baseline_pca_batch.pkl"), 'rb'))
         self.mean_vectors_dict["batch"] = np.load(os.path.join(BASELINE_STATISTICS_FOLDER, "baseline_mean_batch.npy"))
-        self.covariance_matrices_dict["batch"] = np.load(os.path.join(BASELINE_STATISTICS_FOLDER, "baseline_covariance_batch.npy"))
+        self.covariance_matrices_dict["batch"] = np.load(
+            os.path.join(BASELINE_STATISTICS_FOLDER, "baseline_covariance_batch.npy"))
 
         return
 
@@ -354,7 +373,6 @@ class BaselineEstimatorMethod(ABC):
         per_label_PCA_dict = {}
 
         for label in self.label_list:
-
             # Select examples of the current label (predicted/original)
             E_l_idxs = np.nonzero(Y == label)  # Indices of embedding vectors E for label l
             E_l = E[E_l_idxs]  # Embedding vectors E for label l
@@ -371,6 +389,7 @@ class BaselineEstimatorMethod(ABC):
 
 class StandardBaselineEstimator(BaselineEstimatorMethod):
     """ Standard Baseline Estimator Class: Implementation of the BaselineEstimatorMethod Abstract Class. """
+
     def __init__(self, label_list, batch_n_pc, per_label_n_pc):
         BaselineEstimatorMethod.__init__(self, label_list, batch_n_pc, per_label_n_pc)
         return

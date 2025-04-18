@@ -29,9 +29,9 @@ def mahalanobis_distance(mu_x, mu_y, sigma_x) -> float:
     """ Computes the Mahalanobis distance between two means, assuming covariance sigma_x.
 
     Args:
-        mu_x (:obj:`numpy.ndarray`): Mean of the first Gaussian, of shape *(n_features)*.
-        mu_y (:obj:`numpy.ndarray`): Mean of the second Gaussian, of shape *(n_features)*.
-        sigma_x (:obj:`numpy.ndarray`): Covariance matrix of the first Gaussian, of shape *(n_features, n_features)*.
+        mu_x        (:obj:`numpy.ndarray`): Mean of the first Gaussian, of shape *(n_features)*.
+        mu_y        (:obj:`numpy.ndarray`): Mean of the second Gaussian, of shape *(n_features)*.
+        sigma_x     (:obj:`numpy.ndarray`): Covariance matrix of the first Gaussian, of shape *(n_features, n_features)*.
 
     Returns:
         :obj:`float`: Mahalanobis distance between the two means with respect to the covariance of the first distribution.

@@ -33,10 +33,10 @@ def kl_divergence(mu_x, mu_y, sigma_x, sigma_y) -> float:
     """ Computes the Kullback-Leibler (KL) divergence between two multivariate Gaussian distributions.
 
     Args:
-        mu_x (:obj:`numpy.ndarray`): Mean of the first Gaussian, of shape *(n_features)*.
-        mu_y (:obj:`numpy.ndarray`): Mean of the second Gaussian, of shape *(n_features)*.
-        sigma_x (:obj:`numpy.ndarray`): Covariance matrix of the first Gaussian, of shape *(n_features, n_features)*.
-        sigma_y (:obj:`numpy.ndarray`): Covariance matrix of the second Gaussian, of shape *(n_features, n_features)*.
+        mu_x        (:obj:`numpy.ndarray`): Mean of the first Gaussian, of shape *(n_features)*.
+        mu_y        (:obj:`numpy.ndarray`): Mean of the second Gaussian, of shape *(n_features)*.
+        sigma_x     (:obj:`numpy.ndarray`): Covariance matrix of the first Gaussian, of shape *(n_features, n_features)*.
+        sigma_y     (:obj:`numpy.ndarray`): Covariance matrix of the second Gaussian, of shape *(n_features, n_features)*.
 
     Returns:
         :obj:`float`: Kullback-Leibler divergence between the two Gaussian distributions.
