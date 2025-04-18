@@ -193,7 +193,8 @@ def main():
             window_size=window_size,
             n_samples=args.threshold_number_of_estimation_samples,
             flag_shuffle=True,
-            flag_replacement=True)
+            flag_replacement=True,
+            distribution_distance_metric="frechet_drift_distance")
 
         # Calculate the threshold values
         l = np.array(per_batch_distances_sorted)
@@ -247,7 +248,7 @@ def main():
                                                                                                                       flag_replacement=True)
 
                 # Compute the window distribution distances (Frechet Inception Distance) with DriftLens
-                dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0])
+                dl_distance = dl.compute_window_distribution_distances(E_windows[0], Y_predicted_windows[0], distribution_distance_metric="frechet_drift_distance")
 
                 # Predict drift with the drift detectors used for comparison
                 ks_pred = ks_detector.predict(E_windows[0])

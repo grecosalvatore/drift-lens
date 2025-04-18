@@ -90,7 +90,7 @@ def stratified_subsampling(E, Y, n_samples, unique_labels):
 
 
 def main():
-    print("Drift Detection Experiment - Use Case 4 - MNIST")
+    print("Drift Detection Experiment - Use Case 5 - MNIST")
 
     # Parse arguments
     args = parse_args()
