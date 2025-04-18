@@ -94,12 +94,14 @@ class BaselineClass:
 
         return
 
-    def save(self, folder_path, baseline_name):
+    def save(self,
+             folder_path,
+             baseline_name):
         """ Saves persistently on disk the baseline.
 
         Args:
-            folder_path (str): Folder path where save the baseline.
-            baseline_name (str): Filename of the baseline folder.
+            folder_path     (str): Folder path where save the baseline.
+            baseline_name   (str): Filename of the baseline folder.
 
         Returns:
             (str): Baseline folder path.
@@ -199,8 +201,7 @@ class BaselineClass:
         self.PCA_models_dict["batch"] = pickle.load(
             open(os.path.join(BASELINE_PCA_FOLDER, "baseline_pca_batch.pkl"), 'rb'))
         self.mean_vectors_dict["batch"] = np.load(os.path.join(BASELINE_STATISTICS_FOLDER, "baseline_mean_batch.npy"))
-        self.covariance_matrices_dict["batch"] = np.load(
-            os.path.join(BASELINE_STATISTICS_FOLDER, "baseline_covariance_batch.npy"))
+        self.covariance_matrices_dict["batch"] = np.load(os.path.join(BASELINE_STATISTICS_FOLDER, "baseline_covariance_batch.npy"))
 
         return
 
@@ -266,6 +267,7 @@ class BaselineClass:
 
     def get_per_label_n_samples(self):
         """ Gets the number of samples per label.
+
         Returns:
             dict: Number of samples per label.
         """
@@ -273,6 +275,7 @@ class BaselineClass:
 
     def get_batch_PCA_model(self):
         """ Gets the PCA model of the entire batch.
+
         Returns:
             PCA: PCA model of the entire batch (per-batch).
         """
@@ -280,6 +283,7 @@ class BaselineClass:
 
     def get_batch_mean_vector(self):
         """ Gets the mean vector of the entire batch.
+
         Returns:
             np.ndarray: Mean vector of the entire batch (per-batch).
         """
@@ -287,6 +291,7 @@ class BaselineClass:
 
     def get_batch_covariance_matrix(self):
         """ Gets the covariance matrix of the entire batch.
+
         Returns:
             np.ndarray: Covariance matrix of the entire batch (per-batch).
         """
@@ -294,6 +299,7 @@ class BaselineClass:
 
     def get_batch_n_samples(self):
         """ Gets the number of samples of the entire batch (per-batch).
+
         Returns:
             int: Number of samples of the entire batch.
         """
@@ -301,6 +307,7 @@ class BaselineClass:
 
     def get_per_label_number_of_principal_components(self):
         """ Gets the number of principal components for PCA for each label (per-label).
+
         Returns:
             dict: Number of principal components for PCA for each label.
         """
@@ -308,6 +315,7 @@ class BaselineClass:
 
     def get_batch_number_of_principal_components(self):
         """ Gets the number of principal components for PCA for the entire batch (per-batch).
+
         Returns:
             int: Number of principal components for PCA for the entire batch.
         """
@@ -315,6 +323,7 @@ class BaselineClass:
 
     def get_label_list(self):
         """ Gets the list of labels used to train the model.
+
         Returns:
             list: List of labels used to train the model.
         """
@@ -322,6 +331,7 @@ class BaselineClass:
 
     def get_description(self):
         """ Gets the description of the baseline estimator.
+
         Returns:
             str: Description of the baseline estimator.
         """
@@ -329,6 +339,7 @@ class BaselineClass:
 
     def set_description(self, description):
         """ Sets the description of the baseline estimator.
+
         Args:
             description (str): Description of the baseline estimator.
         """
@@ -340,9 +351,9 @@ class BaselineEstimatorMethod(ABC):
     """ Abstract Baseline Estimator Method class.
 
     Attributes:
-        label_list (:obj:`list(int)`): List of labels used to train the model.
-        batch_n_pc (:obj:`int`): Number of principal components for PCA for the entire batch.
-        per_label_n_pc (:obj:`dict`): Number of principal components for PCA for each label.
+        label_list      (:obj:`list(int)`): List of labels used to train the model.
+        batch_n_pc      (:obj:`int`): Number of principal components for PCA for the entire batch.
+        per_label_n_pc  (:obj:`dict`): Number of principal components for PCA for each label.
 
     """
 
@@ -361,8 +372,8 @@ class BaselineEstimatorMethod(ABC):
         """ Fits a PCA for each label and for the entire batch.
 
         Args:
-            E (:obj:`np.ndarray`): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
-            Y (:obj:`np.ndarray`): Labels (predicted/original) of shape (m, 1), where m is the number of samples.
+            E   (:obj:`np.ndarray`): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
+            Y   (:obj:`np.ndarray`): Labels (predicted/original) of shape (m, 1), where m is the number of samples.
 
         Returns:
             :obj:`sklearn.decomposition.PCA`: PCA computed over the entire batch.
@@ -399,9 +410,11 @@ class StandardBaselineEstimator(BaselineEstimatorMethod):
 
     def estimate_baseline(self, E, Y):
         """ Estimates the baseline.
+
          Args:
-             E (np.array): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
-             Y (np.array): Labels (predicted/origianl) of shape (m, 1), where m is the number of samples.
+             E  (np.array): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
+             Y  (np.array): Labels (predicted/origianl) of shape (m, 1), where m is the number of samples.
+             
          Returns:
              BaselineClass: Returns the baseline objects with the estimated models.
          """

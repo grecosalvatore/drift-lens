@@ -20,13 +20,13 @@ class DriftLens:
     """ DriftLens Class.
 
     Attributes:
-        baseline (:obj:`BaselineClass`): BaselineClass object.
-        threshold (:obj:`ThresholdClass`): ThresholdClass object.
-        label_list (:obj:`list(str)`): List of class labels.
-        batch_n_pc (:obj:`int`): Number of principal components to use for the per-batch.
-        per_label_n_pc (:obj:`int`): Number of principal components to use for the per-label.
-        baseline_algorithms (:obj:`dict`): Dictionary of possible baseline algorithms.
-        threshold_estimators (:obj:`dict`): Dictionary of possible threshold estimators.
+        baseline                (:obj:`BaselineClass`): BaselineClass object.
+        threshold               (:obj:`ThresholdClass`): ThresholdClass object.
+        label_list              (:obj:`list(str)`): List of class labels.
+        batch_n_pc              (:obj:`int`): Number of principal components to use for the per-batch.
+        per_label_n_pc          (:obj:`int`): Number of principal components to use for the per-label.
+        baseline_algorithms     (:obj:`dict`): Dictionary of possible baseline algorithms.
+        threshold_estimators    (:obj:`dict`): Dictionary of possible threshold estimators.
     """
     def __init__(self, label_list=None):
 
@@ -44,12 +44,12 @@ class DriftLens:
         r""" Estimates the baseline.
 
         Args:
-            label_list (:obj:`list(str)`): List of class labels used to train the model.
-            batch_n_pc (:obj:`int`): Number of principal components to use for the per-batch.
-            per_label_n_pc (:obj:`int`): Number of principal components to use for the per-label.
-            E (:obj:`numpy.ndarray`): Embedding matrix of shape *(m, d)*, where *m* is the number of samples and *d* the embedding dimensionality.
-            Y (:obj:`numpy.ndarray`): Vector of predicted labels of shape *(m, 1)*, where m is the number of samples.
-            baseline_algorithm (:obj:`str`, `optional`): Baseline estimation algorithm to use. Possible values are: *"StandardBaselineEstimator"*. If not provided, the default value is *"StandardBaselineEstimator"*.
+            label_list          (:obj:`list(str)`): List of class labels used to train the model.
+            batch_n_pc          (:obj:`int`): Number of principal components to use for the per-batch.
+            per_label_n_pc      (:obj:`int`): Number of principal components to use for the per-label.
+            E                   (:obj:`numpy.ndarray`): Embedding matrix of shape *(m, d)*, where *m* is the number of samples and *d* the embedding dimensionality.
+            Y                   (:obj:`numpy.ndarray`): Vector of predicted labels of shape *(m, 1)*, where m is the number of samples.
+            baseline_algorithm  (:obj:`str`, `optional`): Baseline estimation algorithm to use. Possible values are: *"StandardBaselineEstimator"*. If not provided, the default value is *"StandardBaselineEstimator"*.
 
         Returns:
             :class:`~driftlens._baseline.BaselineClass`: An instance of the `BaselineClass` class from the `_baseline.py` module, performing the offline phase of DriftLens.
@@ -78,8 +78,8 @@ class DriftLens:
         """ Stores persistently on disk the baseline.
 
         Args:
-            folder_path (:obj:`str`): Folder path where save the baseline.
-            baseline_name (:obj:`str`): Filename of the baseline folder.
+            folder_path     (:obj:`str`): Folder path where save the baseline.
+            baseline_name   (:obj:`str`): Filename of the baseline folder.
 
         Returns:
             :obj:`str`: Baseline folder path.
@@ -94,8 +94,8 @@ class DriftLens:
         """ Stores persistently on disk the threshold.
 
         Args:
-            folder_path (:obj:`str`): Folder path where save the threshold.
-            threshold_name (:obj:`str`): Filename of the threshold file.
+            folder_path     (:obj:`str`): Folder path where save the threshold.
+            threshold_name  (:obj:`str`): Filename of the threshold file.
 
         Returns:
             :obj:`str`: The threshold filepath.
@@ -110,8 +110,8 @@ class DriftLens:
         r""" Loads the baseline from disk into a BaselineClass object.
 
         Args:
-            folder_path (:obj:`str`): Folder path with the saved baseline.
-            baseline_name (:obj:`str`): Filename of the baseline folder.
+            folder_path     (:obj:`str`): Folder path with the saved baseline.
+            baseline_name   (:obj:`str`): Filename of the baseline folder.
 
         Returns:
             :class:`~driftlens._baseline.BaselineClass`: the loaded baseline.
@@ -152,17 +152,17 @@ class DriftLens:
         """ Estimates the threshold using the random sampling algorithm.
 
         Args:
-            label_list (:obj:`list(int)`): List of class label ids used to train the model.
-            E (:obj:`numpy.ndarray`): Embedding matrix of shape *(m, d)*, where *m* is the number of samples and *d* the embedding dimensionality.
-            Y (:obj:`numpy.ndarray`): Vector of predicted labels of shape *(m, 1)*, where m is the number of samples.
-            batch_n_pc (:obj:`int`): Number of principal components to use for the per-batch.
-            per_label_n_pc (:obj:`int`): Number of principal components to use for the per-label.
-            window_size (:obj:`int`): Size of the window to use for the threshold estimation.
-            n_samples (:obj:`int`): Number of windows randomly sampled to use for the threshold estimation.
-            flag_shuffle (:obj:`bool`, `optional`): Flag to shuffle the samples before the threshold estimation. Default is True.
-            flag_replacement (:obj:`bool`, `optional`): Flag to sample with replacement the windows. Default is True.
-            proportional_flag (:obj:`bool`, `optional`): Flag to use the windows with proportional distribution between labels. Default is False.
-            proportions_dict (:obj:`dict`, `optional`): Dictionary with the proportions of the labels to use for the proportional sampling. Default is None.
+            label_list          (:obj:`list(int)`): List of class label ids used to train the model.
+            E                   (:obj:`numpy.ndarray`): Embedding matrix of shape *(m, d)*, where *m* is the number of samples and *d* the embedding dimensionality.
+            Y                   (:obj:`numpy.ndarray`): Vector of predicted labels of shape *(m, 1)*, where m is the number of samples.
+            batch_n_pc          (:obj:`int`): Number of principal components to use for the per-batch.
+            per_label_n_pc      (:obj:`int`): Number of principal components to use for the per-label.
+            window_size         (:obj:`int`): Size of the window to use for the threshold estimation.
+            n_samples           (:obj:`int`): Number of windows randomly sampled to use for the threshold estimation.
+            flag_shuffle        (:obj:`bool`, `optional`): Flag to shuffle the samples before the threshold estimation. Default is True.
+            flag_replacement    (:obj:`bool`, `optional`): Flag to sample with replacement the windows. Default is True.
+            proportional_flag   (:obj:`bool`, `optional`): Flag to use the windows with proportional distribution between labels. Default is False.
+            proportions_dict    (:obj:`dict`, `optional`): Dictionary with the proportions of the labels to use for the proportional sampling. Default is None.
 
         Returns:
             :obj:`tuple(numpy.ndarray, numpy.ndarray)`: Tuple with the per-batch distances sorted and the per-label distances.
@@ -207,8 +207,8 @@ class DriftLens:
         """ Loads the threshold from disk into a ThresholdClass object.
 
         Args:
-            folder_path (:obj:`str`): Folder path with the saved threshold
-            threshold_name (:obj:`str`): Filename of the threshold file.
+            folder_path     (:obj:`str`): Folder path with the saved threshold
+            threshold_name  (:obj:`str`): Filename of the threshold file.
 
         Returns:
             :class:`~driftlens._threshold.ThresholdClass`: The loaded threshold.
@@ -224,9 +224,9 @@ class DriftLens:
         """ Computes the per-batch and per-label distribution distances for an embedding window.
 
         Args:
-            E_w (:obj:`numpy.ndarray`): Embeddings of the window.
-            Y_w (:obj:`numpy.ndarray`): Predicted labels of the window.
-            distribution_distance_metric (:obj:`str`, `optional`): The distribution distance metric to use. The Frechet Distance is used by default. Options are: ...
+            E_w                             (:obj:`numpy.ndarray`): Embeddings of the window.
+            Y_w                             (:obj:`numpy.ndarray`): Predicted labels of the window.
+            distribution_distance_metric    (:obj:`str`, `optional`): The distribution distance metric to use. The Frechet Distance is used by default. Options are: ...
 
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
@@ -247,13 +247,16 @@ class DriftLens:
             return None
         return window_distribution_distances_dict
 
-    def compute_window_list_distribution_distances(self, E_w_list, Y_w_list, distribution_distance_metric="frechet_drift_distance"):
+    def compute_window_list_distribution_distances(self,
+                                                   E_w_list,
+                                                   Y_w_list,
+                                                   distribution_distance_metric="frechet_drift_distance"):
         """ Computes the per-batch and per-label distribution distances for each embedding window.
 
         Args:
-            E_w_list (:obj:`list`(:obj:`numpy.ndarray`)`): List of embeddings of the windows.
-            Y_w_list (:obj:`list`(:obj:`numpy.ndarray`)`): List of predicted labels of the windows.
-            distribution_distance_metric (:obj:`str`, `optional`): The distribution distance metric to use. Currently, only the Frechet Inception Distance is supported.
+            E_w_list                        (:obj:`list`(:obj:`numpy.ndarray`)`): List of embeddings of the windows.
+            Y_w_list                        (:obj:`list`(:obj:`numpy.ndarray`)`): List of predicted labels of the windows.
+            distribution_distance_metric    (:obj:`str`, `optional`): The distribution distance metric to use. Currently, only the Frechet Inception Distance is supported.
 
         Returns:
             :obj:`tuple`: A tuple containing a list of dictionaries containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
