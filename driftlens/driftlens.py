@@ -40,11 +40,18 @@ class DriftLens:
         self.baseline_algorithms = {"StandardBaselineEstimator": "Description"}
         self.threshold_estimators = {"KFoldThresholdEstimator": "Description"}
 
-    def estimate_baseline(self, E, Y,  label_list, batch_n_pc, per_label_n_pc, baseline_algorithm="StandardBaselineEstimator") -> _baseline.BaselineClass:
+    def estimate_baseline(self,
+                          E: np.ndarray,
+                          Y: np.ndarray,
+                          label_list: list[int],
+                          batch_n_pc: int,
+                          per_label_n_pc: int,
+                          baseline_algorithm: str = "StandardBaselineEstimator"
+                          ) -> _baseline.BaselineClass:
         r""" Estimates the baseline.
 
         Args:
-            label_list          (:obj:`list(str)`): List of class labels used to train the model.
+            label_list          (:obj:`list(int)`): List of class label ids used to train the model.
             batch_n_pc          (:obj:`int`): Number of principal components to use for the per-batch.
             per_label_n_pc      (:obj:`int`): Number of principal components to use for the per-label.
             E                   (:obj:`numpy.ndarray`): Embedding matrix of shape *(m, d)*, where *m* is the number of samples and *d* the embedding dimensionality.
@@ -74,7 +81,7 @@ class DriftLens:
 
         return self.baseline
 
-    def save_baseline(self, folder_path, baseline_name) -> str:
+    def save_baseline(self, folder_path: str, baseline_name: str) -> str:
         """ Stores persistently on disk the baseline.
 
         Args:
@@ -90,7 +97,7 @@ class DriftLens:
             raise Exception(f'Error: Baseline has not yet been estimated. You should first call the "estimate_baseline" method.')
         return baseline_path
 
-    def save_threshold(self, folder_path, threshold_name) -> str:
+    def save_threshold(self, folder_path: str, threshold_name: str) -> str:
         """ Stores persistently on disk the threshold.
 
         Args:
@@ -106,7 +113,7 @@ class DriftLens:
             raise Exception(f'Error: Threshold has not yet been estimated. You should first call the "estimate_threshold" method.')
         return threshold_path
 
-    def load_baseline(self, folder_path, baseline_name) -> _baseline.BaselineClass:
+    def load_baseline(self, folder_path: str, baseline_name: str) -> _baseline.BaselineClass:
         r""" Loads the baseline from disk into a BaselineClass object.
 
         Args:
@@ -124,7 +131,7 @@ class DriftLens:
         self.label_list = baseline.get_label_list()
         return baseline
 
-    def set_baseline(self, baseline) -> None:
+    def set_baseline(self, baseline: _baseline.BaselineClass) -> None:
         """ Sets the baseline attribute with a BaselineClass object.
 
         Args:
@@ -148,7 +155,20 @@ class DriftLens:
         self.threshold = threshold
         return
 
-    def random_sampling_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, n_samples, flag_shuffle=True, flag_replacement=True, proportional_flag=False, proportions_dict=None, distribution_distance_metric="frechet_drift_distance"):
+    def random_sampling_threshold_estimation(self,
+                                             label_list: list[int],
+                                             E: np.ndarray,
+                                             Y: np.ndarray,
+                                             batch_n_pc: int,
+                                             per_label_n_pc: int,
+                                             window_size: int,
+                                             n_samples: int,
+                                             flag_shuffle: bool = True,
+                                             flag_replacement: bool = True,
+                                             proportional_flag: bool = False,
+                                             proportions_dict=None,
+                                             distribution_distance_metric: str ="frechet_drift_distance"
+                                             ):
         """ Estimates the threshold using the random sampling algorithm.
 
         Args:
@@ -176,7 +196,29 @@ class DriftLens:
             raise Exception(f'Error in estimating the threshold: {e}')
         return per_batch_distances_sorted, per_label_distances
 
-    def KFold_threshold_estimation(self, label_list, E, Y, batch_n_pc, per_label_n_pc, window_size, flag_shuffle=True):
+    def KFold_threshold_estimation(self,
+                                   label_list: list[int],
+                                   E: np.ndarray,
+                                   Y: np.ndarray,
+                                   batch_n_pc: int,
+                                   per_label_n_pc: int,
+                                   window_size: int,
+                                   flag_shuffle: bool = True
+                                   ):
+        """ Estimates the threshold using the KFold algorithm (preliminary version of DriftLens).
+
+        Args:
+            label_list          (:obj:`list(int)`): List of class label ids used to train the model.
+            E                   (:obj:`numpy.ndarray`): Embedding matrix of shape *(m, d)*, where *m* is the number of samples and *d* the embedding dimensionality.
+            Y                   (:obj:`numpy.ndarray`): Vector of predicted labels of shape *(m, 1)*, where m is the number of samples.
+            batch_n_pc          (:obj:`int`): Number of principal components to use for the per-batch.
+            per_label_n_pc      (:obj:`int`): Number of principal components to use for the per-label.
+            window_size         (:obj:`int`): Size of the window to use for the threshold estimation.
+            flag_shuffle        (:obj:`bool`, `optional`): Flag to shuffle the samples before the threshold estimation. Default is True.
+
+        Returns:
+            :obj:`numpy.ndarray`: The estimated threshold.
+        """
         threshold_algorithm = _threshold.KFoldThresholdEstimator(label_list)
         # Execute the threshold estimation
         try:
@@ -203,7 +245,7 @@ class DriftLens:
             raise Exception(f'Error in estimating the threshold: {e}')
         return self.threshold
 
-    def load_threshold(self, folder_path, threshold_name) -> _threshold.ThresholdClass:
+    def load_threshold(self, folder_path: str, threshold_name: str) -> _threshold.ThresholdClass:
         """ Loads the threshold from disk into a ThresholdClass object.
 
         Args:
@@ -220,7 +262,11 @@ class DriftLens:
         self.threshold = threshold
         return threshold
 
-    def compute_window_distribution_distances(self, E_w, Y_w, distribution_distance_metric="frechet_drift_distance"):
+    def compute_window_distribution_distances(self,
+                                              E_w: np.ndarray,
+                                              Y_w: np.ndarray,
+                                              distribution_distance_metric: str = "frechet_drift_distance"
+                                              ) -> dict:
         """ Computes the per-batch and per-label distribution distances for an embedding window.
 
         Args:
@@ -248,9 +294,10 @@ class DriftLens:
         return window_distribution_distances_dict
 
     def compute_window_list_distribution_distances(self,
-                                                   E_w_list,
-                                                   Y_w_list,
-                                                   distribution_distance_metric="frechet_drift_distance"):
+                                                   E_w_list: list[np.ndarray],
+                                                   Y_w_list: list[np.ndarray],
+                                                   distribution_distance_metric: str = "frechet_drift_distance"
+                                                   ) -> tuple(list[dict], list[dict]):
         """ Computes the per-batch and per-label distribution distances for each embedding window.
 
         Args:

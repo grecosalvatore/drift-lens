@@ -15,9 +15,9 @@ class BaselineClass:
         label_list                  (:obj:`list(int)`): List of label ids used to train the model
         batch_n_pc                  (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift
         per_label_n_pc              (:obj:`int`): number of principal components to reduce embedding for the per-label drift
-        mean_vectors_dict           (:obj:`dict`): Dict containing the mean vectors: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
-        covariance_matrices_dict    (:obj:`dict`): Dict containing the covariance matrices: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
-        PCA_models_dict             (:obj:`dict`): Dict containing the PCA models: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
+        mean_vectors_dict           (:obj:`dict`): Dict containing the mean vectors: (1) per-label ["per-label"] and (2) for the entire batch ["batch"]
+        covariance_matrices_dict    (:obj:`dict`): Dict containing the covariance matrices: (1) per-label ["per-label"] and (2) for the entire batch ["batch"]
+        PCA_models_dict             (:obj:`dict`): Dict containing the PCA models: (1) per-label ["per-label"] and (2) for the entire batch ["batch"]
     """
 
     def __init__(self):
@@ -94,17 +94,15 @@ class BaselineClass:
 
         return
 
-    def save(self,
-             folder_path,
-             baseline_name):
+    def save(self, folder_path, baseline_name):
         """ Saves persistently on disk the baseline.
 
         Args:
-            folder_path     (str): Folder path where save the baseline.
-            baseline_name   (str): Filename of the baseline folder.
+            folder_path     (:obj:`str`): Folder path where to save the baseline.
+            baseline_name   (:obj:`str`): Filename of the baseline folder.
 
         Returns:
-            (str): Baseline folder path.
+            :obj:`str`: Baseline folder path.
         """
         BASELINE_PATH = os.path.join(folder_path, baseline_name)
         BASELINE_PCA_FOLDER = os.path.join(BASELINE_PATH, "pca_models")
@@ -164,8 +162,9 @@ class BaselineClass:
         """ Loads the baseline from folder.
 
         Args:
-            folder_path     (str): Folder path where the baseline is saved.
-            baseline_name   (str): Filename of the baseline folder.
+            folder_path     (:obj:`str`): Folder path where the baseline is saved.
+            baseline_name   (:obj:`str`): Filename of the baseline folder.
+
         Returns:
             None
         """
@@ -414,7 +413,7 @@ class StandardBaselineEstimator(BaselineEstimatorMethod):
          Args:
              E  (np.array): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
              Y  (np.array): Labels (predicted/origianl) of shape (m, 1), where m is the number of samples.
-             
+
          Returns:
              BaselineClass: Returns the baseline objects with the estimated models.
          """
