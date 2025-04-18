@@ -1,10 +1,10 @@
 import os.path
 
-from driftlens import _frechet_drift_distance as fdd
-from driftlens import _mahalanobis_drift_distance as mdd
-from driftlens import _kullback_leibler_drift_divergence as kldd
-from driftlens import _bhattacharyya_drift_distance as bdd
-from driftlens import _jensen_shannon_drift_divergence as jsdd
+from .distribution_distances import frechet_drift_distance as fdd
+from .distribution_distances import mahalanobis_drift_distance as mdd
+from .distribution_distances import kullback_leibler_drift_divergence as kldd
+from .distribution_distances import bhattacharyya_drift_distance as bdd
+from .distribution_distances import jensen_shannon_drift_divergence as jsdd
 from driftlens import _baseline as _baseline
 from driftlens import _threshold as _threshold
 

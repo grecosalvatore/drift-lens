@@ -12,7 +12,7 @@ class BaselineClass:
     """ Baseline CLass: it contains all the attributes and methods of the baseline.
 
     Attributes:
-        label_list                  (:obj:`list(str)`): List of labels used to train the model
+        label_list                  (:obj:`list(int)`): List of label ids used to train the model
         batch_n_pc                  (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift
         per_label_n_pc              (:obj:`int`): number of principal components to reduce embedding for the per-label drift
         mean_vectors_dict           (:obj:`dict`): Dict containing the mean vectors: 1) per-label ["per-label"] and 2) for the entire batch ["batch"]
@@ -21,7 +21,7 @@ class BaselineClass:
     """
 
     def __init__(self):
-        self.label_list = None  # List of labels used to train the model
+        self.label_list = None  # List of label ids used to train the model
         self.batch_n_pc = None  # Number of principal components to reduce the embedding for the entire batch drift
         self.per_label_n_pc = None  # number of principal components to reduce embedding for the per-label drift
 
@@ -96,9 +96,11 @@ class BaselineClass:
 
     def save(self, folder_path, baseline_name):
         """ Saves persistently on disk the baseline.
+
         Args:
             folder_path (str): Folder path where save the baseline.
             baseline_name (str): Filename of the baseline folder.
+
         Returns:
             (str): Baseline folder path.
         """
@@ -158,9 +160,10 @@ class BaselineClass:
 
     def load(self, folder_path, baseline_name):
         """ Loads the baseline from folder.
+
         Args:
-            folder_path (str): Folder path where the baseline is saved.
-            baseline_name (str): Filename of the baseline folder.
+            folder_path     (str): Folder path where the baseline is saved.
+            baseline_name   (str): Filename of the baseline folder.
         Returns:
             None
         """
