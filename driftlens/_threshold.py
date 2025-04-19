@@ -200,8 +200,21 @@ class KFoldThresholdEstimator(ThresholdEstimatorMethod):
         ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="KFoldThresholdEstimator")
         return
 
-    def estimate_threshold(self, E, Y, batch_n_pc, per_label_n_pc, window_size, flag_shuffle=True):
-        """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object. """
+    def estimate_threshold(self,
+                           E: np.ndarray,
+                           Y: np.ndarray,
+                           batch_n_pc: int,
+                           per_label_n_pc: int,
+                           window_size: int,
+                           flag_shuffle: bool = True
+                           ):
+        """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object.
+
+        Args:
+
+        Returns:
+
+        """
 
         if window_size > E.shape[0] * 2:
             # Error
@@ -319,8 +332,26 @@ class StandardThresholdEstimator(ThresholdEstimatorMethod):
         ThresholdEstimatorMethod.__init__(self, label_list, threshold_method_name="StandardThresholdEstimator")
         return
 
-    def estimate_threshold(self, E, Y, baseline, window_size, flag_shuffle=True):
-        """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object. """
+    def estimate_threshold(self,
+                           E: np.ndarray,
+                           Y: np.ndarray,
+                           baseline: driftlens._baseline.BaselineClass,
+                           window_size: int,
+                           flag_shuffle: bool = True
+                           ):
+        """ Implementation of the 'estimate_threshold' Abstract method: Estimates the Threshold and returns a ThresholdClass object.
+
+        Args:
+            E               (:obj:`np.ndarray`): Embedding vectors of the threshold dataset.
+            Y               (:obj:`np.ndarray`): Predicted labels of the threshold dataset.
+            baseline        (:obj:`driftlens._baseline.BaselineClass`): Baseline object.
+            window_size     (:obj:`int`): Size of the window that will be used in the online phase.
+            flag_shuffle    (:obj:`bool`): If True, shuffle the embedding vectors and labels before computing the distribution distances.
+
+        Returns:
+            threshold (:obj:`ThresholdClass`): Threshold object containing the estimated threshold.
+
+        """
 
         # Number of principal components for both batch and per-label are extracted from the baseline
         batch_n_pc = baseline.batch_n_pc
@@ -417,11 +448,9 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
             dl_th.set_baseline(baseline)
             distribution_distances = dl_th.compute_window_list_distribution_distances(E_windows, Y_predicted_windows, distribution_distance_metric=distribution_distance_metric)
 
-
             per_batch_distances.append(distribution_distances[0][0]["per-batch"])
             for l in self.label_list:
                 per_label_distances[l].append(distribution_distances[0][0]["per-label"][str(l)])
-
 
         per_batch_distances_arr = np.array(per_batch_distances)
 
@@ -435,8 +464,30 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
         return per_batch_distances_sorted, per_label_distances
 
     @staticmethod
-    def _proportional_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement,
-                               proportions_dict):
+    def _proportional_sampling(label_list,
+                               E: np.ndarray,
+                               Y_predicted: np.ndarray,
+                               Y_original: np.ndarray,
+                               window_size: int,
+                               n_windows: int,
+                               flag_replacement: bool,
+                               proportions_dict: dict
+                               ):
+        """ Sampling method to create windows of data with proportional representation of each label.
+
+        Args:
+            label_list (:obj:`list`): List of label ids used during training.
+            E (:obj:`np.ndarray`): Embedding vectors.
+            Y_predicted (:obj:`np.ndarray`): Predicted labels.
+            Y_original (:obj:`np.ndarray`): Original (true) labels.
+            window_size (:obj:`int`): Size of the window.
+            n_windows (:obj:`int`): Number of windows to create.
+            flag_replacement (:obj:`bool`): Flag to indicate if sampling is with replacement.
+            proportions_dict (:obj:`dict`): Dictionary with proportions of each label.
+
+        Returns:
+            E_windows (:obj:`list`): List of sampled embedding vectors.
+        """
         per_label_E = {}
         per_label_Y_predicted = {}
         per_label_Y_original = {}
@@ -512,11 +563,22 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
 
         return E_windows, Y_predicted_windows, Y_original_windows
 
-
-
-    #TODO: improve this implementation
     @staticmethod
-    def _balanced_sampling(label_list, E, Y_predicted, Y_original, window_size, n_windows, flag_replacement):
+    def _balanced_sampling(label_list: list,
+                           E: np.ndarray,
+                           Y_predicted: np.ndarray,
+                           Y_original: np.ndarray,
+                           window_size: int,
+                           n_windows: int,
+                           flag_replacement: bool
+                           ):
+        """Generates a window with balanced samples for each class from the dataset.
+
+        Args:
+
+        Returns:
+
+        """
 
         per_label_E = {}
         per_label_Y_predicted = {}
@@ -587,7 +649,6 @@ class RandomSamplingThresholdEstimator(ThresholdEstimatorMethod):
             E_windows.append(np.array(E_window_list))
             Y_predicted_windows.append(np.array(Y_predicted_window_list))
             Y_original_windows.append(np.array(Y_original_window_list))
-
 
         return E_windows, Y_predicted_windows, Y_original_windows
 

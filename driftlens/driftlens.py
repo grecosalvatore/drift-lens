@@ -382,15 +382,20 @@ class DriftLens:
         return {'per-batch': per_batch_drift_probabilities, 'per-label': per_label_drift_probabilities}
 
     @staticmethod
-    def _compute_frechet_distribution_distances(label_list, baseline,  E_w, Y_w, window_id=0):
-        """ Computes the frechet distribution distance (FID) per-batch and per-label.
+    def _compute_frechet_distribution_distances(label_list: List[int],
+                                                baseline: _baseline.BaselineClass,
+                                                E_w: np.ndarray,
+                                                Y_w: np.ndarray,
+                                                window_id: int = 0
+                                                ) -> dict:
+        """ Computes the frechet distribution distance (FDD) per-batch and per-label.
 
         Args:
-            label_list (:obj:`list(str)`):
-            baseline (:obj:`BaselineClass`): The baseline object.
-            E_w: The embeddings of the current window.
-            Y_w: The predicted labels of the current window.
-            window_id:
+            label_list  (:obj:`list(int)`): List of label ids.
+            baseline    (:obj:`BaselineClass`): The baseline object.
+            E_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The embeddings of the current window.
+            Y_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The predicted labels of the current window.
+            window_id   (:obj:`int`): The window id (default: 0).
 
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
@@ -439,15 +444,20 @@ class DriftLens:
         return window_distribution_distances_dict
 
     @staticmethod
-    def _compute_mahalanobis_drift_distances(label_list, baseline, E_w, Y_w, window_id=0):
+    def _compute_mahalanobis_drift_distances(label_list: List[int],
+                                             baseline: _baseline.BaselineClass,
+                                             E_w: np.ndarray,
+                                             Y_w: np.ndarray,
+                                             window_id: int = 0
+                                             ) -> dict:
         """ Computes the mahalanobis distribution distance per-batch and per-label.
 
         Args:
-            label_list (:obj:`list(str)`):
-            baseline (:obj:`BaselineClass`): The baseline object.
-            E_w: The embeddings of the current window.
-            Y_w: The predicted labels of the current window.
-            window_id:
+            label_list  (:obj:`list(int)`): List of label ids.
+            baseline    (:obj:`BaselineClass`): The baseline object.
+            E_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The embeddings of the current window.
+            Y_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The predicted labels of the current window.
+            window_id   (:obj:`int`): The window id (default: 0).
 
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
@@ -493,15 +503,20 @@ class DriftLens:
         return window_distribution_distances_dict
 
     @staticmethod
-    def _compute_kullback_leibler_distribution_divergences(label_list, baseline, E_w, Y_w, window_id=0):
+    def _compute_kullback_leibler_distribution_divergences(label_list: List[int],
+                                                           baseline: _baseline.BaselineClass,
+                                                           E_w: np.ndarray,
+                                                           Y_w: np.ndarray,
+                                                           window_id: int = 0
+                                                           ) -> dict:
         """ Computes the frechet distribution distance (FID) per-batch and per-label.
 
         Args:
-            label_list (:obj:`list(str)`):
-            baseline (:obj:`BaselineClass`): The baseline object.
-            E_w: The embeddings of the current window.
-            Y_w: The predicted labels of the current window.
-            window_id:
+            label_list  (:obj:`list(int)`): List of label ids.
+            baseline    (:obj:`BaselineClass`): The baseline object.
+            E_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The embeddings of the current window.
+            Y_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The predicted labels of the current window.
+            window_id   (:obj:`int`): The window id (default: 0).
 
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
@@ -549,15 +564,20 @@ class DriftLens:
         return window_distribution_distances_dict
 
     @staticmethod
-    def _compute_bhattacharyya_distribution_distances(label_list, baseline, E_w, Y_w, window_id=0):
-        """ Computes the bhattacharyya distribution distance (FID) per-batch and per-label.
+    def _compute_bhattacharyya_distribution_distances(label_list: List[int],
+                                                      baseline: _baseline.BaselineClass,
+                                                      E_w: np.ndarray,
+                                                      Y_w: np.ndarray,
+                                                      window_id: int = 0
+                                                      ) -> dict:
+        """ Computes the bhattacharyya distribution distance per-batch and per-label.
 
         Args:
-            label_list (:obj:`list(str)`):
-            baseline (:obj:`BaselineClass`): The baseline object.
-            E_w: The embeddings of the current window.
-            Y_w: The predicted labels of the current window.
-            window_id:
+            label_list  (:obj:`list(int)`): List of label ids.
+            baseline    (:obj:`BaselineClass`): The baseline object.
+            E_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The embeddings of the current window.
+            Y_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The predicted labels of the current window.
+            window_id   (:obj:`int`): The window id (default: 0).
 
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
@@ -605,15 +625,20 @@ class DriftLens:
         return window_distribution_distances_dict
 
     @staticmethod
-    def _compute_jensen_shannon_distribution_divergences(label_list, baseline, E_w, Y_w, window_id=0):
-        """ Computes the jensen shannon distribution distance (FID) per-batch and per-label.
+    def _compute_jensen_shannon_distribution_divergences(label_list: List[int],
+                                                         baseline: _baseline.BaselineClass,
+                                                         E_w: np.ndarray,
+                                                         Y_w: np.ndarray,
+                                                         window_id: int = 0
+                                                         ) -> dict:
+        """ Computes the jensen shannon distribution distance per-batch and per-label.
 
         Args:
-            label_list (:obj:`list(str)`):
-            baseline (:obj:`BaselineClass`): The baseline object.
-            E_w: The embeddings of the current window.
-            Y_w: The predicted labels of the current window.
-            window_id:
+            label_list  (:obj:`list(int)`): List of label ids.
+            baseline    (:obj:`BaselineClass`): The baseline object.
+            E_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The embeddings of the current window.
+            Y_w         (:obj:`list`(:obj:`numpy.ndarray`)`): The predicted labels of the current window.
+            window_id   (:obj:`int`): The window id (default: 0).
 
         Returns:
             a dictionary containing the per-batch (window_distribution_distances_dict[batch]) and the per-label
