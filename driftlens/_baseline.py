@@ -159,7 +159,7 @@ class BaselineClass:
         return BASELINE_PATH
 
     def load(self, folder_path, baseline_name):
-        """ Loads the baseline from folder.
+        """ Loads the baseline from a folder.
 
         Args:
             folder_path     (:obj:`str`): Folder path where the baseline is saved.
@@ -353,9 +353,7 @@ class BaselineEstimatorMethod(ABC):
         label_list      (:obj:`list(int)`): List of labels used to train the model.
         batch_n_pc      (:obj:`int`): Number of principal components for PCA for the entire batch.
         per_label_n_pc  (:obj:`dict`): Number of principal components for PCA for each label.
-
     """
-
     def __init__(self, label_list, batch_n_pc, per_label_n_pc):
         self.batch_n_pc = batch_n_pc  # Number of principal components for PCA for the entire batch
         self.per_label_n_pc = per_label_n_pc  # Number of principal components for PCA for the per-label
@@ -401,8 +399,8 @@ class BaselineEstimatorMethod(ABC):
 
 
 class StandardBaselineEstimator(BaselineEstimatorMethod):
-    """ Standard Baseline Estimator Class: Implementation of the BaselineEstimatorMethod Abstract Class. """
-
+    """ Standard Baseline Estimator Class: Implementation of the BaselineEstimatorMethod Abstract Class.
+        It estimates the per-batch and per-labels distributions as multivariate Gaussian distributions. """
     def __init__(self, label_list, batch_n_pc, per_label_n_pc):
         BaselineEstimatorMethod.__init__(self, label_list, batch_n_pc, per_label_n_pc)
         return
@@ -411,8 +409,8 @@ class StandardBaselineEstimator(BaselineEstimatorMethod):
         """ Estimates the baseline.
 
          Args:
-             E  (np.array): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
-             Y  (np.array): Labels (predicted/origianl) of shape (m, 1), where m is the number of samples.
+             E  (:obj:`np.ndarray`): Embedding vectors of shape (m, n_e), where m is the number of samples and n_e the embedding dimensionality.
+             Y  (:obj:`np.ndarray`): Labels (predicted/origianl) of shape (m, 1), where m is the number of samples.
 
          Returns:
              BaselineClass: Returns the baseline objects with the estimated models.

@@ -686,8 +686,8 @@ class DriftLens:
         return window_distribution_distances_dict
 
     @staticmethod
-    def convert_distribution_distances_list_to_dataframe(distribution_distances_list) -> pd.DataFrame:
-        """ Convert the list of distribution distances to a pandas DataFrame.
+    def convert_distribution_distances_list_to_dataframe(distribution_distances_list: dict) -> pd.DataFrame:
+        """ Converts the list of distribution distances to a pandas DataFrame.
         
         Args:   
             distribution_distances_list (:obj:`list(dict)`): A list of dictionaries containing the distribution distances.
