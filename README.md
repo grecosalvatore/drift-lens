@@ -2,7 +2,7 @@
 <div align="center">
   <img src="https://github.com/grecosalvatore/drift-lens/raw/main/docs/_static/images/Drift_Lens_Logo.png" width="300"/>
   <h4>Unsupervised Concept Drift Detection <br> from Deep Learning
-Representations on Unstructured Data in Real-time</h4>
+Representations in Real-time</h4>
 </div>
 <br/>
 
