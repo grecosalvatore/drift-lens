@@ -1,8 +1,8 @@
 #
 <div align="center">
   <img src="https://github.com/grecosalvatore/drift-lens/raw/main/docs/_static/images/Drift_Lens_Logo.png" width="300"/>
-  <h4>Unsupervised Concept Drift Detection from Deep Learning
-Representations in Real-time</h4>
+  <h3>Unsupervised Concept Drift Detection from Deep Learning
+Representations in Real-time</h3>
 </div>
 <br/>
 
