@@ -181,7 +181,7 @@ class ThresholdEstimatorMethod(ABC):
         """ Constructor of the ThresholdEstimatorMethod class.
 
         Args:
-            label_list              (:obj:`list`): List of label ids used to train the model.
+            label_list              (:obj:`list(int)`): List of label ids used to train the model.
             threshold_method_name   (:obj:`str`): Name of the threshold method.
         """
         self.label_list = label_list
