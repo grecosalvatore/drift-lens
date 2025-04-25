@@ -719,8 +719,8 @@ class DriftLensVisualizer:
     def _parse_distribution_distances(label_list, windows_distribution_distances):
         """ Parse the distribution distances to per-label and per-batch distances.
         Args:
-            label_list (list): list of labels.
-            windows_distribution_distances (list): list of distribution distances.
+            label_list (:obj:`list(int)`): list of label ids.
+            windows_distribution_distances (:obj:`list(dict)`): list of distribution distances.
         Returns:
             per_label_distribution_distances (dict): dictionary with per-label distribution distances.
             per_batch_distribution_distances (list): list of per-batch distribution distances.
