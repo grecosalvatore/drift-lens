@@ -2,7 +2,7 @@
 cd ../../..
 
 
-python -m experiments.use_case_4_biasinbios_bert_female_drift.use_case_4_drift_detection_accuracy \
+python -m experiments.use_case_4_biasinbios_professions_gender_swap_drift.use_case_4_drift_detection_accuracy \
   --number_of_runs 5 \
   --model_name 'bert' \
   --window_size 500 \
@@ -16,11 +16,11 @@ python -m experiments.use_case_4_biasinbios_bert_female_drift.use_case_4_drift_d
   --n_subsamples_lsdd 14000 \
   --n_subsamples_cvm -1 \
   --n_subsamples_ks -1 \
-  --train_embedding_filepath 'experiments/use_case_4_biasinbios_bert_female_drift/static/saved_embeddings/bert/train_embedding.hdf5' \
-  --test_embedding_filepath 'experiments/use_case_4_biasinbios_bert_female_drift/static/saved_embeddings/bert/test_embedding.hdf5' \
-  --new_unseen_embedding_filepath 'experiments/use_case_4_biasinbios_bert_female_drift/static/saved_embeddings/bert/new_unseen_embedding.hdf5' \
-  --drift_embedding_filepath 'experiments/use_case_4_biasinbios_bert_female_drift/static/saved_embeddings/bert/drift_embedding.hdf5' \
-  --output_dir 'experiments/use_case_4_biasinbios_bert_female_drift/static/outputs/bert/' \
+  --train_embedding_filepath 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/saved_embeddings/bert/train_embedding.hdf5' \
+  --test_embedding_filepath 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/saved_embeddings/bert/test_embedding.hdf5' \
+  --new_unseen_embedding_filepath 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/saved_embeddings/bert/new_unseen_embedding.hdf5' \
+  --drift_embedding_filepath 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/saved_embeddings/bert/drift_embedding.hdf5' \
+  --output_dir 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/outputs/bert/' \
   --save_results \
   --cuda \
   --verbose \

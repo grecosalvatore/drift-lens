@@ -19,11 +19,11 @@ python -m experiments.drift_curve_correlation \
   --periodic_drift_duration 20 \
   --batch_n_p 150 \
   --per_label_n_pc 75 \
-  --train_embedding_filepath 'experiments/use_case_4_biasinbios_bert_female_drift/static/saved_embeddings/bert/train_embedding.hdf5' \
-  --test_embedding_filepath 'experiments/use_case_4_biasinbios_bert_female_drift/static/saved_embeddings/bert/test_embedding.hdf5' \
-  --new_unseen_embedding_filepath 'experiments/use_case_4_biasinbios_bert_female_drift/static/saved_embeddings/bert/new_unseen_embedding.hdf5' \
-  --drift_embedding_filepath 'experiments/use_case_4_biasinbios_bert_female_drift/static/saved_embeddings/bert/drift_embedding.hdf5' \
-  --output_dir 'experiments/use_case_4_biasinbios_bert_female_drift/static/outputs/bert/' \
+  --train_embedding_filepath 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/saved_embeddings/bert/train_embedding.hdf5' \
+  --test_embedding_filepath 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/saved_embeddings/bert/test_embedding.hdf5' \
+  --new_unseen_embedding_filepath 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/saved_embeddings/bert/new_unseen_embedding.hdf5' \
+  --drift_embedding_filepath 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/saved_embeddings/bert/drift_embedding.hdf5' \
+  --output_dir 'experiments/use_case_4_biasinbios_professions_gender_swap_drift/static/outputs/bert/' \
   --save_results \
   --verbose \
   --seed 42
