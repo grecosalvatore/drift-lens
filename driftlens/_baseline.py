@@ -11,6 +11,14 @@ import json
 class BaselineClass:
     """ Baseline CLass: it contains all the attributes and methods of the baseline.
 
+    This class stores reference statistics computed from historical data (modeling the absence of drift),
+    including mean vectors, covariance matrices, and PCA models for both per-label and
+    batch-level drift detection estimated as multivariate Gaussian distributions.
+
+    The baseline statistics are computed at two levels:
+    - Per-label: Statistics computed separately for each class label
+    - Batch: Statistics computed across all samples regardless of label
+
     Attributes:
         label_list                  (:obj:`list(int)`): List of label ids used to train the model
         batch_n_pc                  (:obj:`int`): Number of principal components to reduce the embedding for the entire batch drift
@@ -58,7 +66,7 @@ class BaselineClass:
             batch_n_samples=None,
             description=""
             ) -> None:
-        """ Fits the baseline attributes.
+        """ Fits the baseline attributes with precomputed statistics.
 
             Args:
                 label_list                  (:obj:`list(int)`): List of label ids used to train the model.
@@ -94,7 +102,7 @@ class BaselineClass:
 
         return
 
-    def save(self, folder_path, baseline_name):
+    def save(self, folder_path, baseline_name) -> str:
         """ Saves persistently on disk the baseline.
 
         Args:
@@ -103,6 +111,12 @@ class BaselineClass:
 
         Returns:
             :obj:`str`: Baseline folder path.
+
+        Raises:
+            :obj:`OSError`: If there are insufficient permissions to create directories or write files.
+            :obj:`FileNotFoundError`: If the parent directory of folder_path does not exist.
+            :obj:`PermissionError`: If write access is denied to the target location.
+            :obj:`Exception`: If there's an error serializing the baseline info to JSON.
         """
         BASELINE_PATH = os.path.join(folder_path, baseline_name)
         BASELINE_PCA_FOLDER = os.path.join(BASELINE_PATH, "pca_models")
@@ -158,7 +172,7 @@ class BaselineClass:
             raise Exception(f'Error in saving the baseline info json: {e}')
         return BASELINE_PATH
 
-    def load(self, folder_path, baseline_name):
+    def load(self, folder_path, baseline_name) -> None:
         """ Loads the baseline from a folder.
 
         Args:
@@ -167,6 +181,13 @@ class BaselineClass:
 
         Returns:
             None
+
+        Raises:
+            :obj:`Exception`: If the baseline_info.json file is not found or cannot be loaded.
+            :obj:`FileNotFoundError`: If any required baseline files are missing.
+            :obj:`KeyError`: If required keys are missing from the baseline_info.json file.
+            :obj:`pickle.UnpicklingError`: If there's an error loading the pickle files.
+            :obj:`OSError`: If there are file system access issues.
         """
         BASELINE_PATH = os.path.join(folder_path, baseline_name)
         BASELINE_PCA_FOLDER = os.path.join(BASELINE_PATH, "pca_models")
@@ -304,7 +325,7 @@ class BaselineClass:
         """
         return self.n_samples_dict["batch"]
 
-    def get_per_label_number_of_principal_components(self):
+    def get_per_label_number_of_principal_components(self) -> int:
         """ Gets the number of principal components for PCA for each label (per-label).
 
         Returns:
@@ -312,7 +333,7 @@ class BaselineClass:
         """
         return self.per_label_n_pc
 
-    def get_batch_number_of_principal_components(self):
+    def get_batch_number_of_principal_components(self) -> int:
         """ Gets the number of principal components for PCA for the entire batch (per-batch).
 
         Returns:
