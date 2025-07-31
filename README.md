@@ -15,12 +15,17 @@ Representations in Real-time</h3>
 *DriftLens* is an **unsupervised** framework for real-time *concept drift* **detection** and **characterization**. 
 It is designed for deep learning classifiers handling unstructured data, and leverages distribution distances in deep learning representations to enable efficient and accurate detection.
 
-The latest advancements in the *DriftLens* methodology and its evaluation is currently **Under Review** ([arxiv](https://www.arxiv.org/abs/2406.17813)). 
 
-The preliminary idea was first proposed in the paper: 
-[Drift Lens: Real-time unsupervised Concept Drift detection by evaluating per-label embedding distributions](https://ieeexplore.ieee.org/document/9679880) **(Greco et al., 2021)**
+## Publications
+The latest advancements in the *DriftLens* methodology and its evaluation has been published in the paper: \
+[Unsupervised Concept Drift Detection from Deep Learning Representations in Real-time](https://ieeexplore.ieee.org/document/11103500) **(Greco et al., 2025)**, *IEEE Transactions on Knowledge and Data Engineering (TKDE).*
 
-*DriftLens* as been also implemented in a web application tool ([GitHub](https://github.com/grecosalvatore/DriftLensDemo)) ([demopaper](https://openproceedings.org/2024/conf/edbt/paper-239.pdf)).
+
+The preliminary idea was first proposed in the paper: \
+[Drift Lens: Real-time unsupervised Concept Drift detection by evaluating per-label embedding distributions](https://ieeexplore.ieee.org/document/9679880) **(Greco et al., 2021)**, *nternational Conference on Data Mining Workshops (ICDMW).*
+
+*DriftLens* as been also implemented in a Flask application tool ([GitHub](https://github.com/grecosalvatore/DriftLensDemo)): \
+[DriftLens: A Concept Drift Detection Tool](https://openproceedings.org/2024/conf/edbt/paper-239.pdf) **(Greco et al., 2024)**, *International Conference on Extending Database Technology (EDBT) Demo.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -112,16 +117,18 @@ Instructions and scripts for the experimental evaluation reproducibility are loc
 ## References
 If you use DriftLens, please cite the following papers:
 
-1) DriftLens methodology and evaluation is currently **under review**. The pre-print is available at:
+1) DriftLens methodology and evaluation has been accepted at the IEEE Transactions on Knowledge and Data Engineering (TKDE):
 ```bibtex
-@misc{greco2024unsupervisedconceptdriftdetection,
-      title={Unsupervised Concept Drift Detection from Deep Learning Representations in Real-time}, 
-      author={Salvatore Greco and Bartolomeo Vacchetti and Daniele Apiletti and Tania Cerquitelli},
-      year={2024},
-      eprint={2406.17813},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2406.17813}, 
+@ARTICLE{11103500,
+  author={Greco, Salvatore and Vacchetti, Bartolomeo and Apiletti, Daniele and Cerquitelli, Tania},
+  journal={IEEE Transactions on Knowledge and Data Engineering}, 
+  title={Unsupervised Concept Drift Detection from Deep Learning Representations in Real-time}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-14},
+  keywords={Concept drift;Deep learning;Data models;Computational modeling;Real-time systems;Adaptation models;Detectors;Complexity theory;Production;Monitoring;Concept Drift;Data Drift;Drift Detection;Drift Explanation;Deep Learning;NLP;Computer Vision;Audio},
+  doi={10.1109/TKDE.2025.3593123}
 }
 ```
 
