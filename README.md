@@ -9,6 +9,7 @@ Representations in Real-time</h3>
 [![Documentation Status](https://readthedocs.org/projects/driftlens/badge/?version=latest)](https://driftlens.readthedocs.io/en/latest/?version=latest)
 [![Version](https://img.shields.io/pypi/v/driftlens?color=blue)](https://pypi.org/project/driftlens)
 [![License](https://img.shields.io/github/license/grecosalvatore/drift-lens)](https://github.com/grecosalvatore/drift-lens/blob/main/LICENSE)
+[![IEEE TKDE](https://img.shields.io/badge/IEEE-TKDE-blue?logo=ieee&logoColor=white)](https://ieeexplore.ieee.org/document/11103500)
 [![arxiv preprint](https://img.shields.io/badge/arXiv-2406.17813-b31b1b.svg)](https://arxiv.org/abs/2406.17813)
 [![Downloads](https://static.pepy.tech/badge/driftlens)](https://pepy.tech/project/driftlens)
 
