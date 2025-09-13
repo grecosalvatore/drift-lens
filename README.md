@@ -123,14 +123,14 @@ If you use DriftLens, please cite the following papers:
 @ARTICLE{11103500,
   author={Greco, Salvatore and Vacchetti, Bartolomeo and Apiletti, Daniele and Cerquitelli, Tania},
   journal={IEEE Transactions on Knowledge and Data Engineering}, 
-  title={Unsupervised Concept Drift Detection from Deep Learning Representations in Real-time}, 
+  title={Unsupervised Concept Drift Detection From Deep Learning Representations in Real-Time}, 
   year={2025},
-  volume={},
-  number={},
-  pages={1-14},
-  keywords={Concept drift;Deep learning;Data models;Computational modeling;Real-time systems;Adaptation models;Detectors;Complexity theory;Production;Monitoring;Concept Drift;Data Drift;Drift Detection;Drift Explanation;Deep Learning;NLP;Computer Vision;Audio},
-  doi={10.1109/TKDE.2025.3593123}
-}
+  volume={37},
+  number={10},
+  pages={6232-6245},
+  keywords={Concept drift;Deep learning;Data models;Computational modeling;Real-time systems;Adaptation models;Detectors;Complexity theory;Production;Monitoring;Concept drift;data drift;drift detection;drift explanation;deep learning;NLP;computer vision;audio},
+  doi={10.1109/TKDE.2025.3593123}}
+
 ```
 
 2) Preliminary idea 
