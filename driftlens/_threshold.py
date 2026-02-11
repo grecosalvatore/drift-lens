@@ -47,10 +47,19 @@ class ThresholdClass:
             batch_mean,
             batch_std,
             per_label_mean_dict,
-            per_label_std_dict, label_list, batch_n_pc, per_label_n_pc, window_size, distribution_distances_list,  threshold_method_name=""):
+            per_label_std_dict,
+            label_list,
+            batch_n_pc,
+            per_label_n_pc,
+            window_size,
+            distribution_distances_list,
+            threshold_method_name="") -> None:
         """ Fits the threshold attributes.
-        Args:
-            batch_mean:
+
+        Attributes:
+            batch_mean                  (np.array): Mean vector for the entire batch (overall distribution).
+            batch_std
+            label_list                  (:obj:`list(int)`): List of label ids used to train the model.
 
         Returns:
             None
