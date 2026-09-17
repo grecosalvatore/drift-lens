@@ -23,7 +23,7 @@ The latest advancements in the *DriftLens* methodology and its evaluation has be
 
 
 The preliminary idea was first proposed in the paper: \
-[Drift Lens: Real-time unsupervised Concept Drift detection by evaluating per-label embedding distributions](https://ieeexplore.ieee.org/document/9679880) **(Greco et al., 2021)**, *nternational Conference on Data Mining Workshops (ICDMW).*
+[Drift Lens: Real-time unsupervised Concept Drift detection by evaluating per-label embedding distributions](https://ieeexplore.ieee.org/document/9679880) **(Greco et al., 2021)**, *International Conference on Data Mining Workshops (ICDMW).*
 
 *DriftLens* as been also implemented in a Flask application tool ([GitHub](https://github.com/grecosalvatore/DriftLensDemo)): \
 [DriftLens: A Concept Drift Detection Tool](https://openproceedings.org/2024/conf/edbt/paper-239.pdf) **(Greco et al., 2024)**, *International Conference on Extending Database Technology (EDBT) Demo*.
